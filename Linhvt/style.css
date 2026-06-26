@@ -1,0 +1,142 @@
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:99999;
+}
+
+.overlay.show{
+    display:flex;
+}
+
+.overlay-content{
+
+    width:90%;
+    max-width:1300px;
+
+    max-height:92vh;
+
+    background:#fff;
+
+    border-radius:18px;
+
+    overflow:auto;
+
+    position:relative;
+
+    animation:popup .25s;
+}
+
+@keyframes popup{
+
+    from{
+
+        transform:translateY(40px);
+
+        opacity:0;
+
+    }
+
+    to{
+
+        transform:none;
+
+        opacity:1;
+
+    }
+
+}
+
+.close-btn{
+
+    position:absolute;
+
+    right:20px;
+
+    top:20px;
+
+    width:42px;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#f4f4f4;
+
+    cursor:pointer;
+
+    font-size:28px;
+
+}
+
+.overlay-body{
+
+    display:flex;
+
+    gap:40px;
+
+    padding:60px;
+
+}
+
+.left{
+
+    flex:2;
+
+}
+
+.left #mainImage{
+
+    width:100%;
+
+    border-radius:12px;
+
+}
+
+.thumb-list{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-top:20px;
+
+}
+
+.thumb-list img{
+
+    width:160px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+}
+
+.right{
+
+    width:350px;
+
+}
+
+.right h2{
+
+    margin-bottom:20px;
+
+}
+
+.right p{
+
+    color:#666;
+
+    line-height:1.6;
+
+}
