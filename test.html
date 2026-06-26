@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="logo">Portfolio</div>
+
+    <input
+        class="search"
+        placeholder="Search..."
+    >
+</header>
+
+<!-- ================= HOME ================= -->
+
+<section id="home">
+
+    <div class="projects">
+
+        <div class="card" onclick="openProject(0)">
+
+            <img
+                src="images/sailix/cover.webp"
+                alt=""
+            >
+
+            <div class="info">
+                <h3>UI/UX for Sales Product</h3>
+
+                <p>HALO LAB</p>
+            </div>
+
+        </div>
+
+        <div class="card" onclick="openProject(1)">
+
+            <img
+                src="images/dashboard/cover.webp"
+                alt=""
+            >
+
+            <div class="info">
+                <h3>Finance Dashboard</h3>
+
+                <p>HALO LAB</p>
+            </div>
+
+        </div>
+
+        <div class="card" onclick="openProject(2)">
+
+            <img
+                src="images/crm/cover.webp"
+                alt=""
+            >
+
+            <div class="info">
+                <h3>CRM Dashboard</h3>
+
+                <p>HALO LAB</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= DETAIL ================= -->
+
+<section id="detail" style="display:none">
+
+    <button class="back" onclick="goHome()">
+        ← Back
+    </button>
+
+    <h1 id="projectTitle"></h1>
+
+    <p id="projectAuthor"></p>
+
+    <div
+        class="gallery"
+        id="gallery"
+    >
+
+    </div>
+
+</section>
+
+<!-- ================= POPUP ================= -->
+
+<div
+    id="popup"
+    style="display:none"
+>
+
+    <button
+        class="close"
+        onclick="closePopup()"
+    >
+        ×
+    </button>
+
+    <button
+        class="prev"
+        onclick="prevImage()"
+    >
+        ❮
+    </button>
+
+    <img
+        id="popupImage"
+    >
+
+    <button
+        class="next"
+        onclick="nextImage()"
+    >
+        ❯
+    </button>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
