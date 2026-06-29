@@ -137,3 +137,282 @@ body {
     from { transform: scale(0.9); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
 }
+--- roadmap ----
+
+.roadmap-hero-sub {
+    color: #64748b;
+    margin-top: 10px;
+    font-size: 14px;
+}
+/* Container chung */
+.roadmap-section {
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin: 20px;
+}
+
+.roadmap-header-top h1 {
+    display: inline-block;
+    font-size: 28px;
+    color: #1e40af;
+    margin: 0;
+}
+.roadmap-subtitle {
+    color: #64748b;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+------- remark ---
+.remark-container {
+    position: relative;
+    max-width: 800px;
+    margin: 30px auto;
+    padding-left: 20px;
+}
+
+/* Đường kẻ dọc màu xám nhạt */
+.vertical-line {
+    position: absolute;
+    left: 90px; /* Căn chỉnh nằm giữa ngày và card */
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #e0e0e0;
+    z-index: 1;
+}
+
+.remark-item {
+    display: grid;
+    grid-template-columns: 70px 40px 1fr; /* Ngày - Marker - Card */
+    align-items: flex-start;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Cột ngày tháng */
+.remark-date {
+    text-align: right;
+    padding-top: 10px;
+    color: #333;
+}
+.remark-date .month { display: block; font-size: 22px; font-weight: bold; }
+.remark-date .year { font-size: 16px; color: #888; }
+
+/* Dấu chấm tròn có vòng viền */
+.remark-marker {
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border: 3px solid #ccc;
+    border-radius: 50%;
+    margin: 18px auto 0;
+    z-index: 3;
+}
+
+/* Card trắng có bóng đổ nhẹ */
+.remark-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+}
+.remark-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+
+/* Status Tag (Positive, Negative, Neutral) */
+.status-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.remark-item.blue .status-tag { background-color: #210be7; }
+.remark-item.blue .remark-marker { border-color: #210be7; }
+
+.remark-item.green .status-tag { background-color: #00bfa5; }
+.remark-item.green .remark-marker { border-color: #00bfa5; }
+
+.remark-card h3 { margin: 5px 0; font-size: 18px; color: #222; }
+
+.card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #888;
+    font-size: 14px;
+    margin-top: 10px;
+}
+.pill {
+    background: #f1f1f1;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+}
+
+/* Hiệu ứng ẩn hiện */
+.card-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+}
+.remark-item.active .card-details {
+    max-height: 1000px; /* Cho phép hiển thị nội dung */
+}
+.detail-inner {
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    margin-top: 15px;
+    color: #555;
+    line-height: 1.6;
+}
+.img-in-card { width: 100%; border-radius: 8px; margin-top: 10px; }
+
+-----raci matrix ---
+/* Container chung */
+.raci-section {
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin: 20px;
+}
+
+.raci-header-top h1 {
+    display: inline-block;
+    font-size: 28px;
+    color: #1e40af;
+    margin: 0;
+}
+
+.number-circle {
+    display: inline-flex;
+    width: 32px;
+    height: 32px;
+    background: #1e40af;
+    color: white;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.raci-subtitle {
+    color: #64748b;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* Table Style */
+.table-wrapper {
+    overflow-x: auto; /* Cho phép cuộn ngang trên mobile */
+    margin-top: 30px;
+}
+
+.raci-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px; /* Tạo khoảng cách giữa các dòng */
+}
+
+.raci-table th {
+    padding: 15px;
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.raci-table th:nth-child(2) { text-align: left; } /* Cột nội dung căn trái */
+
+.raci-table td {
+    padding: 15px;
+    background: #f8fafc;
+    vertical-align: middle;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+/* Bo góc cho dòng */
+.raci-table td:first-child { border-radius: 12px 0 0 12px; }
+.raci-table td:last-child { border-radius: 0 12px 12px 0; }
+
+.raci-table tr:hover td {
+    background: #f1f5f9;
+}
+
+/* Cell nội dung */
+.content-cell {
+    text-align: left !important;
+    min-width: 300px;
+}
+.content-cell strong { display: block; font-size: 14px; color: #334155; }
+.content-cell p { margin: 5px 0 0 0; font-size: 12px; color: #94a3b8; }
+
+/* Giúp Badge giai đoạn hiển thị đẹp hơn trong cột rộng */
+.phase-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    width: 80px;
+    text-align: center;
+}
+/* Màu cho các Phase Badge */
+.phase-badge.p1 { background: #f0f4ff; color: #5c7cfa; }
+.phase-badge.p2 { background: #f3f0ff; color: #845ef7; }
+.phase-badge.p3 { background: #ebfbee; color: #40c057; }
+.phase-badge.p4 { background: #e7f5ff; color: #228be6; }
+.phase-badge.p5 { background: #f4fce3; color: #82c91e; }
+.phase-badge.p6 { background: #fff4e6; color: #fd7e14; }
+
+/* Tinh chỉnh lại thẻ Pill cho nhỏ gọn hơn để vừa với cột hẹp */
+.raci-pill {
+    display: inline-block;
+    padding: 5px 0; /* Giảm padding ngang */
+    width: 90px;    /* Cố định chiều rộng pill để tất cả đều nhau */
+    border-radius: 6px;
+    font-size: 11px; /* Giảm nhẹ font chữ */
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Màu cho các RACI Pills */
+.raci-pill.chot { background: #fff9db; color: #f59f00; border: 1px solid #ffe066; }
+.raci-pill.gopy { background: #e7f5ff; color: #228be6; border: 1px solid #a5d8ff; }
+.raci-pill.thuchien { background: #ebfbee; color: #40c057; border: 1px solid #b2f2bb; }
+.raci-pill.theodoi { background: #fff4e6; color: #fd7e14; border: 1px solid #ffd8a8; }
+.raci-pill.kiemtra { background: #f1f3f5; color: #495057; border: 1px solid #228be6; } /* Viền xanh chữ xám */
+.raci-pill.hotro { background: #f8f9fa; color: #15aabf; border: 1px solid #99e9f2; }
+.raci-pill.capnhat { background: #f1f3f5; color: #868e96; border: 1px solid #dee2e6; }
+
+/* 1. Cột Giai đoạn (Cột 1): Mở rộng ra */
+.raci-table th:nth-child(1), 
+.raci-table td:nth-child(1) {
+    width: 120px; 
+    text-align: center;
+}
+
+/* 2. Cột Nội dung (Cột 2): Để tự động co giãn (chiếm phần lớn nhất) */
+.raci-table th:nth-child(2), 
+.raci-table td:nth-child(2) {
+    width: auto; 
+}
+
+/* 3. Các cột vai trò (Cột 3 đến cột 8): Giảm chiều rộng */
+.raci-table th:nth-child(n+3), 
+.raci-table td:nth-child(n+3) {
+    width: 110px; /* Giảm chiều rộng xuống mức vừa đủ cho pill */
+    padding: 10px 5px; /* Giảm padding hai bên để tiết kiệm diện tích */
+}
+
+
