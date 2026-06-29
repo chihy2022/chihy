@@ -1,18 +1,39 @@
-const overlay = document.getElementById("overlay");
-const closeBtn = document.querySelector(".close-btn");
+const overlay=document.getElementById("overlay");
 
-closeBtn.onclick = () => {
-    overlay.classList.remove("show");
-};
+const popup=document.getElementById("popupContent");
 
-overlay.onclick = (e) => {
-    if (e.target === overlay) {
-        overlay.classList.remove("show");
+document.querySelectorAll(".card").forEach(card=>{
+
+    card.onclick=()=>{
+
+        fetch(card.dataset.file)
+
+        .then(r=>r.text())
+
+        .then(html=>{
+
+            popup.innerHTML=html;
+
+            overlay.classList.add("show");
+
+        });
+
     }
-};
 
-document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-        overlay.classList.remove("show");
-    }
 });
+
+document.getElementById("close").onclick=()=>{
+
+    overlay.classList.remove("show");
+
+}
+
+overlay.onclick=(e)=>{
+
+    if(e.target===overlay){
+
+        overlay.classList.remove("show");
+
+    }
+
+}
