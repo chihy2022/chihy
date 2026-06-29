@@ -65,3 +65,39 @@ document.addEventListener('click', function (e) {
         modal.style.display = "none";
     }
 });
+
+document.addEventListener('click', function (e) {
+    // Xử lý click mở rộng Card
+    const header = e.target.closest('.card-header');
+    if (header) {
+        const item = header.closest('.timeline-item');
+        item.classList.toggle('active');
+        
+        // Xoay icon mũi tên
+        const icon = header.querySelector('.toggle-btn i');
+        if (icon) {
+            icon.style.transform = item.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+    }
+
+    // (Giữ nguyên code Popup ảnh cũ ở đây...)
+});
+
+document.addEventListener('click', function (e) {
+    // Xử lý đóng mở Remark Card
+    const card = e.target.closest('.remark-card');
+    if (card) {
+        const item = card.closest('.remark-item');
+        item.classList.toggle('active');
+    }
+
+    // Xử lý zoom ảnh (như các bước trước đã làm)
+    if (e.target && e.target.id === 'myImg') {
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("imgFull");
+        if (modal) {
+            modal.style.display = "flex";
+            modalImg.src = e.target.src;
+        }
+    }
+});
