@@ -5,11 +5,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentArea = document.getElementById('content-area');
     const menuItems = document.querySelectorAll('.menu-item');
 
-    // 1. Logic đóng mở sidebar
-    if (closeBtn) closeBtn.onclick = () => sidebar.classList.add('hidden');
-    if (openBtn) openBtn.onclick = () => sidebar.classList.remove('hidden');
+    // 1. ĐÓNG/MỞ SIDEBAR
+    if (closeBtn) {
+        closeBtn.onclick = () => sidebar.classList.add('hidden');
+    }
+    if (openBtn) {
+        openBtn.onclick = () => sidebar.classList.remove('hidden');
+    }
 
-    // 2. Hàm Load nội dung động
+    // 2. HÀM LOAD TRANG CHI TIẾT
     async function loadPage(shotName) {
         if (!contentArea) return;
         contentArea.style.opacity = '0'; 
@@ -23,11 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 200);
             }
         } catch (e) {
-            contentArea.innerHTML = "<h2>Lỗi tải trang</h2>";
+            contentArea.innerHTML = "<h2>Lỗi tải nội dung. Vui lòng thử lại.</h2>";
         }
     }
 
-    // 3. Xử lý click menu
+    // 3. XỬ LÝ CLICK MENU
     menuItems.forEach(item => {
         item.onclick = function() {
             menuItems.forEach(i => i.classList.remove('active'));
@@ -35,30 +39,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const shot = this.getAttribute('data-shot');
             loadPage(shot);
         };
-    }); // <--- BẠN TỪNG THIẾU DẤU NÀY
+    });
 
-    // Mặc định load trang đầu tiên
+    // Load mặc định trang shot1
     loadPage('shot1');
 });
 
-// 4. XỬ LÝ POPUP ZOOM ẢNH (Ủy thác sự kiện - Luôn chạy kể cả khi nội dung thay đổi)
-
+// 4. XỬ LÝ POPUP ẢNH (Ủy thác sự kiện - Cực kỳ quan trọng)
 document.addEventListener('click', function (e) {
-    if (e.target && e.target.id === 'myImg') {
-        const modal = document.getElementById("imageModal");
-        const modalImg = document.getElementById("imgFull");
-        const captionText = document.getElementById("caption");
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("imgFull");
+    const captionText = document.getElementById("caption");
 
-        if (modal && modalImg) {
-            modal.style.display = "flex"; // Sửa 'block' thành 'flex' để căn giữa
-            modalImg.src = e.target.src;
-            captionText.innerHTML = e.target.alt; // Chữ lấy từ thuộc tính alt của ảnh
-        }
+    if (!modal) return;
+
+    // A. MỞ MODAL: Khi click vào ảnh có ID là myImg
+    if (e.target && e.target.id === 'myImg') {
+        modal.style.display = "flex"; // Hiện dạng flex để căn giữa
+        modalImg.src = e.target.src;
+        captionText.innerHTML = e.target.alt;
     }
 
-    // Đóng modal
-    if (e.target && (e.target.classList.contains('close') || e.target.id === 'imageModal')) {
-        const modal = document.getElementById("imageModal");
-        if (modal) modal.style.display = "none";
+    // B. ĐÓNG MODAL: Khi click vào nút X HOẶC click vào vùng đen (nền modal)
+    if (e.target.classList.contains('close') || e.target.id === 'imageModal') {
+        modal.style.display = "none";
     }
 });
