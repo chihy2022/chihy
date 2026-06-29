@@ -3,36 +3,18 @@
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-<div class="roadmap-card">
-    <div class="card-left">
-        <span class="status-badge">01</span>
-        
-        <h1 style="font-size: 40px; font-weight: 700; margin: 20px 0; color: #37352f; line-height: 1.2;">
-            Digital Roadmap 2026-2027
-        </h1>
-        
-        <p style="font-size: 16px; color: #37352f; line-height: 1.6; margin-bottom: 40px; opacity: 0.8;">
-            UMER phát triển bức tranh KPI Performance thống nhất cho Mer Force, 
-            rồi mở rộng các góc nhìn theo mức sẵn sàng của dữ liệu và nhu cầu sử dụng thực tế.
-        </p>
-
-        <div style="border-left: 3px solid #005ba1; padding-left: 20px; margin-bottom: 30px;">
-            <h4 style="color: #005ba1; font-size: 18px;">06-08.2026</h4>
-            <p style="font-size: 14px; color: #7c98b6;">MTD Performance cho đội ngũ Mer Force</p>
-        </div>
-
-        <div class="info-box" style="background: #f9f9f9; padding: 25px; border-radius: 12px;">
-            <h4 style="color: #37352f; margin-bottom: 10px; font-size: 16px;">Góc nhìn tổng quan</h4>
-            <p style="font-size: 14px; color: #666; line-height: 1.5;">
-                Hiển thị 5 KPI MTD — Successful Calls, F2F/tần suất viếng thăm, Time Spend, OSA và QC.
-            </p>
-        </div>
+<div class="roadmap-card" style="display: flex; gap: 40px; align-items: flex-start;">
+    <div class="card-left" style="flex: 1;">
+        <span style="color: #888; font-size: 14px;">01</span>
+        <h1 style="font-size: 32px; margin: 10px 0;">Digital Roadmap 2026-2027</h1>
+        <p style="color: #666; line-height: 1.6;">UMER phát triển bức tranh KPI Performance...</p>
     </div>
-
-    <div class="card-right">
-    <!-- Thêm id="myImg" để JS nhận diện -->
-    <img id="myImg" src="images/UnimeDXmobile1.png" alt="Mobile1" style="cursor: zoom-in; width: 100%;">
+    
+    <div class="card-right" style="flex: 1;">
+        <!-- Dùng src="images/..." vì index.html gọi file này -->
+        <img id="myImg" src="images/mobile.png" alt="Roadmap mobile" style="max-height: 900px;">
     </div>
+</div>
         
     <!-- Khung Popup (Modal) - Hãy dán đoạn này xuống cuối trang -->
     <div id="imageModal" class="modal">
