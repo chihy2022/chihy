@@ -1,222 +1,139 @@
-:root {
-    --notion-bg: #ffffff;
-    --notion-sidebar: #fbfbfa; /* Xám cực nhẹ */
-    --notion-hover: #efefed;
-    --notion-text: #37352f;
-    --notion-secondary: rgba(55, 53, 47, 0.5);
+/* Giao diện chung */
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background-color: #ffffff;
+    color: #37352f;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif; }
+.app-container {
+    display: flex;
+    height: 100vh;
+}
 
-body { background: var(--notion-bg); color: var(--notion-text); overflow: hidden; }
-
-.app-container { display: flex; height: 100vh; }
-
-/* Sidebar Notion */
+/* SIDEBAR PHONG CÁCH NOTION */
 .sidebar {
-    width: 240px;
-    background: var(--notion-sidebar);
-    height: 100%;
-    transition: all 0.25s ease;
+    width: 260px;
+    background: #fbfbfa;
+    border-right: 1px solid #edeceb;
+    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid rgba(0,0,0,0.05);
-    position: relative;
 }
 
-.sidebar.hidden { margin-left: -240px; }
+.sidebar.hidden {
+    margin-left: -260px;
+}
 
 .sidebar-header {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-profile {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    margin-bottom: 10px;
+    gap: 8px;
 }
 
-.user-profile { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.avatar { width: 20px; height: 20px; background: #5025d1; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
-.username { font-size: 14px; font-weight: 600; white-space: nowrap; }
-
-/* Nút đóng/mở tinh tế */
-.sidebar-btn-close, .open-sidebar-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--notion-secondary); padding: 4px 6px;
-    border-radius: 4px; transition: 0.2s;
+.avatar {
+    width: 20px;
+    height: 20px;
+    background: #888;
+    color: white;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
 }
-
-.sidebar-btn-close:hover, .open-sidebar-btn:hover { background: var(--notion-hover); color: var(--notion-text); }
-
-.open-sidebar-btn {
-    position: fixed; top: 15px; left: 15px;
-    z-index: 99; opacity: 0; pointer-events: none; /* Ẩn đi khi sidebar đang hiện */
-}
-
-.sidebar.hidden + .main-content .open-sidebar-btn { opacity: 1; pointer-events: all; }
-
-/* Menu */
-.sidebar-menu { flex: 1; padding: 0 10px; }
-.group-title { font-size: 11px; font-weight: 600; color: var(--notion-secondary); padding: 10px; text-transform: uppercase; }
 
 .menu-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 12px; border-radius: 5px;
-    font-size: 14px; cursor: pointer; transition: 0.2s;
-    color: var(--notion-text);
+    padding: 8px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
 }
 
-.menu-item i { width: 16px; color: var(--notion-secondary); }
-.menu-item:hover { background: var(--notion-hover); }
-.menu-item.active { background: var(--notion-hover); font-weight: 600; }
+.menu-item:hover, .menu-item.active {
+    background-color: #efefed;
+}
 
-/* --- CẬP NHẬT PHẦN NỘI DUNG CHÍNH --- */
+/* NỘI DUNG CHÍNH */
 .main-content {
     flex: 1;
     overflow-y: auto;
-    background: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
+    position: relative;
+}
+
+.open-sidebar-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #888;
 }
 
 .content-body {
-    width: 100%;
-    margin: 0 auto;
-    padding: 80px 60px; /* Tăng padding để thoáng hơn */
-    box-sizing: border-box;
+    padding: 50px 80px;
+    transition: opacity 0.3s;
 }
 
-/* --- THIẾT KẾ LẠI ROADMAP CARD TO VÀ RÕ --- */
-.roadmap-card {
-    display: flex;
-    gap: 60px; /* Tăng khoảng cách giữa 2 cột */
-    align-items: flex-start;
-    justify-content: space-between;
-}
-
-.card-left {
-    flex: 1.2; /* Cột chữ chiếm hơn 1 chút */
-}
-
-/* Tăng size font tiêu đề cho xứng tầm Desktop */
-.card-left h1 {
-    font-size: 48px; /* To và đậm chất Notion */
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -1px;
-    margin-bottom: 25px;
-}
-
-.card-left p {
-    font-size: 18px; /* Tăng size chữ mô tả */
-    line-height: 1.6;
-    color: #37352f;
-    opacity: 0.9;
-}
-
-/* --- CỘT ẢNH MOCKUP --- */
-.card-right {
-    flex: 1; /* Cho cột ảnh to bằng cột chữ */
-    position: sticky;
-    top: 40px;
-}
-
-.card-right img {
-    width: 100%;
-    height: auto;
-    border-radius: 16px;
-    /* Đổ bóng sâu hơn để ảnh "nổi" lên khỏi nền trắng */
-    box-shadow: 0 20px 50px rgba(0,0,0,0.12);
-    border: 1px solid rgba(0,0,0,0.05);
-}
-
-/* Box thông tin phụ cũng cần to hơn */
-.info-box {
-    margin-top: 40px;
-    padding: 30px !important;
-    border-radius: 16px !important;
-    background: #f7f7f5 !important;
-    border: 1px solid #edece9 !important;
-}
-
-.info-box h4 {
-    font-size: 18px;
-    margin-bottom: 12px;
-}
-
-.info-box p {
-    font-size: 16px !important;
-}
-
-/* Responsive: Nếu màn hình nhỏ hơn 1024px thì mới thu nhỏ lại */
-@media (max-width: 1024px) {
-    .roadmap-card {
-        flex-direction: column; /* Chuyển thành 1 cột trên iPad/Mobile */
-    }
-    .content-body {
-        padding: 40px 20px;
-    }
-}
-
-/* Khung nền đen */
+/* MODAL POPUP - Đã sửa để căn giữa và đóng được */
 .modal {
-    display: none; /* Sẽ chuyển thành flex bằng JS */
+    display: none; /* JS sẽ đổi thành flex */
     position: fixed;
-    z-index: 9999;
+    z-index: 10000; /* Phải cực cao để đè lên mọi thứ */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.9); /* Nền tối hơn cho sang */
-    
-    /* Căn giữa hoàn hảo */
+    background-color: rgba(0, 0, 0, 0.85);
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    cursor: zoom-out; /* Click vào vùng đen là thoát */
 }
 
-/* Ảnh trong Popup */
 .modal-content {
     max-width: 90%;
-    max-height: 80vh; /* Không quá 80% chiều cao màn hình */
-    object-fit: contain; /* Giữ nguyên tỉ lệ ảnh, không bị méo */
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); /* Tạo viền sáng nhẹ cho ảnh nổi bật */
-    
-    /* Làm ảnh sắc nét hơn */
-    image-rendering: -webkit-optimize-contrast; 
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 4px;
     animation: zoomIn 0.3s ease;
+    image-rendering: -webkit-optimize-contrast; /* Giúp ảnh nét */
 }
 
-/* Chữ mô tả (Caption) */
 #caption {
-    margin-top: 20px;
     color: #fff;
-    font-size: 20px;
-    font-weight: 500;
-    text-align: center;
-    font-family: sans-serif;
+    margin-top: 15px;
+    font-size: 16px;
 }
 
-/* Nút đóng (X) */
+/* Nút đóng X */
 .close {
     position: absolute;
     top: 20px;
     right: 40px;
-    color: #fff;
-    font-size: 50px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
     cursor: pointer;
-    transition: 0.3s;
+    z-index: 10001;
 }
 
 .close:hover {
-    transform: scale(1.2);
     color: #ff4d4d;
 }
 
-/* Hiệu ứng phóng to khi hiện */
 @keyframes zoomIn {
-    from { transform: scale(0.7); opacity: 0; }
+    from { transform: scale(0.9); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
 }
