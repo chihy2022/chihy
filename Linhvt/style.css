@@ -148,18 +148,24 @@ textarea {
 }
 
 .menu-item {
-    padding: 8px 15px;
+    padding: 8px 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 10px;
     font-size: 14px;
+    border: 1px solid transparent; /* Border ẩn để giữ chỗ */
+    transition: all 0.2s ease;     /* Hiệu ứng chuyển màu mượt mà */
 }
 
 .menu-item:hover, .menu-item.active {
-    background-color: #eaf2fc;
-    font-weight: 600;
+    background-color: #f0f7ff;
     color: #0066CC;
+    font-weight: 600;
+    /* Tạo vạch xanh bên trái */
+    border-left: 4px solid #0066CC; 
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 /* NỘI DUNG CHÍNH */
@@ -178,11 +184,6 @@ textarea {
     cursor: pointer;
     font-size: 20px;
     color: #888;
-}
-
-.content-body {
-    padding: 50px 50px;
-    transition: opacity 0.3s;
 }
 
 /* MODAL POPUP - Đã sửa để căn giữa và đóng được */
@@ -238,17 +239,12 @@ textarea {
 }
 
 /* Container chung */
-.roadmap-section {
+.section {
     background: #fff;
     padding: 30px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     margin: 20px;
-}
-.hero-sub {
-    color: #64748b;
-    margin-top: 10px;
-    font-size: 14px;
 }
 .number-circle {
     display: inline-flex;
@@ -266,14 +262,15 @@ textarea {
     display: flex;       /* Kích hoạt flexbox */
     align-items: center; /* Căn giữa tất cả các thành phần bên trong theo chiều dọc */
     gap: 10px;        /* Tạo khoảng cách giữa vòng tròn và chữ (thay cho margin-right) */
-    padding: 15px;   
+    padding-bottom: 15px;
 }
-
 
 /* Đảm bảo h1 không có margin mặc định làm lệch dòng */
 .title h1 {
     margin: 0;
     line-height: 1;      /* Giúp căn chỉnh chính xác hơn */
+    font-weight: 700;
+    color: #0066CC;
 }
 
 ------- remark ---
@@ -389,32 +386,25 @@ textarea {
 .img-in-card { width: 100%; border-radius: 8px; margin-top: 10px; }
 
 -----raci matrix ---
-/* Container chung */
-.raci-section {
-    background: #fff;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    margin: 20px;
-}
 /* Table Style */
 .table-wrapper {
     overflow-x: auto; /* Cho phép cuộn ngang trên mobile */
     margin-top: 30px;
+    width: 100%;
 }
+
 
 .raci-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0 10px; /* Tạo khoảng cách giữa các dòng */
+    min-width: 1000px; /* Đảm bảo đủ chỗ cho các cột */
 }
 
 .raci-table th {
     padding: 15px;
     text-align: center;
-    color: #64748b;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 16px;
     border-bottom: 2px solid #f1f5f9;
 }
 
@@ -436,13 +426,20 @@ textarea {
     background: #f1f5f9;
 }
 
+/* Đặc trị cho cột Giai đoạn bị mất chữ */
+.raci-table td:first-child, 
+.raci-table th:first-child {
+    padding-left: 10px !important;
+    text-align: left !important;
+}
+
 /* Cell nội dung */
 .content-cell {
     text-align: left !important;
     min-width: 300px;
 }
-.content-cell strong { display: block; font-size: 14px; color: #334155; }
-.content-cell p { margin: 5px 0 0 0; font-size: 12px; color: #94a3b8; }
+.content-cell strong { display: block;font-weight: 600; font-size: 16px; color: #212529; }
+.content-cell p { margin: 5px 0 0 0; font-size: 14px; color: #888888; }
 
 /* Giúp Badge giai đoạn hiển thị đẹp hơn trong cột rộng */
 .phase-badge {
@@ -452,12 +449,12 @@ textarea {
     text-align: center;
 }
 /* Màu cho các Phase Badge */
-.phase-badge.p1 { background: #f0f4ff; color: #5c7cfa; }
-.phase-badge.p2 { background: #f3f0ff; color: #845ef7; }
-.phase-badge.p3 { background: #ebfbee; color: #40c057; }
-.phase-badge.p4 { background: #e7f5ff; color: #228be6; }
-.phase-badge.p5 { background: #f4fce3; color: #82c91e; }
-.phase-badge.p6 { background: #fff4e6; color: #fd7e14; }
+.phase-badge.p1 { background: #f0f4ff; color: #0066CC; }
+.phase-badge.p2 { background: #f3f0ff; color: #00bfa5; }
+.phase-badge.p3 { background: #ebfbee; color: #0066CC; }
+.phase-badge.p4 { background: #e7f5ff; color: #00bfa5; }
+.phase-badge.p5 { background: #f4fce3; color: #0066CC; }
+.phase-badge.p6 { background: #fff4e6; color: #00bfa5; }
 
 /* Tinh chỉnh lại thẻ Pill cho nhỏ gọn hơn để vừa với cột hẹp */
 .raci-pill {
@@ -465,7 +462,7 @@ textarea {
     padding: 5px 0; /* Giảm padding ngang */
     width: 90px;    /* Cố định chiều rộng pill để tất cả đều nhau */
     border-radius: 6px;
-    font-size: 11px; /* Giảm nhẹ font chữ */
+    font-size: 14px; /* Giảm nhẹ font chữ */
     font-weight: 600;
     text-align: center;
 }
@@ -499,4 +496,298 @@ textarea {
     padding: 10px 5px; /* Giảm padding hai bên để tiết kiệm diện tích */
 }
 
+.top-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
 
+.btn-export:hover {
+    background-color: #003d6b;
+}
+
+/* Ẩn nút Export khi đang in để nó không xuất hiện trong file PDF */
+@media print {
+    .btn-export, .open-sidebar-btn, .sidebar {
+        display: none !important;
+    }
+}
+/* 1. Dàn hàng Header */
+.main-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: #fff;
+    border-bottom: 1px solid #ececec;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Chỉnh lại nút openBtn để không bị dính lề */
+.open-sidebar-btn {
+    position: static; /* Bỏ position absolute cũ nếu có */
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Nút Export PDF màu xanh Unilever */
+.btn-export {
+    background-color: #005ba1;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    font-family: 'Unilever Shilling', 'Inter', sans-serif;
+}
+
+
+.btn-export:hover {
+    background-color: #003d6b;
+    box-shadow: 0 4px 12px rgba(0, 91, 161, 0.2);
+}
+
+
+/* Trong style.css */
+.content-body {
+    transition: opacity 0.3s;
+    margin: 0 auto; /* Căn giữa nội dung trên web */
+}
+
+/* Thêm đoạn này để khi in không bị dính lề của trình duyệt */
+@media print {
+    .content-body {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+}
+/* 1. Quan trọng: Giúp hiệu ứng cuộn trượt từ từ, không bị giật */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 2. Style cho thanh menu điều hướng */
+.report-nav {
+    position: sticky;      /* Dính ở trên cùng */
+    top: 0;                /* Vị trí dính là sát mép trên */
+}
+
+.nav-container {
+    display: flex;
+    justify-content: center; /* Căn giữa 3 nút */
+    gap: 20px;               /* Khoảng cách giữa các nút */
+}
+
+
+.nav-item {
+    text-decoration: none;
+    color: #005ee0;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 7px 16px;
+    background: #f0f7ff;
+    border-radius: 20px;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+.nav-item:hover {
+    background: #005ee0;
+    color: #fff;
+}
+
+/* 3. Khoảng đệm để khi cuộn tới, tiêu đề không bị thanh menu che mất */
+section {
+    scroll-margin-top: 100px; /* Độ cao này nên lớn hơn độ cao thanh menu */
+    margin-bottom: 50px;
+}
+
+.current-page-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    white-space: nowrap;
+    /* Tạo khoảng cách và đường kẻ phân cách */
+    padding-left: 20px;
+    margin-left: 10px;
+    border-left: 1px solid #ddd; 
+    min-width: 150px; /* Đảm bảo không gian hiển thị tên */
+}
+
+
+/* Nhóm nút mở và Tiêu đề */
+.header-left-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+/* Nhóm bên phải (Nav + Nút Export) */
+.header-right-group {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Khoảng cách giữa thanh menu và nút Xuất PDF */
+}
+.current-page-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    border-left: 1px solid #ddd; /* Vạch ngăn cách */
+    padding-left: 15px;
+    white-space: nowrap;
+}
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
+
+/* ===========================
+   Shot 5 - UMER Powerhouse
+   =========================== */
+
+body{
+    background:#f5f7fb;
+    font-family:"Segoe UI",Roboto,sans-serif;
+}
+/* Metrics */
+.metric {
+    background-color: #ffffff;    /* Nền trắng */
+    border-radius: 20px;          /* Bo góc lớn chuẩn Unilever */
+    padding: 30px 25px;           /* Khoảng cách đệm bên trong */
+    text-align: left;             /* Căn lề trái */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Đổ bóng cực nhẹ cho sang */
+    height: 100%;                 /* Cho các card cao bằng nhau trong hàng */
+    transition: transform 0.3s ease; /* Hiệu ứng khi di chuột vào (tùy chọn) */
+    border: 1px solid #f0f0f0;    /* Viền mảnh để tách biệt với nền sáng */
+}
+
+/* Tùy chỉnh con số (h2) */
+.metric h2 {
+    color: #005ee0;               /* Màu xanh thương hiệu */
+    font-size: 36px;              /* Kích thước số lớn */
+    font-weight: 800;             /* Độ dày font cực đậm */
+    margin-bottom: 8px;           /* Khoảng cách với dòng chữ dưới */
+    letter-spacing: -1px;         /* Cho các con số sát nhau hơn chút */
+}
+
+/* Tùy chỉnh dòng chữ mô tả (div bên dưới h2) */
+.metric div {
+    color: #1f4e91;               /* Màu xanh đậm hơn một chút cho dễ đọc */
+    font-size: 16px;              /* Kích thước chữ */
+    font-weight: 600;             /* Độ đậm vừa phải */
+    line-height: 1.3;             /* Khoảng cách giữa các dòng */
+    margin: 0;
+}
+
+/* Hiệu ứng hover (tùy chọn) */
+.metric:hover {
+    transform: translateY(-5px);  /* Nhấc nhẹ card lên khi di chuột */
+}
+
+/* Section title */
+.section-title{
+    margin:45px 0 20px;
+    font-weight:700;
+}
+
+
+/* Flow */
+.flow{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:18px;
+}
+
+.flow-item{
+    width:200px;
+    padding:13px;
+    text-align:center;
+    background:#fff;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.05);
+    transition:.3s;
+}
+
+.flow-item:hover{
+    transform:translateY(-6px);
+}
+
+.arrow{
+    font-size:30px;
+    color:#999;
+    align-self:center;
+}
+
+/* Phase Card */
+.phase-card{
+    position:relative;
+    border:0;
+    border-radius:18px;
+    overflow:hidden;
+    height:100%;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+    transition:.3s;
+}
+
+.phase-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 20px 40px rgba(0,0,0,.08);
+}
+
+.phase-card::before{
+    content:"";
+    display:block;
+    height:6px;
+    background:#0066CC;
+}
+
+.phase-card h4{
+    margin-top:15px;
+    font-weight:700;
+}
+
+.phase-card ul{
+    margin-top:20px;
+}
+
+/* Top color of each phase */
+.phase-card.phase-2::before{
+    background:#00bfa5;
+}
+
+.phase-card.phase-3::before{
+    background:#0066CC;
+}
+
+.phase-card.phase-4::before{
+    background:#00bfa5;
+}
+
+.phase-card.phase-5::before{
+    background:#0066CC;
+}
+
+.phase-card.phase-6::before{
+    background:#00bfa5;
+}
+
+/* Table */
+.table{
+    border-radius:12px;
+    overflow:hidden;
+}
