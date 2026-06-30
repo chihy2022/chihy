@@ -32,22 +32,61 @@ body {
     align-items: center;
 }
 
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
 .avatar {
-    width: 20px;
-    height: 20px;
-    background: #888;
-    color: white;
-    border-radius: 3px;
+    width: 32px;        /* Bạn có thể tăng lên 40px nếu muốn to hơn */
+    height: 32px;
+    background: #fff;   /* Logo thường đẹp nhất trên nền trắng */
+    border: 1px solid #edeceb; /* Viền mờ cho giống phong cách Notion */
+    border-radius: 4px; /* Bo góc nhẹ */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    overflow: hidden;   /* Cắt bỏ phần thừa nếu logo to quá */
+    padding: 2px;       /* Tạo khoảng cách nhỏ giữa logo và viền */
+    Flex-shrink: 0; /* Không cho logo bị bóp méo khi chữ quá dài */
+}
+
+.avatar img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Đảm bảo logo giữ đúng tỉ lệ, không bị móp méo */
+}
+
+.user-profile {
+    display: flex;
+    align-items: center; /* Căn giữa logo và khối chữ theo chiều dọc */
+    gap: 10px;
+}
+
+
+.user-info-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Giới hạn chiều rộng để không đè vào nút toggle */
+    /* Sidebar 260px - Avatar 40px - Nút 40px = còn khoảng 180px */
+    max-width: 170px; 
+}
+
+/* Phần mô tả */
+.user-description {
+    font-size: 11px;
+    color: #888;
+    line-height: 1.4;      /* Tăng khoảng cách dòng cho dễ đọc khi xuống hàng */
+    margin-top: 2px;
+    
+    /* QUAN TRỌNG: Các thuộc tính giúp xuống dòng */
+    white-space: normal;    /* Cho phép xuống dòng tự nhiên */
+    word-break: break-word; /* Nếu từ quá dài thì tự cắt để xuống dòng */
+    display: block;         /* Đảm bảo nó là một khối riêng */
+}
+
+/* Tên hệ thống */
+.username {
+    font-weight: 700;
+    font-size: 14px;
+    color: #37352f;
+    white-space: normal;    /* Tên nếu quá dài cũng cho xuống dòng luôn */
 }
 
 .menu-item {
@@ -82,7 +121,7 @@ body {
 }
 
 .content-body {
-    padding: 50px 80px;
+    padding: 50px 50px;
     transition: opacity 0.3s;
 }
 
