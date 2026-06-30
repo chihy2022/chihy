@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Linhvt's</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
@@ -16,7 +19,7 @@
                 <div class="user-profile">
                 <!-- Logo khách hàng -->
                 <div class="avatar">
-                    <img src="https://upload.wikimedia.org/wikipedia/sco/e/e4/Unilever.svg" alt="Unilever Logo">
+                    <img id="myImg" src="images/logoUNILEVER.png" alt="Logo Unilever" style="cursor: zoom-in; width: 100%;">
                 </div>
 
                 <!-- Khối văn bản bao gồm Tên và Mô tả -->
@@ -32,7 +35,7 @@
             </div>
             <div class="sidebar-menu">
                 <div class="menu-group">
-                    <p class="group-title" style="padding-left: 15px;"><i>Lộ trình triển khai</i></p>
+                    <p class="group-title" style="padding: 25px 15px 10px 15px;font-size: 13px;color: #000000;">Lộ trình triển khai</p>
                     <div class="menu-item active" data-shot="shot1">
                         <i class="fa-regular fa-file-lines"></i> <span>Weekly Meeting</span>
                     </div>
@@ -53,7 +56,7 @@
         </aside>
 
         <!-- NỘI DUNG CHÍNH -->
-        <main class="main-content">
+        <main class="main-content" style="background: #fafafa;">
             <!-- Nút mở sidebar chỉ hiện khi sidebar bị ẩn -->
             <button class="open-sidebar-btn" id="openBtn">
                 <i class="fa-solid fa-bars"></i>
