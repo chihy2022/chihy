@@ -1,123 +1,17 @@
 <head>
+    <!-- Nhúng file CSS (nhớ có ../ vì file css ở ngoài) -->
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-<div class="grid2" style="display: flex; gap: 40px; align-items: flex-start;">
-    <div class="card-left" style="flex: 1;">
-        <span style="color: #888; font-size: 14px;">01</span>
-        <h1 style="font-size: 32px; margin: 10px 0;">Digital Roadmap 2026-2027</h1>
-        <p style="color: #666; line-height: 1.6;">UMER phát triển bức tranh KPI Performance...</p>
-    </div>
-    
-    <div class="card-right" style="flex: 1;">
-        <img id="myImg" src="images/mobile.png" alt="Roadmap mobile" style="max-height: 900px;">
-    </div>
-</div>
-<div class="timeline-container">
-    <!-- Đường kẻ dọc chính giữa -->
-    <div class="timeline-line"></div>
-
-    <!-- Mốc 02 - Bên Phải -->
-    <div class="timeline-item right">
-        <div class="timeline-marker blue">02</div>
-        <div class="roadmap-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <span class="date color-blue">• 09–11.2026</span>
-                    <p class="subtitle">Khảo sát khả năng mở rộng dữ liệu tại điểm bán</p>
-                </div>
-                <button class="toggle-btn">2 hạng mục <i class="fa-solid fa-chevron-down"></i></button>
-            </div>
-            <div class="card-content">
-                <p>Nội dung chi tiết cho giai đoạn khảo sát...</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mốc 03 - Bên Trái -->
-    <div class="timeline-item left">
-        <div class="timeline-marker green">03</div>
-        <div class="roadmap-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <span class="date color-green">• 12–02.2027</span>
-                    <p class="subtitle">Bản đồ phân tích thực thi tại điểm bán</p>
-                </div>
-                <button class="toggle-btn">2 hạng mục <i class="fa-solid fa-chevron-down"></i></button>
-            </div>
-            <div class="card-content">
-                <div class="inner-info">
-                    <h4>Phân tích điểm bán</h4>
-                    <p>Kết nối KPI MTD với OSA và tồn kho theo điểm bán...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mốc 04 - Bên Phải -->
-    <div class="timeline-item right">
-        <div class="timeline-marker green">04</div>
-        <div class="roadmap-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <span class="date color-green">• 03–05.2027</span>
-                    <p class="subtitle">Hỗ trợ lựa chọn điểm bán cần quan tâm</p>
-                </div>
-                <button class="toggle-btn">2 hạng mục <i class="fa-solid fa-chevron-down"></i></button>
-            </div>
-            <div class="card-content">
-                <p>Nội dung phân tích lựa chọn điểm bán...</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mốc 06 - Bên Phải -->
-    <div class="timeline-item right">
-        <div class="timeline-marker yellow">06</div>
-        <div class="roadmap-card">
-            <div class="card-header">
-                <div class="header-left">
-                    <span class="date color-yellow">• 09–12.2027</span>
-                    <p class="subtitle">Vòng lặp học hỏi và phát triển UMER</p>
-                </div>
-                <button class="toggle-btn">2 hạng mục <i class="fa-solid fa-chevron-down"></i></button>
-            </div>
-            <div class="card-content">
-                <p>Cải tiến và tối ưu hóa hệ thống...</p>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Mốc 01 - Phía bên Trái -->
-<div class="timeline-item left active"> <!-- Thêm class active để mặc định mở rộng -->
-    <div class="timeline-marker blue-glow">01</div>
-    
-    <div class="roadmap-card">
-        <!-- Header -->
-        <div class="card-header">
-            <div class="header-left">
-                <span class="date color-blue">• 06–08.2026</span>
-                <p class="subtitle">MTD Performance cho đội ngũ Mer Force</p>
-            </div>
-            <button class="toggle-btn">2 hạng mục <i class="fa-solid fa-chevron-up"></i></button>
-        </div>
-
-        <!-- Nội dung chi tiết -->
-        <div class="card-content">
-            <!-- Box Mục con 1 -->
-            <div class="sub-info-box">
-                <h4>Góc nhìn tổng quan <span class="divider">—</span> <span class="highlight">Month To Date KPI Performance cho đội ngũ quản lí quản thị trường</span></h4>
-                <p>Hiển thị 5 KPI MTD — Successful Calls, F2F/tần suất viếng thăm, Time Spend, OSA và QC.</p>
-            </div>
-
-            <!-- Box Mục con 2 -->
-            <div class="sub-info-box">
-                <h4>Xem chi tiết & xu hướng <span class="divider">—</span> <span class="highlight">Đúng thông tin, đúng thời điểm, đúng trọng tâm</span></h4>
-                <p>Hỗ trợ dữ liệu đa góc nhìn, user có thể đi từ Toàn quốc > Khu vực, từ Toàn quốc > AMM > MerSup > MER; xem mục tiêu, kết quả MTD, xu hướng theo thời gian và thời điểm dữ liệu được cập nhật để chuẩn bị trao đổi với đúng bối cảnh.</p>
-            </div>
-            <img id="myImg" src="images/testimage.png" alt="Roadmap mobile" style="max-height: 900px;">
-
-        
+        <img id="myImg" src="images/1.png" alt="Báo cáo tiến độ" style="cursor: zoom-in; width: 100%;">
+        <img id="myImg" src="images/2.png" alt="Digital transformation" style="cursor: zoom-in; width: 100%;">
+        <img id="myImg" src="images/3.png" alt="WEB Tồn kho - Logic" style="cursor: zoom-in; width: 100%;">
+        <img id="myImg" src="images/4.png" alt="Web tồn kho - CDA import" style="cursor: zoom-in; width: 100%;">
+        <img id="myImg" src="images/5.png" alt="Web tồn kho - GSTB input" style="cursor: zoom-in; width: 100%;">
+        <img id="myImg" src="images/6.png" alt="Web tồn kho - GAP tồn system vs. GSTB input" style="cursor: zoom-in; width: 100%;">
+        <img id="myImg" src="images/7.png" alt="Web tồn kho - View POSM TOP" style="cursor: zoom-in; width: 100%;">
+        <img id="myImg" src="images/8.png" alt="Digital Roadmap 2026 - 2027" style="cursor: zoom-in; width: 100%;">
+        <img id="myImg" src="images/9.png" alt="Thank you" style="cursor: zoom-in; width: 100%;">
     <!-- Khung Popup (Modal)-->
     <div id="imageModal" class="modal">
         <span class="close">&times;</span>
