@@ -732,6 +732,9 @@ body{
     color:#999;
     align-self:center;
 }
+.rounded-pill {
+    border-radius: 50rem !important;
+}
 
 /* Phase Card */
 .phase-card{
