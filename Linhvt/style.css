@@ -1,11 +1,51 @@
-/* Giao diện chung */
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    background-color: #ffffff;
-    color: #37352f;
+
+/* Khai báo font Unilever Shilling */
+@font-face {
+    font-family: 'Unilever Shilling';
+    src: url('https://www.unilever.com.vn/static/fonts/UnileverShilling-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
 }
 
+@font-face {
+    font-family: 'Unilever Shilling';
+    src: url('https://www.unilever.com.vn/static/fonts/UnileverShilling-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Unilever Shilling';
+    src: url('https://www.unilever.com.vn/static/fonts/UnileverShilling-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* Áp dụng font Unilever, nếu lỗi thì chuyển sang Inter hoặc Sans-serif */
+    font-family: 'Unilever Shilling', 'Inter', sans-serif;
+}
+
+/* Tinh chỉnh tiêu đề cho giống website Unilever */
+h1, h2, h3, h4, .username {
+    font-weight: 700; /* Dùng bản Bold */
+    color: #0066CC;   /* Màu xanh đặc trưng */
+}
+
+p, span, td {
+    font-weight: 400; /* Dùng bản Regular */
+    line-height: 1.6;
+}
+
+/* Đảm bảo các nút bấm và ô nhập liệu cũng dùng font Unilever */
+button, 
+input, 
+select, 
+textarea {
+    font-family: 'Unilever Shilling', sans-serif;
+}
 .app-container {
     display: flex;
     height: 100vh;
@@ -14,7 +54,7 @@ body {
 /* SIDEBAR PHONG CÁCH NOTION */
 .sidebar {
     width: 260px;
-    background: #fbfbfa;
+    background: #ffffff;
     border-right: 1px solid #edeceb;
     transition: all 0.3s ease;
     display: flex;
@@ -39,7 +79,7 @@ body {
     outline: none;
     
     /* Màu xanh logo Unilever */
-    color: #005ba1; 
+    color: #0066CC; 
     
     /* Kích thước và con trỏ */
     font-size: 18px;
@@ -55,64 +95,56 @@ body {
 }
 .close-btn-close:hover {
     background-color: #efefed; /* Hiện nền xám nhạt kiểu Notion khi hover */
-    color: #003d6b;           /* Màu xanh đậm hơn một chút */
+    color: #0066CC;           /* Màu xanh đậm hơn một chút */
 }
-
+/* 2. Chỉnh kích thước Logo to lên */
 .avatar {
-    width: 32px;        /* Bạn có thể tăng lên 40px nếu muốn to hơn */
-    height: 32px;
-    background: #fff;   /* Logo thường đẹp nhất trên nền trắng */
-    border: 1px solid #edeceb; /* Viền mờ cho giống phong cách Notion */
-    border-radius: 4px; /* Bo góc nhẹ */
+    width: 48px;             /* Tăng từ 32px lên 48px hoặc tùy ý bạn */
+    height: 48px;
+    background: #fff;
+    border: 1px solid #edeceb;
+    border-radius: 8px;      /* Bo góc lại một chút cho cân đối */
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;   /* Cắt bỏ phần thừa nếu logo to quá */
-    padding: 2px;       /* Tạo khoảng cách nhỏ giữa logo và viền */
-    Flex-shrink: 0; /* Không cho logo bị bóp méo khi chữ quá dài */
+    flex-shrink: 0;          /* Đảm bảo logo không bị bóp méo */
+    padding: 4px;            /* Khoảng cách từ logo đến viền trắng */
+    margin-top: 2px;         /* Tinh chỉnh để logo khớp hoàn hảo với dòng chữ đầu tiên */
 }
 
 .avatar img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain; /* Đảm bảo logo giữ đúng tỉ lệ, không bị móp méo */
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* 3. Tinh chỉnh khối chữ bên cạnh */
+.user-info-text {
+    display: flex;
+    flex-direction: column;
+    padding-top: 2px;        /* Đẩy chữ xuống 1 chút nếu cần để cân với logo */
+}
+
+.username {
+    font-family: 'Unilever Shilling', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 16px;         /* Tăng nhẹ size chữ cho xứng với logo to */
+    color: #37352f;
+    line-height: 1.2;
+}
+
+.user-description {
+    font-family: 'Unilever Shilling', 'Inter', sans-serif;
+    font-size: 12px;
+    color: #888888;
+    margin-top: 4px;
+    line-height: 1.4;
 }
 
 .user-profile {
     display: flex;
-    align-items: center; /* Căn giữa logo và khối chữ theo chiều dọc */
-    gap: 10px;
-}
-
-
-.user-info-text {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    /* Giới hạn chiều rộng để không đè vào nút toggle */
-    /* Sidebar 260px - Avatar 40px - Nút 40px = còn khoảng 180px */
-    max-width: 170px; 
-}
-
-/* Phần mô tả */
-.user-description {
-    font-size: 11px;
-    color: #888;
-    line-height: 1.4;      /* Tăng khoảng cách dòng cho dễ đọc khi xuống hàng */
-    margin-top: 2px;
-    
-    /* QUAN TRỌNG: Các thuộc tính giúp xuống dòng */
-    white-space: normal;    /* Cho phép xuống dòng tự nhiên */
-    word-break: break-word; /* Nếu từ quá dài thì tự cắt để xuống dòng */
-    display: block;         /* Đảm bảo nó là một khối riêng */
-}
-
-/* Tên hệ thống */
-.username {
-    font-weight: 700;
-    font-size: 14px;
-    color: #37352f;
-    white-space: normal;    /* Tên nếu quá dài cũng cho xuống dòng luôn */
+    align-items: flex-start; /* Căn logo và chữ lên trên cùng */
+    gap: 12px;               /* Khoảng cách giữa logo và chữ */
 }
 
 .menu-item {
@@ -127,7 +159,7 @@ body {
 .menu-item:hover, .menu-item.active {
     background-color: #eaf2fc;
     font-weight: 600;
-    color: #1a6bbf;
+    color: #0066CC;
 }
 
 /* NỘI DUNG CHÍNH */
@@ -223,7 +255,7 @@ body {
 .roadmap-header-top h1 {
     display: inline-block;
     font-size: 28px;
-    color: #1e40af;
+    color: #0066CC;
     margin: 0;
 }
 .roadmap-subtitle {
@@ -357,7 +389,7 @@ body {
 .raci-header-top h1 {
     display: inline-block;
     font-size: 28px;
-    color: #1e40af;
+    color: #0066CC;
     margin: 0;
 }
 
@@ -365,7 +397,7 @@ body {
     display: inline-flex;
     width: 32px;
     height: 32px;
-    background: #1e40af;
+    background: #0066CC;
     color: white;
     border-radius: 50%;
     align-items: center;
