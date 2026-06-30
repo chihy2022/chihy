@@ -236,32 +236,44 @@ textarea {
     from { transform: scale(0.9); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
 }
---- roadmap ----
 
-.roadmap-hero-sub {
-    color: #64748b;
-    margin-top: 10px;
-    font-size: 14px;
-}
 /* Container chung */
 .roadmap-section {
     background: #fff;
     padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     margin: 20px;
 }
-
-.roadmap-header-top h1 {
-    display: inline-block;
-    font-size: 28px;
-    color: #0066CC;
-    margin: 0;
-}
-.roadmap-subtitle {
+.hero-sub {
     color: #64748b;
     margin-top: 10px;
     font-size: 14px;
+}
+.number-circle {
+    display: inline-flex;
+    width: 32px;
+    height: 32px;
+    background: #0066CC;
+    color: white;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-weight: bold;
+}
+.title {
+    display: flex;       /* Kích hoạt flexbox */
+    align-items: center; /* Căn giữa tất cả các thành phần bên trong theo chiều dọc */
+    gap: 10px;        /* Tạo khoảng cách giữa vòng tròn và chữ (thay cho margin-right) */
+    padding: 15px;   
+}
+
+
+/* Đảm bảo h1 không có margin mặc định làm lệch dòng */
+.title h1 {
+    margin: 0;
+    line-height: 1;      /* Giúp căn chỉnh chính xác hơn */
 }
 
 ------- remark ---
@@ -385,33 +397,6 @@ textarea {
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     margin: 20px;
 }
-
-.raci-header-top h1 {
-    display: inline-block;
-    font-size: 28px;
-    color: #0066CC;
-    margin: 0;
-}
-
-.number-circle {
-    display: inline-flex;
-    width: 32px;
-    height: 32px;
-    background: #0066CC;
-    color: white;
-    border-radius: 50%;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-    font-weight: bold;
-}
-
-.raci-subtitle {
-    color: #64748b;
-    margin-top: 10px;
-    font-size: 14px;
-}
-
 /* Table Style */
 .table-wrapper {
     overflow-x: auto; /* Cho phép cuộn ngang trên mobile */
