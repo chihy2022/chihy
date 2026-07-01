@@ -256,18 +256,5 @@
         actual: "" 
     });
     saveAndRender(); // Hàm này gọi renderTable, renderTable lại gọi getRowStyle
-
-    function updateTimestamp() {
-    const now = new Date();
-    const time = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-    const date = now.toLocaleDateString('vi-VN');
-    const fullTime = `${time} ${date}`;
-
-    const display = document.getElementById('last-updated');
-    if (display) {
-        display.innerText = fullTime;
-        // Lưu luôn vào máy để khi load lại trang vẫn còn thời gian cũ
-        localStorage.setItem('shot5_last_time', fullTime);
-    }
 });
 });
