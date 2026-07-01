@@ -270,3 +270,66 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+/*Báo cáo tiến độ*/
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Lấy dữ liệu từ máy (localStorage). Nếu chưa có thì tạo 1 dòng trống
+    let reportData = JSON.parse(localStorage.getItem('shot5_data')) || [
+        { session: "POSM E2E", au: "Unilever", task: "Tên việc mẫu", desc: "Mô tả mẫu...", priority: "1", other: "", note: "", progress: "Demo", status: "OPEN", timeline: "" }
+    ];
+
+    const tableBody = document.getElementById('table-body');
+    const btnAdd = document.getElementById('btnAddRow');
+
+    // 2. Hàm hiển thị bảng
+    function render() {
+        tableBody.innerHTML = '';
+        reportData.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td contenteditable="true" onblur="updateCell(${index}, 'session', this)">${item.session}</td>
+                <td contenteditable="true" onblur="updateCell(${index}, 'au', this)">${item.au}</td>
+                <td contenteditable="true" onblur="updateCell(${index}, 'task', this)" style="color:#2e7d32; font-weight:bold">${item.task}</td>
+                <td contenteditable="true" onblur="updateCell(${index}, 'desc', this)" style="white-space: pre-wrap;">${item.desc}</td>
+                <td contenteditable="true" onblur="updateCell(${index}, 'priority', this)" style="text-align:center">${item.priority}</td>
+                <td contenteditable="true" onblur="updateCell(${index}, 'other', this)">${item.other}</td>
+                <td contenteditable="true" onblur="updateCell(${index}, 'note', this)">${item.note}</td>
+                <td contenteditable="true" onblur="updateCell(${index}, 'progress', this)">${item.progress}</td>
+                <td contenteditable="true" onblur="updateCell(${index}, 'status', this)">${item.status}</td>
+                <td contenteditable="true" onblur="updateCell(${index}, 'timeline', this)">${item.timeline}</td>
+                <td style="text-align:center">
+                    <button class="btn-del" onclick="deleteRow(${index})">Xóa</button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    // 3. Hàm Thêm Dòng
+    btnAdd.addEventListener('click', () => {
+        reportData.push({ session: "Mới", au: "Unilever", task: "Nhiệm vụ mới", desc: "Mô tả...", priority: "3", other: "", note: "", progress: "Process", status: "OPEN", timeline: "" });
+        saveAndRender();
+    });
+
+    // 4. Hàm Lưu khi sửa nội dung trực tiếp trên bảng
+    window.updateCell = function(idx, field, el) {
+        reportData[idx][field] = el.innerText;
+        localStorage.setItem('shot5_data', JSON.stringify(reportData));
+        console.log("Đã lưu thay đổi!");
+    };
+
+    // 5. Hàm Xóa dòng
+    window.deleteRow = function(idx) {
+        if (confirm("Bạn muốn xóa dòng này?")) {
+            reportData.splice(idx, 1);
+            saveAndRender();
+        }
+    };
+
+    function saveAndRender() {
+        localStorage.setItem('shot5_data', JSON.stringify(reportData));
+        render();
+    }
+
+    render(); // Chạy ngay khi mở web
+});
