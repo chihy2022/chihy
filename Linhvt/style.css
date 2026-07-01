@@ -273,6 +273,34 @@ textarea {
     color: #0066CC;
 }
 
+/* 1. Thiết lập trạng thái ban đầu cho phần chi tiết */
+.timeline-item .card-detail {
+    max-height: 0;            /* Ẩn nội dung bằng cách cho chiều cao = 0 */
+    overflow: hidden;         /* Cắt phần nội dung thừa */
+    transition: max-height 0.4s ease-in-out, padding 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* 2. Khi Card có class active thì bung chiều cao ra */
+.timeline-item.active .card-detail {
+    max-height: 1000px;       /* Đặt một con số đủ lớn để chứa hết nội dung */
+    opacity: 1;
+    padding-top: 15px;        /* Khoảng cách khi mở ra */
+    padding-bottom: 15px;
+}
+
+/* 3. Thêm hiệu ứng hover để người dùng biết là card này ấn được */
+.timeline-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.timeline-item:hover {
+    background-color: #f8f9fa; /* Đổi màu nhẹ khi hover */
+}
+
 ------- remark ---
 .remark-container {
     position: relative;
