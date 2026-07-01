@@ -899,26 +899,3 @@ td {
 }
 
 .help-text { font-style: italic; color: #666; margin-top: 10px; }
-
-.report-sub-header {
-    background-color: #1a4b8c; /* Màu xanh đậm Unilever */
-    color: white;
-    padding: 10px 15px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    margin-top: 15px;
-}
-
-.report-meta {
-    padding: 8px 0;
-    font-size: 0.95rem;
-    color: #333;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 20px;
-}
-
-#last-updated {
-    font-weight: bold;
-    color: #d32f2f; /* Màu đỏ để nổi bật thời gian */
-}
