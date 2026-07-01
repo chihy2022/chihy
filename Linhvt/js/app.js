@@ -1,326 +1,224 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. KHAI BÁO BIẾN DÙNG CHUNG ---
     const sidebar = document.getElementById('sidebar');
     const closeBtn = document.getElementById('closeBtn');
     const openBtn = document.getElementById('openBtn');
     const contentArea = document.getElementById('content-area');
     const menuItems = document.querySelectorAll('.menu-item');
+    const headerTitle = document.getElementById('dynamic-header-title');
 
-    // 1. ĐÓNG/MỞ SIDEBAR
-    if (closeBtn) {
-        closeBtn.onclick = () => sidebar.classList.add('hidden');
-    }
-    if (openBtn) {
-        openBtn.onclick = () => sidebar.classList.remove('hidden');
-    }
+    // --- 2. XỬ LÝ SIDEBAR (ĐÓNG/MỞ) ---
+    closeBtn?.addEventListener('click', () => sidebar?.classList.add('hidden'));
+    openBtn?.addEventListener('click', () => sidebar?.classList.remove('hidden'));
 
-    // 2. HÀM LOAD TRANG CHI TIẾT
+    // --- 3. HÀM TẢI TRANG CHI TIẾT ---
     async function loadPage(shotName) {
         if (!contentArea) return;
-        contentArea.style.opacity = '0'; 
+
+        contentArea.style.opacity = '0'; // Hiệu ứng mờ dần
+
         try {
             const response = await fetch(`detail/${shotName}.html`);
-            if (response.ok) {
-                const html = await response.text();
-                setTimeout(() => {
-                    contentArea.innerHTML = html;
-                    contentArea.style.opacity = '1';
-                }, 200);
-            }
-        } catch (e) {
+            if (!response.ok) throw new Error("Không tải được trang");
+            
+            const html = await response.text();
+            
+            setTimeout(() => {
+                contentArea.innerHTML = html;
+                contentArea.style.opacity = '1';
+
+                // Sau khi load HTML mới, kiểm tra nếu là trang Shot 5 thì khởi tạo bảng
+                if (shotName === 'shot5') {
+                    initProgressReport();
+                }
+
+                // Gọi hàm init riêng cho từng shot nếu có (ví dụ: initShot1())
+                const initFuncName = "init" + shotName.charAt(0).toUpperCase() + shotName.slice(1);
+                if (typeof window[initFuncName] === "function") {
+                    window[initFuncName]();
+                }
+            }, 150);
+        } catch (err) {
+            console.error(err);
             contentArea.innerHTML = "<h2>Lỗi tải nội dung. Vui lòng thử lại.</h2>";
+            contentArea.style.opacity = '1';
         }
     }
 
-    // 3. XỬ LÝ CLICK MENU
+    // --- 4. XỬ LÝ CLICK MENU SIDEBAR ---
     menuItems.forEach(item => {
-        item.onclick = function() {
+        item.addEventListener('click', function() {
+            // Đổi active class
             menuItems.forEach(i => i.classList.remove('active'));
             this.classList.add('active');
+
+            // Cập nhật tiêu đề Header
+            if (headerTitle) {
+                headerTitle.innerText = this.querySelector('span')?.innerText || "";
+            }
+
+            // Load nội dung
             const shot = this.getAttribute('data-shot');
             loadPage(shot);
-        };
+        });
     });
 
-    // Load mặc định trang shot1
+    // Tải trang mặc định
     loadPage('shot1');
-});
-// 4. XỬ LÝ POPUP ẢNH (Ủy thác sự kiện - Cực kỳ quan trọng)
-document.addEventListener('click', function (e) {
-    const modal = document.getElementById("imageModal");
-    const modalImg = document.getElementById("imgFull");
-    const captionText = document.getElementById("caption");
 
-    if (!modal) return;
-
-    // A. MỞ MODAL: Khi click vào ảnh có ID là myImg
-    if (e.target && e.target.id === 'myImg') {
-        modal.style.display = "flex"; // Hiện dạng flex để căn giữa
-        modalImg.src = e.target.src;
-        captionText.innerHTML = e.target.alt;
-    }
-
-    // B. ĐÓNG MODAL: Khi click vào nút X HOẶC click vào vùng đen (nền modal)
-    if (e.target.classList.contains('close') || e.target.id === 'imageModal') {
-        modal.style.display = "none";
-    }
-});
-
-document.addEventListener('click', function (e) {
-    // Xử lý click mở rộng Card
-    const header = e.target.closest('.card-header');
-    if (header) {
-        const item = header.closest('.timeline-item');
-        item.classList.toggle('active');
+    // --- 5. ỦY THÁC SỰ KIỆN (EVENT DELEGATION) ---
+    // Dùng document.addEventListener('click') để xử lý các element được load động qua fetch
+    document.addEventListener('click', function (e) {
         
-        // Xoay icon mũi tên
-        const icon = header.querySelector('.toggle-btn i');
-        if (icon) {
-            icon.style.transform = item.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+        // A. Xử lý Popup Ảnh
+        if (e.target && e.target.id === 'myImg') {
+            const modal = document.getElementById("imageModal");
+            const modalImg = document.getElementById("imgFull");
+            if (modal && modalImg) {
+                modal.style.display = "flex";
+                modalImg.src = e.target.src;
+            }
         }
-    }
-
-    // (Giữ nguyên code Popup ảnh cũ ở đây...)
-});
-
-document.addEventListener('click', function (e) {
-    // Xử lý đóng mở Remark Card
-    const card = e.target.closest('.remark-card');
-    if (card) {
-        const item = card.closest('.remark-item');
-        item.classList.toggle('active');
-    }
-
-    // Xử lý zoom ảnh (như các bước trước đã làm)
-    if (e.target && e.target.id === 'myImg') {
-        const modal = document.getElementById("imageModal");
-        const modalImg = document.getElementById("imgFull");
-        if (modal) {
-            modal.style.display = "flex";
-            modalImg.src = e.target.src;
-        }
-    }
-});
-/*export nhiều page pdf
-document.addEventListener('click', function (e) {
-    const exportBtn = e.target.closest('#exportPdfBtn');
-    if (exportBtn) {
-        const element = document.getElementById('content-area');
-        if (!element) {
-            console.error("Không tìm thấy phần tử #content-area");
-            return;
+        if (e.target.classList.contains('close') || e.target.id === 'imageModal') {
+            document.getElementById("imageModal").style.display = "none";
         }
 
-        exportBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
-        exportBtn.disabled = true;
+        // B. Xử lý Accordion / Card Timeline
+        const timelineItem = e.target.closest('.timeline-item');
 
-        const opt = {
-            margin: [10, 10, 10, 10], // Lề [trên, trái, dưới, phải] tính bằng mm
-            filename: 'Unime-System-Report.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2,           // Tăng độ sắc nét
-                useCORS: true,      // Cho phép lấy ảnh từ server khác nếu có
-                logging: false,     // Tắt log để tăng tốc
-                letterRendering: true,
-                allowTaint: false
-            },
-            jsPDF: { 
-                unit: 'mm', 
-                format: 'a4', 
-                orientation: 'landscape', // Khổ ngang
-                compress: true 
-            }
-        };
+        if (timelineItem) {
+            // Nếu click vào một nút bấm (button) hoặc link (a) bên trong card thì không toggle
+            if (e.target.closest('button') || e.target.closest('a')) return;
 
-        // Chạy tiến trình xuất PDF
-        html2pdf().set(opt).from(element).toContainer().toCanvas().toImg().toPdf().save().then(() => {
-            exportBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Xuất PDF';
-            exportBtn.disabled = false;
-        }).catch(err => {
-            console.error("Lỗi xuất PDF:", err);
-            exportBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Lỗi khi xuất';
-            exportBtn.disabled = false;
-        });
+            // Toggle class active cho card
+            timelineItem.classList.toggle('active');
+        }
 
-        // Hàm onclone nằm trong cấu hình html2canvas của html2pdf
-        opt.html2canvas.onclone = (clonedDoc) => {
-            const clonedEl = clonedDoc.getElementById('content-area');
-            
-            // 1. Reset toàn bộ style của các thẻ cha để tránh bị ảnh hưởng bởi layout web (Flex/Grid/Padding)
-            let parent = clonedEl.parentElement;
-            while (parent) {
-                parent.style.margin = "0";
-                parent.style.padding = "0";
-                parent.style.display = "block";
-                parent.style.position = "static";
-                parent = parent.parentElement;
-            }
+        // C. Xử lý Remark Card
+        const remarkCard = e.target.closest('.remark-card');
+        if (remarkCard) {
+            remarkCard.closest('.remark-item')?.classList.toggle('active');
+        }
 
-            // 2. Cố định chiều rộng cho vùng nội dung để khớp với tỷ lệ A4 Landscape (~1100px)
-            // Việc này giúp ngăn chặn việc nội dung bị co lại hoặc tràn lề
-            clonedEl.style.width = "1080px"; 
-            clonedEl.style.margin = "0 auto";
-            clonedEl.style.padding = "10px";
-            clonedEl.style.background = "white";
-            clonedEl.style.position = "relative";
-            clonedEl.style.top = "0";
-            clonedEl.style.left = "0";
+        // D. Xuất PDF
+        const exportBtn = e.target.closest('#exportPdfBtn');
+        if (exportBtn) {
+            handleExportPdf(exportBtn);
+        }
+    });
 
-            // 3. Xử lý các thành phần đặc biệt (Table RACI)
-            const raci = clonedEl.querySelector('.raci-table');
-            if (raci) {
-                raci.style.width = "100%";
-                raci.style.tableLayout = "fixed";
-                
-                // Thu nhỏ font chữ để bảng không bị đẩy rộng
-                const cells = raci.querySelectorAll('th, td');
-                cells.forEach(cell => {
-                    cell.style.fontSize = "10px";
-                    cell.style.padding = "4px";
-                });
-                
-                // Thu nhỏ các Pill/Badge
-                const pills = raci.querySelectorAll('.raci-pill');
-                pills.forEach(p => {
-                    p.style.fontSize = "9px";
-                    p.style.padding = "2px 5px";
-                    p.style.minWidth = "auto";
-                });
-            }
-
-            // 4. Đảm bảo các ảnh (logo Unilever...) hiển thị đầy đủ
-            const images = clonedEl.querySelectorAll('img');
-            images.forEach(img => {
-                img.style.maxWidth = "100%";
-                img.style.height = "auto";
-            });
-        };
-    }
-});*/
-document.addEventListener('click', function (e) {
-    const exportBtn = e.target.closest('#exportPdfBtn');
-    if (exportBtn) {
-        // Kiểm tra xem thư viện đã load chưa
+    // --- 6. HÀM XUẤT PDF ---
+    function handleExportPdf(btn) {
         if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
-            alert("Đang tải thư viện, vui lòng thử lại sau 1 giây!");
+            alert("Đang tải thư viện, vui lòng thử lại sau giây lát!");
             return;
         }
 
         const element = document.getElementById('content-area');
-        exportBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
-        exportBtn.disabled = true;
+        const originalBtnHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+        btn.disabled = true;
 
-        // Chụp ảnh vùng nội dung
-        html2canvas(element, {
-            scale: 2, 
-            useCORS: true,
-            backgroundColor: "#ffffff",
-            logging: false
-        }).then(canvas => {
+        html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" })
+        .then(canvas => {
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            
-            // Lấy kích thước thực tế theo Point (pt)
             const imgWidth = canvas.width / 2;
             const imgHeight = canvas.height / 2;
-
-            // Khởi tạo jsPDF từ thư viện
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({
                 orientation: imgWidth > imgHeight ? 'l' : 'p',
                 unit: 'pt',
-                format: [imgWidth, imgHeight] // Trang vừa khít ảnh, không phân trang
+                format: [imgWidth, imgHeight]
             });
-
             pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
             pdf.save('Unime-Full-Report.pdf');
-
-            exportBtn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Xuất PDF';
-            exportBtn.disabled = false;
-        }).catch(err => {
-            console.error("Lỗi xuất PDF:", err);
-            exportBtn.disabled = false;
-            exportBtn.innerHTML = 'Lỗi xuất PDF';
+        })
+        .finally(() => {
+            btn.innerHTML = originalBtnHtml;
+            btn.disabled = false;
         });
     }
-});
-document.addEventListener('DOMContentLoaded', function() {
-    const headerTitle = document.getElementById('dynamic-header-title');
-    const menuItems = document.querySelectorAll('.sidebar-menu .menu-item');
 
-    // 1. Hàm cập nhật chữ lên Header
-    function updateHeader(element) {
-        if (!element || !headerTitle) return;
-        const text = element.querySelector('span').innerText;
-        headerTitle.innerText = text;
+    // --- 7. LOGIC BÁO CÁO TIẾN ĐỘ (SHOT 5) ---
+    let reportData = [];
+
+    function initProgressReport() {
+        const tableBody = document.getElementById('table-body');
+        const btnAdd = document.getElementById('btnAddRow');
+        if (!tableBody) return;
+
+        reportData = JSON.parse(localStorage.getItem('shot5_data')) || [
+            { session: "POSM E2E", au: "Unilever", task: "Tên việc mẫu", desc: "Mô tả...", priority: "1", other: "", note: "", progress: "Request", status: "NEW", timeline: "", actual: "" }
+        ];
+
+        renderTable();
+
+        btnAdd?.addEventListener('click', () => {
+            reportData.push({ session: "Mới", au: "Unilever", task: "Nhiệm vụ mới", desc: "", priority: "3", other: "", note: "", progress: "Request", status: "NEW", timeline: "" , actual: "" });
+            saveAndRender();
+        });
     }
 
-    // 2. Khi vừa load trang, lấy tên của mục đang 'active'
-    const initialActive = document.querySelector('.menu-item.active');
-    updateHeader(initialActive);
-
-    // 3. Lắng nghe sự kiện click vào các mục menu Sidebar
-    menuItems.forEach(item => {
-        item.addEventListener('click', function() {
-            // Cập nhật tiêu đề ngay lập tức khi click
-            updateHeader(this);
-            
-            // Xử lý đổi class active cho menu (nếu code cũ của bạn chưa có)
-            menuItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-});
-
-/*Báo cáo tiến độ*/
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Lấy dữ liệu từ máy (localStorage). Nếu chưa có thì tạo 1 dòng trống
-    let reportData = JSON.parse(localStorage.getItem('shot5_data')) || [
-        { session: "POSM E2E", au: "Unilever", task: "Tên việc mẫu", desc: "Mô tả mẫu...", priority: "1", other: "", note: "", progress: "Demo", status: "OPEN", timeline: "" }
-    ];
-
+    function renderTable() {
     const tableBody = document.getElementById('table-body');
-    const btnAdd = document.getElementById('btnAddRow');
-
-    // 2. Hàm hiển thị bảng
-    function render() {
-        tableBody.innerHTML = '';
-        reportData.forEach((item, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td contenteditable="true" onblur="updateCell(${index}, 'session', this)">${item.session}</td>
-                <td contenteditable="true" onblur="updateCell(${index}, 'au', this)">${item.au}</td>
-                <td contenteditable="true" onblur="updateCell(${index}, 'task', this)" style="color:#2e7d32; font-weight:bold">${item.task}</td>
-                <td contenteditable="true" onblur="updateCell(${index}, 'desc', this)" style="white-space: pre-wrap;">${item.desc}</td>
-                <td contenteditable="true" onblur="updateCell(${index}, 'priority', this)" style="text-align:center">${item.priority}</td>
-                <td contenteditable="true" onblur="updateCell(${index}, 'other', this)">${item.other}</td>
-                <td contenteditable="true" onblur="updateCell(${index}, 'note', this)">${item.note}</td>
-                <td contenteditable="true" onblur="updateCell(${index}, 'progress', this)">${item.progress}</td>
-                <td contenteditable="true" onblur="updateCell(${index}, 'status', this)">${item.status}</td>
-                <td contenteditable="true" onblur="updateCell(${index}, 'timeline', this)">${item.timeline}</td>
-                <td style="text-align:center">
-                    <button class="btn-del" onclick="deleteRow(${index})">Xóa</button>
-                </td>
-            `;
-            tableBody.appendChild(tr);
-        });
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = reportData.map((item, index) => `
+        <tr style="${getRowStyle(item.status)}">
+            <td contenteditable="true" onblur="updateCell(${index}, 'session', this)">${item.session || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'au', this)">${item.au || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'task', this)">${item.task || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'desc', this)">${item.desc || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'priority', this)">${item.priority || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'other', this)">${item.other || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'note', this)">${item.note || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'progress', this)">${item.progress || ''}</td>
+            
+            <!-- Cột Status -->
+            <td contenteditable="true" onblur="updateStatusCell(${index}, this)">
+                ${item.status || ''}
+            </td>
+            
+            <td contenteditable="true" onblur="updateCell(${index}, 'timeline', this)">${item.timeline || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'actual', this)">${item.actual || ''}</td>
+            <td><button class="btn-del" onclick="deleteRow(${index})">Xóa</button></td>
+        </tr>
+    `).join('');
+    }
+    
+    function getRowStyle(status) {
+    const val = (status || "").toString().trim().toUpperCase();
+    
+    switch (val) {
+        case 'DONE':
+            // Màu xanh neon nhạt cho nền
+            return 'background-color: rgba(57, 255, 20, 0.2); font-weight: 500;'; 
+            
+        case 'OPEN':
+        case 'REOPEN':
+            // Màu vàng nhạt
+            return 'background-color: rgba(255, 235, 59, 0.2); font-weight: 500;';
+            
+        case 'PROCESS':
+            // Màu xanh lá Case nhạt
+            return 'background-color: rgba(46, 125, 50, 0.15); font-weight: 500;';
+            
+        case 'NEW':
+            // Màu xanh dương nhạt (Sky Blue)
+            return 'background-color: rgba(33, 150, 243, 0.15); font-weight: 500;';
+            
+        default:
+            return '';
+    }
     }
 
-    // 3. Hàm Thêm Dòng
-    btnAdd.addEventListener('click', () => {
-        reportData.push({ session: "Mới", au: "Unilever", task: "Nhiệm vụ mới", desc: "Mô tả...", priority: "3", other: "", note: "", progress: "Process", status: "OPEN", timeline: "" });
-        saveAndRender();
-    });
-
-    // 4. Hàm Lưu khi sửa nội dung trực tiếp trên bảng
     window.updateCell = function(idx, field, el) {
         reportData[idx][field] = el.innerText;
         localStorage.setItem('shot5_data', JSON.stringify(reportData));
-        console.log("Đã lưu thay đổi!");
     };
 
-    // 5. Hàm Xóa dòng
     window.deleteRow = function(idx) {
-        if (confirm("Bạn muốn xóa dòng này?")) {
+        if (confirm("Xóa dòng này?")) {
             reportData.splice(idx, 1);
             saveAndRender();
         }
@@ -328,8 +226,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveAndRender() {
         localStorage.setItem('shot5_data', JSON.stringify(reportData));
-        render();
+        renderTable();
     }
 
-    render(); // Chạy ngay khi mở web
+    window.updateStatusCell = function(idx, el) {
+    const newStatus = el.innerText.trim();
+    reportData[idx]['status'] = newStatus;
+    
+    // Tìm thẻ <tr> và cập nhật style mới
+    const parentRow = el.closest('tr');
+    if (parentRow) {
+        parentRow.style = getRowStyle(newStatus);
+    }
+    
+    localStorage.setItem('shot5_data', JSON.stringify(reportData));
+    };
+    btnAdd?.addEventListener('click', () => {
+    reportData.push({ 
+        session: "Mới", 
+        au: "Unilever", 
+        task: "Nhiệm vụ mới", 
+        desc: "", 
+        priority: "3", 
+        other: "", 
+        note: "", 
+        progress: "0%", 
+        status: "NEW", // Đặt là NEW
+        timeline: "",
+        actual: "" 
+    });
+    saveAndRender(); // Hàm này gọi renderTable, renderTable lại gọi getRowStyle
+});
 });
