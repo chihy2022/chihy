@@ -1,66 +1,66 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. KHAI BÁO BIẾN DÙNG CHUNG ---
-    const sidebar = document.getElementById('sidebar');
-    const closeBtn = document.getElementById('closeBtn');
-    const openBtn = document.getElementById('openBtn');
-    const contentArea = document.getElementById('content-area');
-    const menuItems = document.querySelectorAll('.menu-item');
-    const headerTitle = document.getElementById('dynamic-header-title');
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. KHAI BÁO BIẾN DÙNG CHUNG ---
+        const sidebar = document.getElementById('sidebar');
+        const closeBtn = document.getElementById('closeBtn');
+        const openBtn = document.getElementById('openBtn');
+        const contentArea = document.getElementById('content-area');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const headerTitle = document.getElementById('dynamic-header-title');
 
-    // --- 2. XỬ LÝ SIDEBAR (ĐÓNG/MỞ) ---
-    closeBtn?.addEventListener('click', () => sidebar?.classList.add('hidden'));
-    openBtn?.addEventListener('click', () => sidebar?.classList.remove('hidden'));
+        // --- 2. XỬ LÝ SIDEBAR (ĐÓNG/MỞ) ---
+        closeBtn?.addEventListener('click', () => sidebar?.classList.add('hidden'));
+        openBtn?.addEventListener('click', () => sidebar?.classList.remove('hidden'));
 
-    // --- 3. HÀM TẢI TRANG CHI TIẾT ---
-    async function loadPage(shotName) {
-        if (!contentArea) return;
+        // --- 3. HÀM TẢI TRANG CHI TIẾT ---
+        async function loadPage(shotName) {
+            if (!contentArea) return;
 
-        contentArea.style.opacity = '0'; // Hiệu ứng mờ dần
+            contentArea.style.opacity = '0'; // Hiệu ứng mờ dần
 
-        try {
-            const response = await fetch(`detail/${shotName}.html`);
-            if (!response.ok) throw new Error("Không tải được trang");
-            
-            const html = await response.text();
-            
-            setTimeout(() => {
-                contentArea.innerHTML = html;
+            try {
+                const response = await fetch(`detail/${shotName}.html`);
+                if (!response.ok) throw new Error("Không tải được trang");
+                
+                const html = await response.text();
+                
+                setTimeout(() => {
+                    contentArea.innerHTML = html;
+                    contentArea.style.opacity = '1';
+
+                    // Sau khi load HTML mới, kiểm tra nếu là trang Shot 5 thì khởi tạo bảng
+                    if (shotName === 'shot5') {
+                        initProgressReport();
+                    }
+
+                    // Gọi hàm init riêng cho từng shot nếu có (ví dụ: initShot1())
+                    const initFuncName = "init" + shotName.charAt(0).toUpperCase() + shotName.slice(1);
+                    if (typeof window[initFuncName] === "function") {
+                        window[initFuncName]();
+                    }
+                }, 150);
+            } catch (err) {
+                console.error(err);
+                contentArea.innerHTML = "<h2>Lỗi tải nội dung. Vui lòng thử lại.</h2>";
                 contentArea.style.opacity = '1';
-
-                // Sau khi load HTML mới, kiểm tra nếu là trang Shot 5 thì khởi tạo bảng
-                if (shotName === 'shot5') {
-                    initProgressReport();
-                }
-
-                // Gọi hàm init riêng cho từng shot nếu có (ví dụ: initShot1())
-                const initFuncName = "init" + shotName.charAt(0).toUpperCase() + shotName.slice(1);
-                if (typeof window[initFuncName] === "function") {
-                    window[initFuncName]();
-                }
-            }, 150);
-        } catch (err) {
-            console.error(err);
-            contentArea.innerHTML = "<h2>Lỗi tải nội dung. Vui lòng thử lại.</h2>";
-            contentArea.style.opacity = '1';
-        }
-    }
-
-    // --- 4. XỬ LÝ CLICK MENU SIDEBAR ---
-    menuItems.forEach(item => {
-        item.addEventListener('click', function() {
-            // Đổi active class
-            menuItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-
-            // Cập nhật tiêu đề Header
-            if (headerTitle) {
-                headerTitle.innerText = this.querySelector('span')?.innerText || "";
             }
+        }
 
-            // Load nội dung
-            const shot = this.getAttribute('data-shot');
-            loadPage(shot);
-        });
+        // --- 4. XỬ LÝ CLICK MENU SIDEBAR ---
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Đổi active class
+                menuItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+
+                // Cập nhật tiêu đề Header
+                if (headerTitle) {
+                    headerTitle.innerText = this.querySelector('span')?.innerText || "";
+                }
+
+                // Load nội dung
+                const shot = this.getAttribute('data-shot');
+                loadPage(shot);
+            });
     });
 
     // Tải trang mặc định
@@ -256,5 +256,18 @@ document.addEventListener('DOMContentLoaded', () => {
         actual: "" 
     });
     saveAndRender(); // Hàm này gọi renderTable, renderTable lại gọi getRowStyle
+
+    function updateTimestamp() {
+    const now = new Date();
+    const time = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    const date = now.toLocaleDateString('vi-VN');
+    const fullTime = `${time} ${date}`;
+
+    const display = document.getElementById('last-updated');
+    if (display) {
+        display.innerText = fullTime;
+        // Lưu luôn vào máy để khi load lại trang vẫn còn thời gian cũ
+        localStorage.setItem('shot5_last_time', fullTime);
+    }
 });
 });
