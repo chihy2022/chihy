@@ -1,38 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
 <head>
-    <!-- Nhúng file CSS (nhớ có ../ vì file css ở ngoài) -->
-    <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Tiến Độ - Shot 5</title>
+    <!-- Đi ra ngoài thư mục detail để tìm style.css -->
+    <link rel="stylesheet" href="../style.css"> 
 </head>
 <body>
-        <!-- Phần 1: Execution Roadmap -->
-        <section id="execution-roadmap"> 
-        <div class="section">
-            <img id="myImg" src="images/DashAgenda.png" alt="DashAgenda" style="cursor: zoom-in; width: 100%;">
-            <img id="myImg" src="images/DashSummaryExecutive.png" alt="DashSummaryExecutive" style="cursor: zoom-in; width: 100%;">
-        </div>
-        </section>
-        <!-- Phần 2: Use Case Powerhouse -->
-        <section id="use-case-powerhouse">
-        <div class="section">
-            <img id="myImg" src="images/DashEmployeesProfile.png" alt="DashEmployeesProfile" style="cursor: zoom-in; width: 100%;">
-            <img id="myImg" src="images/DashComplianceanalysis.png" alt="DashComplianceanalysis" style="cursor: zoom-in; width: 100%;">
-             <img id="myImg" src="images/DashDisplayResult.png" alt="DashDisplayResulrt" style="cursor: zoom-in; width: 100%;">
-        </div>
-        </section>
-        <!-- Phần 3: RACI Matrix -->
-        <section id="raci-matrix">
-        <div class="section">
-            <img id="myImg" src="images/DashQcResult.png" alt="DashQcResult" style="cursor: zoom-in; width: 100%;">
-            <img id="myImg" src="images/DashKpiPerformance.png" alt="DashKpiPerformance" style="cursor: zoom-in; width: 100%;">
-        </div>
-        </section>
 
+    <div class="report-container">
+        <div class="top-bar">
+            <h2>BÁO CÁO TIẾN ĐỘ DIGITAL (Shot 5)</h2>
+            <button id="btnAddRow" class="btn-add">+ Thêm dòng mới</button>
+        </div>
+
+        <div class="table-scroll">
+            <table id="main-table">
+                <thead>
+                    <tr>
+                        <th>SESSION</th>
+                        <th>A/U</th>
+                        <th>TASK</th>
+                        <th style="width: 25%;">MÔ TẢ</th>
+                        <th>ƯU TIÊN</th>
+                        <th>KHÁC</th>
+                        <th>GHI CHÚ</th>
+                        <th>TIẾN ĐỘ</th>
+                        <th>STATUS</th>
+                        <th>TIME LINE</th>
+                        <th style="width: 80px;">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Dữ liệu sẽ đổ vào đây -->
+                </tbody>
+            </table>
+        </div>
+        <p class="help-text">* Chạm trực tiếp vào nội dung trong bảng để sửa. Dữ liệu tự lưu khi bạn click ra ngoài.</p>
     </div>
-    <!-- Khung Popup (Modal)-->
-    <div id="imageModal" class="modal">
-        <span class="close">&times;</span>
-        <img class="modal-content" id="imgFull">
-        <div id="caption"></div>
-    </div>
-</div>
-<script src="../js/app.js"></script>
+
+    <!-- Đi ra ngoài thư mục detail, vào thư mục js để tìm app.js -->
+    <script src="../js/app.js"></script>
 </body>
+</html>
