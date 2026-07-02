@@ -237,24 +237,6 @@ function getRowStyle(status) {
     }
 }
 
-function getVNTime() {
-    return new Date().toLocaleString('vi-VN', { 
-        hour: '2-digit', minute: '2-digit', 
-        day: '2-digit', month: '2-digit', year: 'numeric' 
-    });
-}
-
-function displayLastUpdated() {
-    const el = document.getElementById('last-updated');
-    if (el) el.innerText = localStorage.getItem('shot5_last_time') || "--:--";
-}
-
-function triggerUpdateTimestamp() {
-    const time = getVNTime();
-    localStorage.setItem('shot5_last_time', time);
-    displayLastUpdated();
-}
-
 function handleExportPdf(btn) {
     if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
         alert("Đang tải thư viện PDF, vui lòng đợi..."); return;
