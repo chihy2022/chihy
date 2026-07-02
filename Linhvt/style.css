@@ -50,6 +50,7 @@ textarea {
 /* SIDEBAR PHONG CÁCH NOTION */
 .sidebar {
     width: 260px;
+    flex-shrink: 0; /* Quan trọng: Sidebar không bao giờ bị bóp nhỏ */
     background: #ffffff;
     border-right: 1px solid #edeceb;
     transition: all 0.3s ease;
@@ -889,12 +890,7 @@ td {
 }
 
 .help-text { font-style: italic; color: #666; margin-top: 10px; }
-/*
-.app-container {
-    display: flex;
-    height: 100vh;
-}
-*/
+
 /* 1. Đảm bảo App luôn cao bằng màn hình, không bị co rụt */
 .app-container {
     display: flex;
@@ -902,21 +898,6 @@ td {
     overflow: hidden; /* Ngăn thanh cuộn kép */
 }
 
-/* 2. Sidebar phải có chiều rộng cố định, không được co giãn */
-#sidebar {
-    width: 260px;
-    flex-shrink: 0; /* Quan trọng: Sidebar không bao giờ bị bóp nhỏ */
-    height: 100%;
-    background: #fff;
-    border-right: 1px solid #eee;
-}
-/* NỘI DUNG CHÍNH
-.main-content {
-    flex: 1;
-    overflow-y: auto;
-    position: relative;
-}
-*/
 /* 3. Khung chứa nội dung chính */
 .main-content {
     flex-grow: 1; /* Chiếm hết phần còn lại */
@@ -928,7 +909,7 @@ td {
 }
 
 /* 4. Khung CHUNG chứa các shot (Nơi bạn fetch dữ liệu vào) */
-#content-area {
+.content-area {
     padding: 20px;
     min-height: 100%; /* Luôn giữ chiều cao ít nhất bằng khung nhìn */
     transition: opacity 0.2s ease-in-out; /* Hiệu ứng mờ chuyển trang mượt */
