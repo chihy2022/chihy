@@ -61,6 +61,12 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 /* 3. MENU LIST */
 .sidebar-menu { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 10px 12px; }
 
+.sidebar-menu i {
+    width: 20px;
+    font-size: 16px; /* Không nên để quá to sẽ bị thô */
+    opacity: 0.8;    /* Để hơi mờ một chút, khi hover hoặc active mới hiện rõ 100% */
+}
+
 /* Menu Item (Chung) */
 .menu-item {
     margin: 4px 0;
@@ -73,6 +79,10 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 .menu-item:hover { background: #f3f4f6; color: var(--primary-blue); }
 .menu-item.active { background: #eef5ff; color: var(--primary-blue); font-weight: 700; }
 .menu-item.active i { color: var(--primary-blue); }
+.menu-item.active i {
+    opacity: 1;
+    color: var(--primary-blue);
+}
 
 /* --- GROUP HEADER (INCOME, REFUNDS...) --- */
 .group-header {
@@ -219,7 +229,7 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
     border-bottom: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     position: sticky; top: 0; padding: 20px 40px;z-index: 1000;
 }
-.current-title { font-size: 22px; font-weight: 800; letter-spacing: -0.8px; display: flex; align-items: center; gap: 12px; }
+.current-title { font-size: 22px; font-weight: 400; letter-spacing: -0.8px; display: flex; align-items: center; gap: 12px; }
 .current-title::before { content: ""; width: 8px; height: 8px; background: var(--primary-blue); border-radius: 50%; }
 
 .btn-export {
