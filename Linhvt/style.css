@@ -908,9 +908,26 @@ td {
     background-color: #f5f7f9;
 }
 
-/* 4. Khung CHUNG chứa các shot (Nơi bạn fetch dữ liệu vào) */
+
+html {
+    overflow-y: scroll;
+}
+
+/* 2. Giữ độ cao cho vùng nội dung (chống giật dọc) */
 .content-area {
-    padding: 20px;
-    min-height: 100%; /* Luôn giữ chiều cao ít nhất bằng khung nhìn */
-    transition: opacity 0.2s ease-in-out; /* Hiệu ứng mờ chuyển trang mượt */
+    min-height: calc(100vh - 60px); /* Chiếm hết chiều cao màn hình trừ header */
+    display: block;
+    position: relative;
+    transition: opacity 0.2s ease-in-out; /* Hiệu ứng mờ dần mượt */
+}
+
+/* 3. Hiệu ứng Loading Spinner (tùy chọn để chuyên nghiệp hơn) */
+.loading-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: #0066CC;
+    z-index: 10;
 }
