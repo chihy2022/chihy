@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (shot2NavGroup) shot2NavGroup.style.display = 'none';
             }
 
-            // B. LOGIC CHO SHOT 5 (QUAN TRỌNG: TẢI GOOGLE SHEETS)
-            if (shotName === 'shot5') {
+            // B. LOGIC CHO SHOT 1 (QUAN TRỌNG: TẢI GOOGLE SHEETS)
+            if (shotName === 'shot1') {
                 initProgressReport(); // Kích hoạt nạp dữ liệu bảng
             }
 
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ================================================================
-// 2. LOGIC BÁO CÁO TIẾN ĐỘ (SHOT 5)
+// 2. LOGIC BÁO CÁO TIẾN ĐỘ (SHOT 1)
 // ================================================================
 async function initProgressReport() {
     const tableBody = document.getElementById('table-body');
