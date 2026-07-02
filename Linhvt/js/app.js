@@ -24,23 +24,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentArea = document.getElementById('content-area');
     if (!contentArea) return;
 
-    // Bước 1: Làm mờ nhẹ trang cũ (không xóa ngay)
-    contentArea.style.opacity = '0.4'; 
+    // Hiệu ứng mờ dần (đừng xóa nội dung cũ ngay)
+    contentArea.style.opacity = '0.5';
 
     try {
-        // Bước 2: Bắt đầu tải trang mới từ server
         const response = await fetch(`detail/${shotName}.html`);
-        if (!response.ok) throw new Error("Lỗi tải trang");
+        if (!response.ok) throw new Error("Lỗi mạng");
         const html = await response.text();
 
-        // Bước 3: Chỉ khi tải xong HTML mới thay thế nội dung
-        // Việc này giúp khung hình không bao giờ bị sụp về 0px
+        // CHỐNG GIẬT: Tải xong xuôi mới ghi đè
         contentArea.innerHTML = html;
-        
-        // Bước 4: Hiện rõ trang mới
         contentArea.style.opacity = '1';
 
-        // Khởi tạo các logic đặc thù
+        // Khởi tạo logic sau khi nạp HTML
         if (shotName === 'shot5') {
             initProgressReport();
         }
@@ -49,13 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof window[initFuncName] === "function") {
             window[initFuncName]();
         }
-
     } catch (err) {
-        console.error(err);
-        contentArea.innerHTML = "<div class='loading-overlay'>Lỗi kết nối. Vui lòng thử lại.</div>";
         contentArea.style.opacity = '1';
+        console.error("Vercel Load Error:", err);
     }
-}
+    }
     // --- XỬ LÝ CLICK MENU ---
     menuItems.forEach(item => {
         item.addEventListener('click', function() {
