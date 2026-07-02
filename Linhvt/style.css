@@ -96,6 +96,84 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
     font-weight: 700; /* Đậm hơn */
     letter-spacing: 0.5px;
 }
+.header-right {
+    display: flex;
+    align-items: center; /* Căn giữa tất cả theo chiều dọc */
+}
+
+
+/* --- NAVIGATION NÚT TRÊN HEADER --- */
+.shot2-navigation {
+    display: flex;
+    gap: 10px;
+    background: #f0f2f5;
+    padding: 5px;
+    border-radius: 12px;
+}
+
+.header-nav-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.header-nav-btn:hover {
+    color: var(--primary-blue);
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Nút khi đang được active (tùy chọn) */
+.header-nav-btn.active {
+    background: var(--primary-blue);
+    color: #fff;
+}
+
+.header-nav-container {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Khoảng cách giữa các tab hẹp lại một chút để tạo cụm */
+    background: #f1f5f9; /* Nền xám cực nhạt để làm nổi bật tabs */
+    padding: 4px;
+    border-radius: 12px;
+    margin-right: 15px; /* Khoảng cách với nút Xuất PDF */
+}
+
+.nav-btn {
+    text-decoration: none !important;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b; /* Màu xám Slate nhẹ nhàng */
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    border: none;
+}
+
+/* Khi di chuột qua Tab */
+.nav-btn:hover {
+    color: var(--primary-blue);
+    background-color: rgba(255, 255, 255, 0.5); /* Nền trắng mờ */
+}
+
+/* TRẠNG THÁI TAB ĐANG ACTIVE (Đẹp nhất) */
+.nav-btn.active {
+    color: var(--primary-blue);
+    background-color: #ffffff; /* Tab nổi hẳn lên trên nền xám */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* Đổ bóng nhẹ tạo độ nổi */
+}
+
+/* Quan trọng: Tránh Header che mất tiêu đề khi cuộn tới */
+.content-section {
+    scroll-margin-top: 100px;
+}
 
 .chevron-icon { font-size: 9px; transition: transform 0.3s; opacity: 0.5; }
 
@@ -145,13 +223,14 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 .current-title::before { content: ""; width: 8px; height: 8px; background: var(--primary-blue); border-radius: 50%; }
 
 .btn-export {
-    background: var(--primary-gradient); color: #fff; border: none; padding: 12px 24px;
+    height: 38px;
+    background: var(--primary-gradient); color: #fff; border: none; padding: 0 16px;
     border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer;
     box-shadow: 0 4px 14px rgba(0, 118, 255, 0.3); transition: 0.3s;
 }
 .btn-export:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 118, 255, 0.4); }
 
-.content-body { flex-grow: 1; padding: 40px; overflow-y: auto; }
+.content-body { flex-grow: 1; padding: 20px; overflow-y: auto; }
 
 /* 6. MODAL */
 .modal { display: none; position: fixed; z-index: 10002; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; backdrop-filter: blur(8px); }
@@ -159,7 +238,7 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 .close { position: absolute; top: 30px; right: 40px; color: #fff; font-size: 40px; cursor: pointer; }
 
 
-/*SHOT5*/
+/*SHOT5: BÁO CÁO TIẾN ĐỘ*/
 /* --- STYLE BẢNG TIẾN ĐỘ --- */
 .modern-table {
     width: 100%;
@@ -201,4 +280,122 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 [contenteditable="true"]:focus {
     outline: 2px solid var(--primary-blue);
     background: #fff;
+}
+
+
+/* --- SHOT 2: ROADMAP & COMPONENTS --- */
+/* --- CHỐNG CHE TIÊU ĐỀ KHI SCROLL --- */
+.content-section {
+    scroll-margin-top: 100px; /* Cách header 100px khi cuộn tới */
+    margin-bottom: 60px;
+}
+
+.section-card {
+    background: #fff; border-radius: 28px; padding: 40px;
+    border: 1px solid #f0f0f0; transition: 0.3s;
+}
+
+/* Timeline & Sticky Mockup */
+.roadmap-flex-container { display: flex; gap: 40px; }
+.sticky-mockup { flex: 1; position: sticky; top: 120px; height: fit-content; }
+.timeline-container { flex: 1.5; position: relative; padding-left: 80px; }
+.vertical-dash-line { position: absolute; left: 95px; top: 0; bottom: 0; width: 2px; background: #f0f2f5; }
+
+.remark-item { display: flex; gap: 25px; margin-bottom: 40px; position: relative; z-index: 2; }
+.remark-date { width: 70px; text-align: right; padding-top: 15px; }
+.remark-date .m { display: block; font-size: 18px; font-weight: 800; color: var(--primary-blue); }
+.remark-date .y { font-size: 12px; color: #999; }
+
+.remark-marker { width: 14px; height: 14px; background: #fff; border: 3px solid #ddd; border-radius: 50%; margin-top: 22px; flex-shrink: 0; }
+.remark-item.active .remark-marker { border-color: var(--primary-blue); background: var(--primary-blue); box-shadow: 0 0 0 5px rgba(0, 102, 204, 0.1); }
+
+.remark-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 20px; padding: 25px; flex-grow: 1; cursor: pointer; transition: 0.3s; }
+.remark-card:hover { transform: translateX(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+
+/* Bảng RACI chuyên nghiệp */
+.pro-raci-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+.pro-raci-table th { background: transparent; padding: 15px; color: #888; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+.pro-raci-table td { background: #f8fafc; padding: 20px 15px; border: none; }
+.pro-raci-table td:first-child { border-radius: 12px 0 0 12px; }
+.pro-raci-table td:last-child { border-radius: 0 12px 12px 0; }
+
+.raci-badge { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: 800; font-size: 13px; }
+.raci-badge.r { background: #dcfce7; color: #15803d; }
+.raci-badge.a { background: #dbeafe; color: #1d4ed8; }
+.raci-badge.c { background: #fef3c7; color: #b45309; }
+.raci-badge.i { background: #f1f5f9; color: #475569; }lateX(5px); box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+.badge-phase { font-size: 10px; font-weight: 800; color: var(--primary-blue); text-transform: uppercase; }
+.card-summary { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 13px; color: #888; }
+.pill-count { background: #f1f3f5; padding: 3px 10px; border-radius: 20px; font-weight: 700; color: #444; }
+
+.card-details { max-height: 0; overflow: hidden; transition: 0.4s ease; }
+.remark-item.active .card-details { max-height: 1000px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+.img-in-card { width: 100%; border-radius: 10px; }
+
+/* Use Case & RACI */
+.metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.m-card { background: #f8fbff; padding: 25px; border-radius: 16px; text-align: center; border: 1px solid #e2e8f0; }
+.m-card h2 { color: var(--primary-blue); font-size: 32px; font-weight: 800; }
+
+.process-flow-box { margin-top: 30px; background: #fff; border: 1px solid #eee; border-radius: 20px; padding: 30px; }
+.flow-steps { display: flex; align-items: center; justify-content: space-between; }
+.f-step b { display: block; font-size: 18px; color: var(--primary-blue); }
+.f-arrow { color: #cbd5e0; }
+
+.pro-raci-table { width: 100%; border-collapse: collapse; }
+.pro-raci-table th { background: #f8fafc; padding: 15px; text-align: left; font-size: 12px; color: #64748b; text-transform: uppercase; }
+.pro-raci-table td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+.raci-badge { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: 800; }
+.raci-badge.r { background: #dcfce7; color: #15803d; }
+.raci-badge.a { background: #dbeafe; color: #1d4ed8; }
+
+/* Wrapper chứa cả số và chữ */
+.pro-title {
+    display: flex;
+    align-items: center; /* Căn giữa số và chữ theo chiều dọc */
+    gap: 18px;           /* Khoảng cách giữa số và chữ */
+    margin-bottom: 12px; /* Khoảng cách với dòng mô tả bên dưới */
+}
+
+/* Style cho hình tròn chứa số (01, 02, 03) */
+.step-num {
+    width: 42px;         /* Tăng kích thước nhẹ */
+    height: 42px;
+    background: var(--primary-blue); /* Màu xanh thương hiệu */
+    color: #ffffff;
+    border-radius: 12px; /* Bo góc dạng tròn hoặc vuông bo góc (đang để vuông bo cho hiện đại) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;    /* Cực đậm */
+    flex-shrink: 0;      /* Không để hình tròn bị bóp méo */
+    
+    /* Hiệu ứng bóng đổ nhẹ tạo độ nổi */
+    box-shadow: 0 4px 10px rgba(0, 102, 204, 0.2);
+}
+
+/* Style cho chữ Tiêu đề (Execution Roadmap...) */
+.pro-title h1 {
+    font-size: 28px;     /* Chữ to rõ ràng */
+    font-weight: 800;    /* Độ đậm cao nhất của font Be Vietnam Pro */
+    color: #111827;      /* Màu đen sâu chuyên nghiệp */
+    margin: 0;           /* Bỏ margin mặc định của h1 */
+    letter-spacing: -0.8px; /* Giãn chữ hẹp lại nhìn rất "Tây" */
+}
+
+/* Dòng mô tả bên dưới tiêu đề */
+.section-subtitle {
+    font-size: 15px;
+    color: #4b5563;      /* Màu xám trung tính dễ đọc */
+    line-height: 1.6;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+/* Thêm vạch kẻ phân cách mờ mờ sau tiêu đề nếu Linh muốn (tùy chọn) */
+.header-top {
+    position: relative;
+    padding-bottom: 25px;
+    /* border-bottom: 1px solid #f3f4f6; */ /* Có thể mở ra nếu muốn vạch ngăn cách các phần */
 }
