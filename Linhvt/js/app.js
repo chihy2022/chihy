@@ -5,7 +5,7 @@ const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyH6XZJtaH0a4L
 let reportData = []; 
 
 // ================================================================
-// 2. KHỞI TẠO KHI TRANG LOAD XONG
+// 2. KHỞI TẠO GIAO DIỆN & ĐIỀU HƯỚNG
 // ================================================================
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
@@ -15,43 +15,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuItems = document.querySelectorAll('.menu-item');
     const headerTitle = document.getElementById('dynamic-header-title');
 
-    // --- SIDEBAR (ĐÓNG/MỞ) ---
+    // --- SIDEBAR ---
     closeBtn?.addEventListener('click', () => sidebar?.classList.add('hidden'));
     openBtn?.addEventListener('click', () => sidebar?.classList.remove('hidden'));
 
-    // --- HÀM TẢI TRANG CHI TIẾT ---
+    // --- HÀM TẢI TRANG CHI TIẾT (AJAX) ---
     async function loadPage(shotName) {
         if (!contentArea) return;
-        contentArea.style.opacity = '0'; 
+        contentArea.style.opacity = '0.5'; // Mờ nhẹ khi đang tải
 
         try {
             const response = await fetch(`detail/${shotName}.html`);
             if (!response.ok) throw new Error("Không tải được trang");
             const html = await response.text();
             
-            setTimeout(() => {
-                contentArea.innerHTML = html;
-                contentArea.style.opacity = '1';
+            contentArea.innerHTML = html;
+            contentArea.style.opacity = '1';
 
-                // Nếu là trang Shot 5 (Báo cáo tiến độ)
-                if (shotName === 'shot5') {
-                    initProgressReport();
-                }
+            // Khởi tạo logic cho từng shot
+            if (shotName === 'shot5') {
+                initProgressReport();
+            }
 
-                // Gọi hàm init riêng cho từng shot nếu có
-                const initFuncName = "init" + shotName.charAt(0).toUpperCase() + shotName.slice(1);
-                if (typeof window[initFuncName] === "function") {
-                    window[initFuncName]();
-                }
-            }, 150);
+            // Gọi hàm init động (ví dụ initShot1())
+            const initFuncName = "init" + shotName.charAt(0).toUpperCase() + shotName.slice(1);
+            if (typeof window[initFuncName] === "function") {
+                window[initFuncName]();
+            }
         } catch (err) {
             console.error(err);
-            contentArea.innerHTML = "<h2>Lỗi tải nội dung. Vui lòng thử lại.</h2>";
+            contentArea.innerHTML = "<h2>Lỗi tải nội dung.</h2>";
             contentArea.style.opacity = '1';
         }
     }
 
-    // --- XỬ LÝ CLICK MENU SIDEBAR ---
+    // --- XỬ LÝ CLICK MENU ---
     menuItems.forEach(item => {
         item.addEventListener('click', function() {
             menuItems.forEach(i => i.classList.remove('active'));
@@ -63,12 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Tải trang mặc định khi vừa mở web
-    loadPage('shot1');
+    loadPage('shot1'); // Trang mặc định
 
-    // --- ỦY THÁC SỰ KIỆN CLICK (CHO POPUP, PDF, ACCORDION) ---
+    // --- ỦY THÁC SỰ KIỆN CLICK (CHO TOÀN BỘ APP) ---
     document.addEventListener('click', function (e) {
-        // A. Popup Ảnh
+        
+        // A. Popup Ảnh (Zoom)
         if (e.target && e.target.id === 'myImg') {
             const modal = document.getElementById("imageModal");
             const modalImg = document.getElementById("imgFull");
@@ -82,13 +80,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) modal.style.display = "none";
         }
 
-        // B. Accordion / Card Timeline
+        // B. Mở rộng Remark Card (Timeline Roadmap) - QUAN TRỌNG
+        const remarkCard = e.target.closest('.remark-card');
+        if (remarkCard) {
+            const item = remarkCard.closest('.remark-item');
+            item?.classList.toggle('active');
+        }
+
+        // C. Mở rộng Timeline Item (nếu có)
         const timelineItem = e.target.closest('.timeline-item');
         if (timelineItem && !e.target.closest('button') && !e.target.closest('a')) {
             timelineItem.classList.toggle('active');
         }
 
-        // C. Xuất PDF
+        // D. Xuất PDF
         const exportBtn = e.target.closest('#exportPdfBtn');
         if (exportBtn) {
             handleExportPdf(exportBtn);
@@ -97,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ================================================================
-// 3. LOGIC BÁO CÁO TIẾN ĐỘ (SHOT 5) - GOOGLE SHEETS
+// 3. LOGIC BÁO CÁO TIẾN ĐỘ (SHOT 5)
 // ================================================================
 
 async function initProgressReport() {
@@ -113,13 +118,12 @@ async function initProgressReport() {
         renderTable();
         displayLastUpdated();
     } catch (error) {
-        console.error("Lỗi tải GG Sheet:", error);
+        console.error("Lỗi nạp dữ liệu:", error);
         const local = localStorage.getItem('shot5_data');
         reportData = local ? JSON.parse(local) : [];
         renderTable();
     }
 
-    // Nút Thêm Dòng
     if (btnAdd) {
         btnAdd.onclick = () => {
             reportData.push({ 
@@ -154,8 +158,7 @@ function renderTable() {
     `).join('');
 }
 
-// --- CÁC HÀM CẬP NHẬT DỮ LIỆU ---
-
+// --- CẬP NHẬT Ô ---
 window.updateCell = function(idx, field, el) {
     reportData[idx][field] = el.innerText;
     localStorage.setItem('shot5_data', JSON.stringify(reportData));
@@ -164,14 +167,13 @@ window.updateCell = function(idx, field, el) {
 window.updateStatusCell = function(idx, el) {
     const newStatus = el.innerText.trim();
     reportData[idx]['status'] = newStatus;
-    // Đổi màu dòng ngay lập tức
     const parentRow = el.closest('tr');
     if (parentRow) parentRow.style = getRowStyle(newStatus);
     localStorage.setItem('shot5_data', JSON.stringify(reportData));
 };
 
 window.deleteRow = function(idx) {
-    if (confirm("Bạn có chắc chắn muốn xóa dòng này?")) {
+    if (confirm("Xác nhận xóa dòng này?")) {
         reportData.splice(idx, 1);
         saveAndRender();
     }
@@ -183,7 +185,6 @@ function saveAndRender() {
 }
 
 // --- ĐỒNG BỘ GOOGLE SHEETS ---
-
 window.syncToGoogleSheets = async function() {
     const btn = document.getElementById('btnSync');
     if (!btn) return;
@@ -199,14 +200,11 @@ window.syncToGoogleSheets = async function() {
         });
         
         if (response.ok) {
-            alert("Đã đồng bộ thành công với Google Sheets!");
+            alert("Đã đồng bộ thành công!");
             triggerUpdateTimestamp();
-        } else {
-            throw new Error("Lỗi Server");
         }
     } catch (e) {
-        console.error("Lỗi đồng bộ:", e);
-        alert("Lỗi kết nối Server! Vui lòng thử lại.");
+        alert("Lỗi kết nối Server!");
     } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
@@ -214,7 +212,7 @@ window.syncToGoogleSheets = async function() {
 };
 
 // ================================================================
-// 4. CÁC HÀM BỔ TRỢ (MÀU SẮC, THỜI GIAN, PDF)
+// 4. HÀM BỔ TRỢ (MÀU, THỜI GIAN, PDF)
 // ================================================================
 
 function getRowStyle(status) {
@@ -238,9 +236,7 @@ function getVNTime() {
 
 function displayLastUpdated() {
     const el = document.getElementById('last-updated');
-    if (el) {
-        el.innerText = localStorage.getItem('shot5_last_time') || "--:--";
-    }
+    if (el) el.innerText = localStorage.getItem('shot5_last_time') || "--:--";
 }
 
 function triggerUpdateTimestamp() {
@@ -251,31 +247,25 @@ function triggerUpdateTimestamp() {
 
 function handleExportPdf(btn) {
     if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
-        alert("Đang tải thư viện, vui lòng thử lại sau!");
-        return;
+        alert("Đang tải thư viện PDF, vui lòng đợi..."); return;
     }
-
     const element = document.getElementById('content-area');
-    const originalBtnHtml = btn.innerHTML;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+    const originalText = btn.innerHTML;
     btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
 
     html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" })
     .then(canvas => {
         const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        const imgWidth = canvas.width / 2;
-        const imgHeight = canvas.height / 2;
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
-            orientation: imgWidth > imgHeight ? 'l' : 'p',
+            orientation: canvas.width > canvas.height ? 'l' : 'p',
             unit: 'pt',
-            format: [imgWidth, imgHeight]
+            format: [canvas.width / 2, canvas.height / 2]
         });
-        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-        pdf.save('Unime-Full-Report.pdf');
-    })
-    .finally(() => {
-        btn.innerHTML = originalBtnHtml;
-        btn.disabled = false;
+        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width / 2, canvas.height / 2);
+        pdf.save('Unime-Report.pdf');
+    }).finally(() => {
+        btn.disabled = false; btn.innerHTML = originalText;
     });
 }
