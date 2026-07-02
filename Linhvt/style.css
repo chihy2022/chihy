@@ -243,9 +243,52 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 .content-body { flex-grow: 1; padding: 20px; overflow-y: auto; }
 
 /* 6. MODAL */
-.modal { display: none; position: fixed; z-index: 10002; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; backdrop-filter: blur(8px); }
-.modal-content { max-width: 90%; max-height: 90%; border-radius: 16px; }
-.close { position: absolute; top: 30px; right: 40px; color: #fff; font-size: 40px; cursor: pointer; }
+.modal {
+    display: none; /* JS sẽ đổi thành flex */
+    position: fixed;
+    z-index: 10005; /* Phải cao hơn tất cả mọi thứ */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9); /* Nền đen đậm hơn cho sang */
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(10px); /* Làm mờ nền đằng sau */
+    padding: 20px;
+}
+
+.modal-content {
+    max-width: 90%;
+    max-height: 90vh; /* Không bao giờ cao quá màn hình */
+    margin: auto;
+    display: block;
+    border-radius: 12px;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+    
+    /* QUAN TRỌNG: Giữ đúng tỉ lệ ảnh */
+    object-fit: contain; 
+    
+    /* Hiệu ứng hiện ra mượt mà */
+    animation: zoomIn 0.3s ease-out;
+}
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+/* Nút đóng X */
+.close {
+    position: absolute;
+    top: 25px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10006;
+    transition: 0.2s;
+}
+.close:hover { transform: scale(1.2); color: #ff4d4d; }
 
 
 /*SHOT5: BÁO CÁO TIẾN ĐỘ*/
