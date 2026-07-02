@@ -193,6 +193,7 @@ function renderTable() {
     
     tableBody.innerHTML = reportData.map((item, index) => {
         const formatT = (t) => (t || "").includes('T') ? t.split('T')[0] : (t || "");
+        
         return `
         <tr style="${getRowStyle(item.status)}">
             <td contenteditable="true" onblur="updateCell(${index}, 'session', this)">${item.session || ''}</td>
@@ -206,15 +207,55 @@ function renderTable() {
             <td contenteditable="true" onblur="updateStatusCell(${index}, this)">${item.status || ''}</td>
             <td contenteditable="true" onblur="updateCell(${index}, 'timeline', this)">${formatT(item.timeline)}</td>
             <td contenteditable="true" onblur="updateCell(${index}, 'actual', this)">${formatT(item.actual)}</td>
-            <td style="text-align:center;"><button class="btn-del-row" onclick="deleteRow(${index})">Xóa</button></td>
+            <td style="text-align:center;">
+                <button class="btn-trash" onclick="deleteRow(${index})" title="Xóa dòng này">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </td>
         </tr>
     `}).join('');
 }
 
+// HÀM XÓA CÓ BẢO MẬT BẰNG MÃ XÁC NHẬN
+window.deleteRow = function(idx) {
+    // 1. Thay confirm bằng prompt để hiện ô nhập chữ
+    const confirmCode = prompt("⚠️ CẢNH BÁO BẢO MẬT\n\nBạn đang thực hiện thao tác xóa dữ liệu vĩnh viễn.\nVui lòng nhập đúng mã để xác nhận:");
+
+    // 2. Kiểm tra mã nhập vào
+    if (confirmCode === "DELETERAW") {
+        reportData.splice(idx, 1); // Xóa trong mảng dữ liệu
+        renderTable();            // Vẽ lại bảng
+        alert("✅ Xác thực thành công! Dòng dữ liệu đã được xóa.");
+    } else if (confirmCode === null) {
+        // Người dùng bấm nút "Cancel" trên bảng thông báo
+        console.log("Hủy thao tác xóa.");
+    } else {
+        // Nhập sai mã
+        alert("❌ Mã xác nhận không đúng! Thao tác xóa bị từ chối để bảo vệ dữ liệu.");
+    }
+};
+
+// 3. Hệ thống màu sắc Status chuyên nghiệp (Dạng Pastel)
+function getRowStyle(status) {
+    const s = (status || "").toString().trim().toUpperCase();
+    switch (s) {
+        case 'DONE': 
+            return 'background-color: #f0fdf4; color: #166534; font-weight: 600;'; // Xanh lá Pastel
+        case 'PENDING': 
+        case 'PROCESS': 
+            return 'background-color: #fffbeb; color: #92400e; font-weight: 600;'; // Vàng cam Pastel
+        case 'REOPEN': 
+            return 'background-color: #fef2f2; color: #991b1b; font-weight: 600;'; // Đỏ nhạt Pastel
+        case 'OPEN':
+        case 'NEW':
+            return 'background-color: #eff6ff; color: #1e40af; font-weight: 600;'; // Xanh dương Pastel
+        default: 
+            return ''; 
+    }
+}
+
 window.updateCell = (idx, f, el) => { reportData[idx][f] = el.innerText; };
 window.updateStatusCell = (idx, el) => { reportData[idx]['status'] = el.innerText; renderTable(); };
-window.deleteRow = (idx) => { if(confirm("Xóa dòng?")) { reportData.splice(idx, 1); renderTable(); } };
-
 window.syncToGoogleSheets = async function() {
     const btn = document.getElementById('btnSync');
     if (!btn) return;
