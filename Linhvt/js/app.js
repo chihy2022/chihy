@@ -21,34 +21,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- HÀM TẢI TRANG CHI TIẾT (AJAX) ---
     async function loadPage(shotName) {
-        if (!contentArea) return;
-        contentArea.style.opacity = '0.5'; // Mờ nhẹ khi đang tải
+    const contentArea = document.getElementById('content-area');
+    if (!contentArea) return;
 
-        try {
-            const response = await fetch(`detail/${shotName}.html`);
-            if (!response.ok) throw new Error("Không tải được trang");
-            const html = await response.text();
-            
-            contentArea.innerHTML = html;
-            contentArea.style.opacity = '1';
+    // Bước 1: Làm mờ nhẹ trang cũ (không xóa ngay)
+    contentArea.style.opacity = '0.4'; 
 
-            // Khởi tạo logic cho từng shot
-            if (shotName === 'shot5') {
-                initProgressReport();
-            }
+    try {
+        // Bước 2: Bắt đầu tải trang mới từ server
+        const response = await fetch(`detail/${shotName}.html`);
+        if (!response.ok) throw new Error("Lỗi tải trang");
+        const html = await response.text();
 
-            // Gọi hàm init động (ví dụ initShot1())
-            const initFuncName = "init" + shotName.charAt(0).toUpperCase() + shotName.slice(1);
-            if (typeof window[initFuncName] === "function") {
-                window[initFuncName]();
-            }
-        } catch (err) {
-            console.error(err);
-            contentArea.innerHTML = "<h2>Lỗi tải nội dung.</h2>";
-            contentArea.style.opacity = '1';
+        // Bước 3: Chỉ khi tải xong HTML mới thay thế nội dung
+        // Việc này giúp khung hình không bao giờ bị sụp về 0px
+        contentArea.innerHTML = html;
+        
+        // Bước 4: Hiện rõ trang mới
+        contentArea.style.opacity = '1';
+
+        // Khởi tạo các logic đặc thù
+        if (shotName === 'shot5') {
+            initProgressReport();
         }
-    }
 
+        const initFuncName = "init" + shotName.charAt(0).toUpperCase() + shotName.slice(1);
+        if (typeof window[initFuncName] === "function") {
+            window[initFuncName]();
+        }
+
+    } catch (err) {
+        console.error(err);
+        contentArea.innerHTML = "<div class='loading-overlay'>Lỗi kết nối. Vui lòng thử lại.</div>";
+        contentArea.style.opacity = '1';
+    }
+}
     // --- XỬ LÝ CLICK MENU ---
     menuItems.forEach(item => {
         item.addEventListener('click', function() {
