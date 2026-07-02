@@ -85,12 +85,16 @@ document.addEventListener('DOMContentLoaded', () => {
     menuItems.forEach(item => {
         item.addEventListener('click', (e) => {
             const shot = item.getAttribute('data-shot');
+        const title = item.getAttribute('data-title');
             if (shot) {
                 menuItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                if (headerTitle) headerTitle.innerText = item.querySelector('span')?.innerText || "";
-                loadPage(shot);
+                const menuName = item.querySelector('span')?.textContent || "";
+            if (headerTitle) {
+                headerTitle.textContent = menuName; 
             }
+            loadPage(shot);
+        }
         });
     });
 
@@ -165,7 +169,7 @@ async function initProgressReport() {
     const btnAdd = document.getElementById('btnAddRow');
     if (!tableBody) return;
 
-    tableBody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i> Đang nạp dữ liệu từ Google Sheets...</td></tr>';
+    tableBody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i> Đang kết nối dữ liệu từ Google Sheets...</td></tr>';
 
     try {
         const response = await fetch(GOOGLE_SHEET_URL);
@@ -276,28 +280,65 @@ function getRowStyle(status) {
 }
 
 // ================================================================
-// 3. HÀM XUẤT PDF CHẤT LƯỢNG CAO
+// 3. HÀM XUẤT PDF CHẤT LƯỢNG CAO (HỖ TRỢ TRANG DÀI)
 // ================================================================
 async function handleExportPdf(btn) {
     if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
-        alert("Đang tải thư viện PDF..."); return;
+        alert("Đang tải thư viện PDF, vui lòng đợi trong giây lát...");
+        return;
     }
+
     const element = document.getElementById('content-area');
+    if (!element) return;
+
+    // Hiệu ứng nút bấm khi đang xử lý
     const originalText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tạo PDF...';
 
     try {
-        const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+        // Tạm thời đưa scroll về đầu để chụp đủ nội dung
+        const currentScroll = window.scrollY;
+        window.scrollTo(0, 0);
+
+        // Chụp màn hình vùng báo cáo với độ phân giải cao (scale: 2)
+        const canvas = await html2canvas(element, {
+            scale: 2,           // Tăng độ nét gấp 2 lần
+            useCORS: true,      // Hỗ trợ load ảnh từ server khác
+            backgroundColor: "#ffffff", // Ép nền trắng
+            logging: false,
+            height: element.scrollHeight, // Chụp toàn bộ chiều cao thực tế
+            windowHeight: element.scrollHeight
+        });
+
         const imgData = canvas.toDataURL('image/png', 1.0);
         const { jsPDF } = window.jspdf;
-        const imgWidth = canvas.width; const imgHeight = canvas.height;
-        const pdf = new jsPDF({ orientation: imgWidth > imgHeight ? 'l' : 'p', unit: 'px', format: [imgWidth, imgHeight] });
+
+        // Tính toán kích thước để PDF dài theo nội dung (Long PDF)
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        
+        // Tạo file PDF với kích thước tùy chỉnh vừa khít với Canvas
+        const pdf = new jsPDF({
+            orientation: imgWidth > imgHeight ? 'l' : 'p',
+            unit: 'px',
+            format: [imgWidth, imgHeight] // Đây là chỗ giúp PDF "dài vô tận" theo báo cáo
+        });
+
         pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        pdf.save(`Unime-Report.pdf`);
+        
+        // Đặt tên file có kèm ngày tháng
+        const date = new Date().toISOString().slice(0,10);
+        pdf.save(`Umer-dms-${date}.pdf`);
+
+        // Trả lại vị trí cuộn cũ
+        window.scrollTo(0, currentScroll);
+
     } catch (error) {
-        alert("Lỗi xuất PDF!");
+        console.error("Lỗi PDF:", error);
+        alert("Có lỗi xảy ra khi xuất PDF!");
     } finally {
-        btn.disabled = false; btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.innerHTML = originalText;
     }
 }
