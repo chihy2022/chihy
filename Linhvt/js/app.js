@@ -24,32 +24,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentArea = document.getElementById('content-area');
     if (!contentArea) return;
 
-    // Hiệu ứng mờ dần (đừng xóa nội dung cũ ngay)
-    contentArea.style.opacity = '0.5';
+    // Bước 1: Giảm độ mờ một chút để báo hiệu đang tải
+    contentArea.style.opacity = '0.7';
 
     try {
         const response = await fetch(`detail/${shotName}.html`);
         if (!response.ok) throw new Error("Lỗi mạng");
         const html = await response.text();
 
-        // CHỐNG GIẬT: Tải xong xuôi mới ghi đè
-        contentArea.innerHTML = html;
+        // Bước 2: Tạo một "container ảo" để trình duyệt parse HTML trước khi đưa vào DOM thật
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newContent = doc.body.innerHTML;
+
+        // Bước 3: Chỉ thay thế khi đã có nội dung mới, tránh hiện tượng trắng trang tạm thời
+        contentArea.innerHTML = newContent;
+        
+        // Đẩy scroll lên đầu trang để tránh bị giữ vị trí cũ
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Bước 4: Hiện nội dung lên mượt mà
         contentArea.style.opacity = '1';
 
-        // Khởi tạo logic sau khi nạp HTML
-        if (shotName === 'shot5') {
-            initProgressReport();
-        }
-
+        // Khởi tạo logic
+        if (shotName === 'shot5') initProgressReport();
+        
         const initFuncName = "init" + shotName.charAt(0).toUpperCase() + shotName.slice(1);
         if (typeof window[initFuncName] === "function") {
             window[initFuncName]();
         }
+
     } catch (err) {
         contentArea.style.opacity = '1';
         console.error("Vercel Load Error:", err);
     }
-    }
+}
     // --- XỬ LÝ CLICK MENU ---
     menuItems.forEach(item => {
         item.addEventListener('click', function() {
