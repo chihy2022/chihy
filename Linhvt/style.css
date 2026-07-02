@@ -264,24 +264,28 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
     line-height: 1.4;
 }
 
-/* Nút xóa màu đỏ giống ảnh */
-.btn-del-row {
-    background: #e53e3e;
-    color: white;
-    border: none;
-    padding: 4px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 11px;
-}
-.btn-del-row:hover { background: #c53030; }
-
 /* Hiệu ứng khi đang sửa ô */
 [contenteditable="true"]:focus {
     outline: 2px solid var(--primary-blue);
     background: #fff;
 }
 
+.btn-trash {
+    background: transparent;
+    border: none;
+    color: #e53e3e; /* Màu đỏ cảnh báo */
+    cursor: pointer;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-trash:hover {
+    background: #fff5f5;
+    color: #c53030;
+    transform: scale(1.1);
+}
 
 /* --- SHOT 2: ROADMAP & COMPONENTS --- */
 /* --- CHỐNG CHE TIÊU ĐỀ KHI SCROLL --- */
