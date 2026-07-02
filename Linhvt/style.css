@@ -907,27 +907,19 @@ td {
     overflow-y: auto; /* Chỉ cho phép cuộn bên trong khu vực này */
     background-color: #f5f7f9;
 }
-
-
-html {
-    overflow-y: scroll;
-}
-
-/* 2. Giữ độ cao cho vùng nội dung (chống giật dọc) */
 .content-area {
-    min-height: calc(100vh - 60px); /* Chiếm hết chiều cao màn hình trừ header */
-    display: block;
-    position: relative;
-    transition: opacity 0.2s ease-in-out; /* Hiệu ứng mờ dần mượt */
+    min-height: 80vh; /* Quan trọng: Giữ một khung tối thiểu để trang không bị sập chiều cao khi đang load */
+    transition: opacity 0.3s ease-in-out; /* Tạo hiệu ứng chuyển tiếp mềm hơn */
+    will-change: opacity; /* Tối ưu hóa hiệu năng render */
 }
 
-/* 3. Hiệu ứng Loading Spinner (tùy chọn để chuyên nghiệp hơn) */
-.loading-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 24px;
-    color: #0066CC;
-    z-index: 10;
+/* Chống giật thanh cuộn */
+html {
+    overflow-y: scroll; /* Luôn hiện thanh cuộn bên phải để tránh trang bị dịch ngang khi nội dung dài/ngắn */
+}
+
+/* Thêm hiệu ứng loading đơn giản nếu cần */
+.loading-active {
+    pointer-events: none; /* Khóa click khi đang load */
+    cursor: wait;
 }
