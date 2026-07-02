@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo cáo tiến độ</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<div class="report-container">
+
+    <div class="top-bar">
+        <h2>BÁO CÁO TIẾN ĐỘ DIGITAL</h2>
+        <!-- Dòng thông tin đối tác -->
+        <div class="actions">
+            <button id="btnAddRow" class="btn-add">Thêm dòng</button>
+            <button onclick="syncToGoogleSheets()" id="btnSync">Lưu lên Server</button>
+        </div>
+    </div>
+
+    <div class="table-scroll">
+
+        <table style=" font-size: 14px;">
+
+            <thead>
+
+            <tr style=" text-align: center;">
+                <th>SESSION</th>
+                <th>A/U</th>
+                <th>TASK</th>
+                <th>MÔ TẢ</th>
+                <th>ƯU TIÊN</th>
+                <th>KHÁC</th>
+                <th>GHI CHÚ</th>
+                <th>TIẾN ĐỘ</th>
+                <th>STATUS</th>
+                <th>TIMELINE</th>
+                <th>THỰC TẾ</th>
+                <th></th>
+            </tr>
+
+            </thead>
+
+            <tbody id="table-body">
+                <!-- Tạo 5 dòng trống để giữ chỗ cho bảng -->
+                <tr style="height: 400px;">
+                    <td colspan="12" style="text-align: center; vertical-align: middle;">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu từ Google Sheets...
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script src="../js/app.js"></script>
+
+</body>
+</html>
