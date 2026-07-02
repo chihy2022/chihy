@@ -100,10 +100,10 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
     font-size: 18px; color: var(--text-muted);
 }
 
-/* Chữ ở Group Header (TO VÀ ĐẬM) */
+/* Chữ ở Group Header */
 .header-main span {
-    font-size: 14px; /* Tăng size */
-    font-weight: 700; /* Đậm hơn */
+    font-size: 14px;
+    font-weight: 600;
     letter-spacing: 0.5px;
 }
 .header-right {
@@ -351,24 +351,9 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
     background: #fff; border-radius: 28px; padding: 40px;
     border: 1px solid #f0f0f0; transition: 0.3s;
 }
-
 /* Timeline & Sticky Mockup */
 .roadmap-flex-container { display: flex; gap: 40px; }
 .sticky-mockup { flex: 1; position: sticky; top: 120px; height: fit-content; }
-.timeline-container { flex: 1.5; position: relative; padding-left: 80px; }
-.vertical-dash-line { position: absolute; left: 95px; top: 0; bottom: 0; width: 2px; background: #f0f2f5; }
-
-.remark-item { display: flex; gap: 25px; margin-bottom: 40px; position: relative; z-index: 2; }
-.remark-date { width: 70px; text-align: right; padding-top: 15px; }
-.remark-date .m { display: block; font-size: 18px; font-weight: 800; color: var(--primary-blue); }
-.remark-date .y { font-size: 12px; color: #999; }
-
-.remark-marker { width: 14px; height: 14px; background: #fff; border: 3px solid #ddd; border-radius: 50%; margin-top: 22px; flex-shrink: 0; }
-.remark-item.active .remark-marker { border-color: var(--primary-blue); background: var(--primary-blue); box-shadow: 0 0 0 5px rgba(0, 102, 204, 0.1); }
-
-.remark-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 20px; padding: 25px; flex-grow: 1; cursor: pointer; transition: 0.3s; }
-.remark-card:hover { transform: translateX(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
-
 /* Bảng RACI chuyên nghiệp */
 .pro-raci-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
 .pro-raci-table th { background: transparent; padding: 15px; color: #888; font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
@@ -382,12 +367,7 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 .raci-badge.c { background: #fef3c7; color: #b45309; }
 .raci-badge.i { background: #f1f5f9; color: #475569; }lateX(5px); box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
 .badge-phase { font-size: 10px; font-weight: 800; color: var(--primary-blue); text-transform: uppercase; }
-.card-summary { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 13px; color: #888; }
 .pill-count { background: #f1f3f5; padding: 3px 10px; border-radius: 20px; font-weight: 700; color: #444; }
-
-.card-details { max-height: 0; overflow: hidden; transition: 0.4s ease; }
-.remark-item.active .card-details { max-height: 1000px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
-.img-in-card { width: 100%; border-radius: 10px; }
 
 /* Use Case & RACI */
 .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
@@ -455,4 +435,151 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
     position: relative;
     padding-bottom: 25px;
     /* border-bottom: 1px solid #f3f4f6; */ /* Có thể mở ra nếu muốn vạch ngăn cách các phần */
+}
+/* --- CONTAINER CHỨA TIMELINE --- */
+.timeline-container {
+    flex: 1.8;
+    position: relative;
+    padding-left: 0; /* Reset padding để tính toán chính xác */
+}
+
+/* --- ĐƯỜNG KẺ NÉT ĐỨT (TIMELINE LINE) --- */
+.vertical-dash-line {
+    position: absolute;
+    /* Căn chỉnh: lề trái 80px của date + 25px gap / 2 => Khoảng 107px */
+    left: 107px; 
+    top: 25px;   /* Bắt đầu từ tâm dấu mốc đầu tiên */
+    bottom: 25px; /* Kết thúc ở tâm dấu mốc cuối cùng */
+    width: 0;
+    /* Biến vạch kẻ thành nét đứt xịn */
+    border-left: 2px dashed #cbd5e1; 
+    z-index: 1;
+}
+
+/* --- TỪNG MỤC TRÊN TIMELINE --- */
+
+.card-summary { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 13px; color: #888; }
+.card-details { max-height: 0; overflow: hidden; transition: 0.4s ease; }
+.remark-item.active .card-details { max-height: 1000px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+.img-in-card { width: 100%; border-radius: 10px; }
+
+.remark-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: 50px; /* Tăng khoảng cách cho thoáng */
+    position: relative;
+    z-index: 2; /* Đè lên trên đường kẻ */
+}
+
+/* Cột ngày tháng */
+.remark-date {
+    width: 80px;
+    text-align: right;
+    padding-top: 12px;
+    flex-shrink: 0;
+}
+.remark-date .m { display: block; font-size: 18px; font-weight: 800; color: #1e293b; }
+.remark-date .y { font-size: 12px; color: #94a3b8; font-weight: 600; }
+
+/* --- DẤU CHẤM MỐC (MARKER) --- */
+.remark-marker {
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    /* Viền của dấu mốc */
+    border: 3px solid #cbd5e1; 
+    border-radius: 50%;
+    margin-top: 18px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 4px #fff; /* Tạo một vòng trắng bao quanh để "cắt" đường đứt đoạn */
+}
+
+/* Hiệu ứng khi Card đang được chọn hoặc di chuột vào */
+.remark-item.active .remark-marker {
+    border-color: var(--primary-blue);
+    background: var(--primary-blue);
+    box-shadow: 0 0 0 4px #fff, 0 0 0 8px rgba(0, 102, 204, 0.15);
+    transform: scale(1.2);
+}
+
+/* --- CARD NỘI DUNG --- */
+.remark-card {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 24px; /* Bo góc tròn trịa hơn */
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.remark-card:hover {
+    transform: translateX(10px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.06);
+    border-color: #e2e8f0;
+}
+
+/* Chỉnh lại các chữ bên trong card cho tinh tế */
+.remark-card h3 {
+    font-size: 19px;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 5px 0;
+}
+
+.card-summary {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+}
+/* --- TRẠNG THÁI 2: ĐANG THỰC HIỆN (DOING) --- */
+.remark-item.doing .remark-marker {
+    border-color: #22c55e;
+}
+.remark-item.doing .remark-card {
+    border-left: 5px solid #22c55e; /* Vạch xanh bên trái card cho đồng bộ */
+}
+.remark-item.doing .m { color: #166534; }
+
+/* --- TRẠNG THÁI 1: ĐÃ THỰC HIỆN (DONE) --- */
+.remark-item.done .remark-marker {
+    border-color: var(--primary-blue);
+    /* Hiệu ứng vòng tròn lan tỏa để báo hiệu đang chạy */
+    box-shadow: 0 0 0 4px #fff, 0 0 0 8px rgba(0, 102, 204, 0.2);
+    animation: pulse-blue 2s infinite;
+}
+.remark-item.done .remark-card {
+    border-left: 5px solid var(--primary-blue);
+    box-shadow: 0 10px 25px rgba(0, 102, 204, 0.1);
+}
+@keyframes pulse-blue {
+    0% { box-shadow: 0 0 0 0px rgba(0, 102, 204, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(0, 102, 204, 0); }
+    100% { box-shadow: 0 0 0 0px rgba(0, 102, 204, 0); }
+}
+
+/* --- TRẠNG THÁI 3: CHƯA THỰC HIỆN (TODO) --- */
+.remark-item.todo .remark-marker {
+    background: #fff;
+    border-color: #cbd5e1; /* Màu xám mờ */
+}
+.remark-item.todo .remark-card {
+    opacity: 0.7; /* Làm mờ nhẹ card để tập trung vào các phần đang chạy */
+    background: #f8fafc;
+    border-style: dashed; /* Viền nét đứt cho cảm giác chưa thành hình */
+}
+.remark-item.done .remark-date .m, 
+.remark-item.done .remark-card h3 {
+    color: #0066CC; /* Chữ màu xanh dương */
+}
+.remark-item.doing .remark-date .m, 
+.remark-item.doing .remark-card h3 {
+    color: #22c55e; /* Chữ màu xanh lá */
+}
+.remark-item.todo .remark-date .m, 
+.remark-item.todo .remark-card h3 {
+    color: #94a3b8; /* Chữ màu xám */
 }
