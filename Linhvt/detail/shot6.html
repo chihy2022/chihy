@@ -1,0 +1,495 @@
+<div id="shot6-content">
+
+<!-- ===================================================== -->
+<!-- SECTION 01 : EXECUTION ROADMAP -->
+<!-- ===================================================== -->
+
+<section id="execution-roadmap" class="shot6-section">
+
+    <div class="shot6-section-header">
+        <div class="shot6-section-number">01</div>
+
+        <div class="shot6-section-info">
+            <h2>Execution Roadmap</h2>
+            <p>Quy trình quản lý tồn kho POSM từ Import đến Dashboard.</p>
+        </div>
+    </div>
+
+    <div class="shot6-roadmap">
+
+        <!-- ================= Timeline ================= -->
+
+        <div class="shot6-timeline">
+
+            <div class="shot6-line"></div>
+
+            <div class="shot6-step active" data-step="1">
+
+                <div class="shot6-circle">
+                    <span>01</span>
+                </div>
+
+                <h4>Import Planout</h4>
+
+                <small>CDA</small>
+
+            </div>
+
+            <div class="shot6-step" data-step="2">
+
+                <div class="shot6-circle">
+                    <span>02</span>
+                </div>
+
+                <h4>Receive POSM</h4>
+
+                <small>NPP</small>
+
+            </div>
+
+            <div class="shot6-step" data-step="3">
+
+                <div class="shot6-circle">
+                    <span>03</span>
+                </div>
+
+                <h4>Inventory Check</h4>
+
+                <small>GSTB</small>
+
+            </div>
+
+            <div class="shot6-step" data-step="4">
+
+                <div class="shot6-circle">
+                    <span>04</span>
+                </div>
+
+                <h4>Update Stock</h4>
+
+                <small>IT</small>
+
+            </div>
+
+            <div class="shot6-step" data-step="5">
+
+                <div class="shot6-circle">
+                    <span>05</span>
+                </div>
+
+                <h4>Dashboard</h4>
+
+                <small>Manager</small>
+
+            </div>
+
+        </div>
+
+        <!-- ================= Detail ================= -->
+
+        <div class="shot6-detail">
+
+            <div class="shot6-detail-card">
+
+                <div class="shot6-detail-title">
+
+                    <h3>STEP 01 - Import Planout</h3>
+
+                    <span class="status">Completed</span>
+
+                </div>
+
+                <div class="shot6-detail-grid">
+
+                    <div class="detail-item">
+
+                        <label>Actor</label>
+
+                        <p>CDA</p>
+
+                    </div>
+
+                    <div class="detail-item">
+
+                        <label>Input</label>
+
+                        <p>Planout Excel File</p>
+
+                    </div>
+
+                    <div class="detail-item full">
+
+                        <label>Process</label>
+
+                        <ul>
+
+                            <li>Upload Planout File</li>
+
+                            <li>Validate dữ liệu</li>
+
+                            <li>Import vào hệ thống</li>
+
+                        </ul>
+
+                    </div>
+
+                    <div class="detail-item full">
+
+                        <label>Output</label>
+
+                        <p>POSM Database được cập nhật.</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- SECTION 02 : USE CASE POWERHOUSE -->
+<!-- ===================================================== -->
+
+<section id="use-case-powerhouse" class="shot6-section">
+
+    <div class="shot6-section-header">
+
+        <div class="shot6-section-number">02</div>
+
+        <div class="shot6-section-info">
+            <h2>Use Case Powerhouse</h2>
+            <p>Business actors and system interactions.</p>
+        </div>
+
+    </div>
+
+    <div class="shot6-usecase">
+
+        <!-- Left Actors -->
+
+        <div class="shot6-actors left">
+
+            <div class="actor-card" data-actor="cda">
+                <div class="actor-icon">👤</div>
+                <h4>CDA</h4>
+                <span>Planning Team</span>
+            </div>
+
+            <div class="actor-card" data-actor="npp">
+                <div class="actor-icon">🏬</div>
+                <h4>NPP</h4>
+                <span>Distributor</span>
+            </div>
+
+            <div class="actor-card" data-actor="gstb">
+                <div class="actor-icon">📦</div>
+                <h4>GSTB</h4>
+                <span>Inventory Staff</span>
+            </div>
+
+        </div>
+
+        <!-- System -->
+
+        <div class="shot6-system">
+
+            <div class="system-header">
+                <h3>WEB POSM SYSTEM</h3>
+                <p>Inventory Management Platform</p>
+            </div>
+
+            <div class="usecase-list">
+
+                <div class="usecase-item" id="uc-import">
+                    <span>📥</span>
+                    <p>Import Planout</p>
+                </div>
+
+                <div class="usecase-item" id="uc-receive">
+                    <span>📦</span>
+                    <p>Receive POSM</p>
+                </div>
+
+                <div class="usecase-item" id="uc-check">
+                    <span>📝</span>
+                    <p>Inventory Check</p>
+                </div>
+
+                <div class="usecase-item" id="uc-stock">
+                    <span>⚙️</span>
+                    <p>Update Stock</p>
+                </div>
+
+                <div class="usecase-item" id="uc-gap">
+                    <span>📊</span>
+                    <p>Calculate GAP</p>
+                </div>
+
+                <div class="usecase-item" id="uc-report">
+                    <span>📈</span>
+                    <p>Dashboard & Report</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Right Actors -->
+
+        <div class="shot6-actors right">
+
+            <div class="actor-card" data-actor="it">
+                <div class="actor-icon">💻</div>
+                <h4>IT</h4>
+                <span>System Admin</span>
+            </div>
+
+            <div class="actor-card" data-actor="manager">
+                <div class="actor-icon">👔</div>
+                <h4>Manager</h4>
+                <span>Business Owner</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Description -->
+
+    <div class="shot6-usecase-detail">
+
+        <div class="usecase-description">
+
+            <h3>Actor Responsibilities</h3>
+
+            <div class="responsibility-grid">
+
+                <div class="responsibility-card">
+                    <h4>CDA</h4>
+                    <ul>
+                        <li>Import Planout</li>
+                        <li>Validate Data</li>
+                    </ul>
+                </div>
+
+                <div class="responsibility-card">
+                    <h4>NPP</h4>
+                    <ul>
+                        <li>Receive POSM</li>
+                        <li>Confirm Quantity</li>
+                    </ul>
+                </div>
+
+                <div class="responsibility-card">
+                    <h4>GSTB</h4>
+                    <ul>
+                        <li>Inventory Check</li>
+                        <li>Update Inventory</li>
+                    </ul>
+                </div>
+
+                <div class="responsibility-card">
+                    <h4>IT</h4>
+                    <ul>
+                        <li>Update Stock</li>
+                        <li>Calculate GAP</li>
+                    </ul>
+                </div>
+
+                <div class="responsibility-card">
+                    <h4>Manager</h4>
+                    <ul>
+                        <li>View Dashboard</li>
+                        <li>Export Report</li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!-- ===================================================== -->
+<!-- SECTION 03 : RACI MATRIX -->
+<!-- ===================================================== -->
+
+<section id="raci-matrix" class="shot6-section">
+
+    <div class="shot6-section-header">
+
+        <div class="shot6-section-number">03</div>
+
+        <div class="shot6-section-info">
+            <h2>RACI Matrix</h2>
+            <p>Role Assignment & Responsibility Matrix</p>
+        </div>
+
+    </div>
+
+    <div class="shot6-matrix">
+
+        <table class="raci-table">
+
+            <thead>
+
+                <tr>
+
+                    <th width="30%">Activity</th>
+
+                    <th>CDA</th>
+
+                    <th>NPP</th>
+
+                    <th>GSTB</th>
+
+                    <th>IT</th>
+
+                    <th>Manager</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        <strong>Import Planout</strong>
+                        <small>Upload & Validate Planning File</small>
+                    </td>
+
+                    <td class="role ar">A/R</td>
+                    <td class="role i">I</td>
+                    <td class="role i">I</td>
+                    <td class="role c">C</td>
+                    <td class="role i">I</td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        <strong>Receive POSM</strong>
+                        <small>Confirm Received Quantity</small>
+                    </td>
+
+                    <td class="role i">I</td>
+                    <td class="role ar">A/R</td>
+                    <td class="role c">C</td>
+                    <td class="role i">I</td>
+                    <td class="role i">I</td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        <strong>Inventory Check</strong>
+                        <small>Verify Physical Inventory</small>
+                    </td>
+
+                    <td class="role i">I</td>
+                    <td class="role c">C</td>
+                    <td class="role ar">A/R</td>
+                    <td class="role i">I</td>
+                    <td class="role i">I</td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        <strong>Update Stock</strong>
+                        <small>Update Inventory Database</small>
+                    </td>
+
+                    <td class="role i">I</td>
+                    <td class="role i">I</td>
+                    <td class="role c">C</td>
+                    <td class="role ar">A/R</td>
+                    <td class="role i">I</td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        <strong>Calculate GAP</strong>
+                        <small>Compare Expected vs Actual</small>
+                    </td>
+
+                    <td class="role i">I</td>
+                    <td class="role i">I</td>
+                    <td class="role c">C</td>
+                    <td class="role ar">A/R</td>
+                    <td class="role i">I</td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        <strong>Dashboard & Report</strong>
+                        <small>Monitoring & Export</small>
+                    </td>
+
+                    <td class="role i">I</td>
+                    <td class="role i">I</td>
+                    <td class="role c">C</td>
+                    <td class="role r">R</td>
+                    <td class="role a">A</td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- Legend -->
+
+    <div class="raci-legend">
+
+        <div class="legend-item">
+            <span class="legend-box ar"></span>
+            <strong>A/R</strong>
+            <small>Accountable & Responsible</small>
+        </div>
+
+        <div class="legend-item">
+            <span class="legend-box a"></span>
+            <strong>A</strong>
+            <small>Accountable</small>
+        </div>
+
+        <div class="legend-item">
+            <span class="legend-box r"></span>
+            <strong>R</strong>
+            <small>Responsible</small>
+        </div>
+
+        <div class="legend-item">
+            <span class="legend-box c"></span>
+            <strong>C</strong>
+            <small>Consulted</small>
+        </div>
+
+        <div class="legend-item">
+            <span class="legend-box i"></span>
+            <strong>I</strong>
+            <small>Informed</small>
+        </div>
+
+    </div>
+
+</section>
