@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- F. KHỞI TẠO KHI MỞ WEB (GHI NHỚ TRANG) ---
     const savedShot = localStorage.getItem('currentShot') || 'shot1';
-    const savedTitle = localStorage.getItem('currentTitle') || 'Báo cáo tiến độ';
+    const savedTitle = localStorage.getItem('currentTitle') || 'BÁO CÁO TIẾN ĐỘ';
     if (headerTitle) headerTitle.textContent = savedTitle;
     
     // Set active cho sidebar theo trang đã lưu
@@ -353,3 +353,302 @@ async function handleExportPdf(btn) {
         btn.innerHTML = originalText;
     }
 }
+
+
+/* ======================================================
+   SHOT 6
+====================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    initTimeline();
+    initUseCase();
+    initMatrix();
+
+});
+
+
+/* ======================================================
+   TIMELINE
+====================================================== */
+
+function initTimeline() {
+
+    const steps = document.querySelectorAll(".shot6-step");
+
+    const title = document.querySelector(".shot6-detail-title h3");
+
+    const actor = document.querySelectorAll(".detail-item p")[0];
+    const input = document.querySelectorAll(".detail-item p")[1];
+    const process = document.querySelector(".detail-item ul");
+    const output = document.querySelectorAll(".detail-item p")[2];
+
+    const data = {
+
+        1:{
+
+            title:"STEP 01 - Import Planout",
+
+            actor:"CDA",
+
+            input:"Planout Excel File",
+
+            process:[
+                "Upload Planout",
+                "Validate Data",
+                "Import Database"
+            ],
+
+            output:"POSM Database"
+
+        },
+
+        2:{
+
+            title:"STEP 02 - Receive POSM",
+
+            actor:"NPP",
+
+            input:"POSM Delivery",
+
+            process:[
+                "Receive POSM",
+                "Verify Quantity",
+                "Confirm Receive"
+            ],
+
+            output:"Receive Quantity"
+
+        },
+
+        3:{
+
+            title:"STEP 03 - Inventory Check",
+
+            actor:"GSTB",
+
+            input:"Current Inventory",
+
+            process:[
+                "Count Inventory",
+                "Verify Stock",
+                "Submit Result"
+            ],
+
+            output:"Actual Stock"
+
+        },
+
+        4:{
+
+            title:"STEP 04 - Update Stock",
+
+            actor:"IT",
+
+            input:"Inventory Data",
+
+            process:[
+                "Update Stock",
+                "Calculate GAP",
+                "Sync Database"
+            ],
+
+            output:"Updated Inventory"
+
+        },
+
+        5:{
+
+            title:"STEP 05 - Dashboard",
+
+            actor:"Manager",
+
+            input:"Stock Data",
+
+            process:[
+                "View Dashboard",
+                "Export Report",
+                "Monitor KPI"
+            ],
+
+            output:"Business Report"
+
+        }
+
+    };
+
+
+
+    steps.forEach(step=>{
+
+        step.addEventListener("click",()=>{
+
+            steps.forEach(item=>item.classList.remove("active"));
+
+            step.classList.add("active");
+
+            const id = step.dataset.step;
+
+            const info = data[id];
+
+            title.innerHTML = info.title;
+
+            actor.innerHTML = info.actor;
+
+            input.innerHTML = info.input;
+
+            output.innerHTML = info.output;
+
+            process.innerHTML="";
+
+            info.process.forEach(item=>{
+
+                process.innerHTML += `<li>${item}</li>`;
+
+            });
+
+        });
+
+    });
+
+}
+
+
+
+/* ======================================================
+   USE CASE
+====================================================== */
+
+function initUseCase(){
+
+    const actors=document.querySelectorAll(".actor-card");
+
+    const items=document.querySelectorAll(".usecase-item");
+
+    const map={
+
+        cda:["uc-import"],
+
+        npp:["uc-receive"],
+
+        gstb:["uc-check"],
+
+        it:["uc-stock","uc-gap"],
+
+        manager:["uc-report"]
+
+    };
+
+    actors.forEach(actor=>{
+
+        actor.addEventListener("mouseenter",()=>{
+
+            items.forEach(i=>{
+
+                i.style.opacity=.25;
+
+                i.style.transform="scale(.95)";
+
+            });
+
+            map[actor.dataset.actor].forEach(id=>{
+
+                const el=document.getElementById(id);
+
+                if(el){
+
+                    el.style.opacity=1;
+
+                    el.style.transform="scale(1.05)";
+
+                    el.style.background="#0F62FE";
+
+                    el.style.color="#fff";
+
+                }
+
+            });
+
+        });
+
+        actor.addEventListener("mouseleave",()=>{
+
+            items.forEach(i=>{
+
+                i.style.opacity=1;
+
+                i.style.transform="scale(1)";
+
+                i.style.background="#fff";
+
+                i.style.color="#111";
+
+            });
+
+        });
+
+    });
+
+}
+
+
+
+/* ======================================================
+   MATRIX
+====================================================== */
+
+function initMatrix(){
+
+    const rows=document.querySelectorAll(".raci-table tbody tr");
+
+    rows.forEach(row=>{
+
+        row.addEventListener("mouseenter",()=>{
+
+            row.style.background="#EFF6FF";
+
+        });
+
+        row.addEventListener("mouseleave",()=>{
+
+            row.style.background="#fff";
+
+        });
+
+    });
+
+}
+
+
+
+/* ======================================================
+   OPTIONAL SCROLL ANIMATION
+====================================================== */
+
+const observer=new IntersectionObserver(entries=>{
+
+    entries.forEach(entry=>{
+
+        if(entry.isIntersecting){
+
+            entry.target.style.opacity=1;
+
+            entry.target.style.transform="translateY(0)";
+
+        }
+
+    });
+
+},{threshold:.2});
+
+document.querySelectorAll(".shot6-section").forEach(section=>{
+
+    section.style.opacity=0;
+
+    section.style.transform="translateY(30px)";
+
+    section.style.transition=".5s";
+
+    observer.observe(section);
+
+});
