@@ -563,12 +563,10 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 
 /* --- TRẠNG THÁI 3: CHƯA THỰC HIỆN (TODO) --- */
 .remark-item.todo .remark-marker {
-    background: #fff;
-    border-color: #cbd5e1; /* Màu xám mờ */
+    border-color: #696d72; /* Màu xám mờ */
 }
 .remark-item.todo .remark-card {
     opacity: 0.7; /* Làm mờ nhẹ card để tập trung vào các phần đang chạy */
-    background: #f8fafc;
     border-style: dashed; /* Viền nét đứt cho cảm giác chưa thành hình */
 }
 .remark-item.done .remark-date .m, 
