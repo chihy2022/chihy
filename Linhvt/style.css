@@ -180,11 +180,6 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* Đổ bóng nhẹ tạo độ nổi */
 }
 
-/* Quan trọng: Tránh Header che mất tiêu đề khi cuộn tới */
-.content-section {
-    scroll-margin-top: 100px;
-}
-
 .chevron-icon { font-size: 9px; transition: transform 0.3s; opacity: 0.5; }
 
 /* --- MENU CON (CHI TIẾT) KHÔNG ICON --- */
@@ -344,7 +339,7 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 /* --- CHỐNG CHE TIÊU ĐỀ KHI SCROLL --- */
 .content-section {
     scroll-margin-top: 100px; /* Cách header 100px khi cuộn tới */
-    margin-bottom: 60px;
+    margin-bottom: 20px;
 }
 
 .section-card {
@@ -580,4 +575,877 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 .remark-item.todo .remark-date .m, 
 .remark-item.todo .remark-card h3 {
     color: #94a3b8; /* Chữ màu xám */
+}
+
+
+/* ==========================================
+   SHOT 6
+========================================== */
+
+#shot6-content{
+
+    padding:30px;
+    display:flex;
+    flex-direction:column;
+    gap:40px;
+
+}
+
+
+/* ==========================================
+   SECTION
+========================================== */
+
+.shot6-section{
+
+    background:#fff;
+    border-radius:18px;
+    padding:30px;
+    box-shadow:0 8px 25px rgba(0,0,0,.06);
+
+}
+
+.shot6-section-header{
+
+    display:flex;
+    align-items:center;
+    gap:20px;
+    margin-bottom:35px;
+
+}
+
+.shot6-section-number{
+
+    width:64px;
+    height:64px;
+
+    border-radius:50%;
+
+    background:linear-gradient(135deg,#0F62FE,#3B82F6);
+
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:24px;
+    font-weight:700;
+
+}
+
+.shot6-section-info h2{
+
+    margin:0;
+    font-size:28px;
+    color:#1f2937;
+
+}
+
+.shot6-section-info p{
+
+    margin-top:6px;
+    color:#6b7280;
+    font-size:15px;
+
+}
+
+
+
+/* ==========================================
+   ROADMAP
+========================================== */
+
+.shot6-roadmap{
+
+    display:grid;
+    grid-template-columns:320px 1fr;
+    gap:30px;
+
+}
+
+
+/* ==========================================
+   TIMELINE
+========================================== */
+
+.shot6-timeline{
+
+    position:relative;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+.shot6-line{
+
+    position:absolute;
+
+    left:27px;
+    top:20px;
+    bottom:20px;
+
+    width:3px;
+
+    background:#dbeafe;
+
+}
+
+.shot6-step{
+
+    position:relative;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.shot6-step:hover{
+
+    transform:translateX(6px);
+
+}
+
+.shot6-circle{
+
+    width:56px;
+    height:56px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    border:4px solid #dbeafe;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-weight:700;
+
+    color:#0F62FE;
+
+    z-index:2;
+
+    transition:.3s;
+
+}
+
+.shot6-step.active .shot6-circle{
+
+    background:#0F62FE;
+
+    border-color:#0F62FE;
+
+    color:#fff;
+
+    box-shadow:0 10px 20px rgba(15,98,254,.25);
+
+}
+
+.shot6-step h4{
+
+    margin:0;
+    font-size:16px;
+    color:#111827;
+
+}
+
+.shot6-step small{
+
+    display:block;
+    margin-top:4px;
+    color:#6b7280;
+}
+
+
+
+/* ==========================================
+   DETAIL
+========================================== */
+
+.shot6-detail-card{
+
+    border-radius:18px;
+
+    border:1px solid #E5E7EB;
+
+    padding:28px;
+
+    background:#fafafa;
+
+}
+
+.shot6-detail-title{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+.shot6-detail-title h3{
+
+    margin:0;
+    color:#111827;
+
+}
+
+.status{
+
+    padding:6px 14px;
+
+    border-radius:30px;
+
+    background:#DCFCE7;
+
+    color:#15803D;
+
+    font-size:13px;
+    font-weight:600;
+
+}
+
+.shot6-detail-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:20px;
+
+}
+
+.detail-item{
+
+    background:#fff;
+
+    border-radius:12px;
+
+    padding:18px;
+
+    border:1px solid #ECECEC;
+
+}
+
+.detail-item.full{
+
+    grid-column:1 / -1;
+
+}
+
+.detail-item label{
+
+    display:block;
+
+    margin-bottom:10px;
+
+    color:#0F62FE;
+
+    font-weight:600;
+
+}
+
+.detail-item p{
+
+    margin:0;
+
+    color:#444;
+
+}
+
+.detail-item ul{
+
+    margin:0;
+    padding-left:20px;
+
+}
+
+.detail-item li{
+
+    margin:8px 0;
+
+}
+/* ==========================================
+   USE CASE
+========================================== */
+
+.shot6-usecase{
+
+    display:grid;
+    grid-template-columns:220px 1fr 220px;
+
+    gap:30px;
+
+    align-items:center;
+
+}
+
+
+
+/* ==========================================
+   ACTORS
+========================================== */
+
+.shot6-actors{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+.actor-card{
+
+    background:#fff;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:16px;
+
+    padding:20px;
+
+    text-align:center;
+
+    transition:.3s;
+
+    cursor:pointer;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.04);
+
+}
+
+.actor-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:#0F62FE;
+
+    box-shadow:0 15px 30px rgba(15,98,254,.12);
+
+}
+
+.actor-icon{
+
+    width:60px;
+    height:60px;
+
+    margin:auto;
+
+    margin-bottom:15px;
+
+    border-radius:50%;
+
+    background:#EFF6FF;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:28px;
+
+}
+
+.actor-card h4{
+
+    margin:0;
+
+    color:#111827;
+
+    font-size:18px;
+
+}
+
+.actor-card span{
+
+    color:#6B7280;
+
+    font-size:13px;
+
+}
+
+
+
+/* ==========================================
+   SYSTEM
+========================================== */
+
+.shot6-system{
+
+    position:relative;
+
+    border-radius:20px;
+
+    padding:30px;
+
+    background:linear-gradient(180deg,#F8FAFC,#FFFFFF);
+
+    border:1px solid #E5E7EB;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+
+}
+
+.system-header{
+
+    text-align:center;
+
+    margin-bottom:25px;
+
+}
+
+.system-header h3{
+
+    margin:0;
+
+    color:#0F62FE;
+
+    font-size:24px;
+
+}
+
+.system-header p{
+
+    margin-top:8px;
+
+    color:#6B7280;
+
+}
+
+
+
+/* ==========================================
+   USE CASE ITEMS
+========================================== */
+
+.usecase-list{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:18px;
+
+}
+
+.usecase-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:18px;
+
+    border-radius:14px;
+
+    background:#fff;
+
+    border:1px solid #E5E7EB;
+
+    transition:.3s;
+
+    cursor:pointer;
+
+}
+
+.usecase-item:hover{
+
+    background:#0F62FE;
+
+    color:#fff;
+
+    transform:translateY(-4px);
+
+}
+
+.usecase-item span{
+
+    font-size:26px;
+
+}
+
+.usecase-item p{
+
+    margin:0;
+
+    font-weight:600;
+
+}
+
+
+
+/* ==========================================
+   RESPONSIBILITY
+========================================== */
+
+.shot6-usecase-detail{
+
+    margin-top:35px;
+
+}
+
+.responsibility-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(5,1fr);
+
+    gap:18px;
+
+}
+
+.responsibility-card{
+
+    background:#fff;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:16px;
+
+    padding:20px;
+
+    transition:.3s;
+
+}
+
+.responsibility-card:hover{
+
+    transform:translateY(-5px);
+
+    border-color:#0F62FE;
+
+}
+
+.responsibility-card h4{
+
+    margin:0 0 15px;
+
+    color:#0F62FE;
+
+}
+
+.responsibility-card ul{
+
+    padding-left:18px;
+
+    margin:0;
+
+}
+
+.responsibility-card li{
+
+    margin-bottom:8px;
+
+    color:#4B5563;
+
+}
+/* ==========================================
+   RACI MATRIX
+========================================== */
+
+.shot6-matrix{
+
+    overflow-x:auto;
+
+}
+
+.raci-table{
+
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+
+}
+
+.raci-table thead{
+
+    background:#0F62FE;
+    color:#fff;
+
+}
+
+.raci-table th{
+
+    padding:18px;
+    text-align:center;
+    font-size:15px;
+    font-weight:600;
+
+}
+
+.raci-table td{
+
+    padding:18px;
+    border-bottom:1px solid #EEF2F7;
+    text-align:center;
+    transition:.25s;
+
+}
+
+.raci-table tbody tr{
+
+    transition:.25s;
+
+}
+
+.raci-table tbody tr:hover{
+
+    background:#F8FAFC;
+
+}
+
+.raci-table tbody td:first-child{
+
+    text-align:left;
+
+}
+
+.raci-table tbody td strong{
+
+    display:block;
+    color:#1F2937;
+    margin-bottom:6px;
+
+}
+
+.raci-table tbody td small{
+
+    color:#6B7280;
+
+}
+
+
+/* =============================
+   ROLE COLOR
+============================= */
+
+.role{
+
+    width:55px;
+    height:55px;
+
+    border-radius:12px;
+
+    font-weight:700;
+
+    color:#fff;
+
+}
+
+.ar{
+
+    background:#0F62FE;
+
+}
+
+.a{
+
+    background:#2563EB;
+
+}
+
+.r{
+
+    background:#16A34A;
+
+}
+
+.c{
+
+    background:#F59E0B;
+
+}
+
+.i{
+
+    background:#CBD5E1;
+    color:#334155;
+
+}
+
+
+/* ==========================================
+   LEGEND
+========================================== */
+
+.raci-legend{
+
+    margin-top:30px;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+}
+
+.legend-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    background:#fff;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:30px;
+
+    padding:10px 18px;
+
+}
+
+.legend-box{
+
+    width:18px;
+    height:18px;
+
+    border-radius:6px;
+
+}
+
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width:1200px){
+
+.shot6-roadmap{
+
+    grid-template-columns:1fr;
+
+}
+
+.shot6-usecase{
+
+    grid-template-columns:1fr;
+
+}
+
+.responsibility-grid{
+
+    grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media (max-width:768px){
+
+#shot6-content{
+
+    padding:20px;
+
+}
+
+.shot6-section{
+
+    padding:20px;
+
+}
+
+.shot6-section-header{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+}
+
+.shot6-detail-grid{
+
+    grid-template-columns:1fr;
+
+}
+
+.usecase-list{
+
+    grid-template-columns:1fr;
+
+}
+
+.responsibility-grid{
+
+    grid-template-columns:1fr;
+
+}
+
+.raci-table{
+
+    min-width:900px;
+
+}
+
+}
+
+
+/* ==========================================
+   ANIMATION
+========================================== */
+
+.shot6-section{
+
+    animation:fadeUp .5s ease;
+
+}
+
+@keyframes fadeUp{
+
+0%{
+
+    opacity:0;
+    transform:translateY(20px);
+
+}
+
+100%{
+
+    opacity:1;
+    transform:translateY(0);
+
+}
+
+}
+
+.actor-card,
+.usecase-item,
+.detail-item,
+.legend-item{
+
+    transition:.3s;
+
+}
+
+.actor-card:hover,
+.usecase-item:hover,
+.detail-item:hover{
+
+    box-shadow:0 12px 30px rgba(15,98,254,.12);
+
 }
