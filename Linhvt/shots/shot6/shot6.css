@@ -116,7 +116,7 @@
 
 .section-desc { font-size: 14px; color: #64748b; margin: 5px 0 25px 65px; font-weight: 500; }
 
-.boss-raci-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #f1f5f9; border-radius: 16px; overflow: hidden; }
+.boss-raci-table { width: 100%; margin-top: 20px; border-collapse: separate; border-spacing: 0; border: 1px solid #f1f5f9; border-radius: 16px; overflow: hidden; }
 
 /* Table Header */
 .boss-raci-table thead th { background: #fff; padding: 20px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
