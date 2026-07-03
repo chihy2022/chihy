@@ -1,3 +1,6 @@
+// ================================================================
+// 1. CẤU HÌNH & BIẾN TOÀN CỤC
+// ================================================================
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyH6XZJtaH0a4L8SVJ-7lcCiORY9EYrnnnw7jFCjprZ59ik6-wgRQELYJ5Q71gJZHSmRA/exec";
 let reportData = []; 
 
@@ -8,11 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuItems = document.querySelectorAll('.menu-item');
     const headerTitle = document.getElementById('dynamic-header-title');
     const groupHeaders = document.querySelectorAll('.group-header');
-    
-    // Vùng chứa 3 nút điều hướng trên header
-    const shot2NavGroup = document.getElementById('shot2-nav-group'); 
 
-    // --- 1. SIDEBAR CONTROL ---
+    // --- A. SIDEBAR CONTROL & PERSISTENCE ---
     if (toggleBtn) {
         toggleBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -37,10 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 2. AJAX PAGE LOADER (HIỆN NÚT HEADER & LOAD GG SHEET) ---
+    // --- B. HÀM TẢI TRANG AJAX VẠN NĂNG ---
     async function loadPage(shotName, targetHash = null) {
         if (!contentArea) return;
-        contentArea.style.opacity = '0.5';
+        contentArea.style.opacity = '0.4';
 
         try {
             const response = await fetch(`./detail/${shotName}.html`);
@@ -52,62 +52,62 @@ document.addEventListener('DOMContentLoaded', () => {
             contentArea.innerHTML = doc.body.innerHTML;
             contentArea.style.opacity = '1';
 
-            // A. LOGIC CHO SHOT 2 (HIỆN NAV & SCROLL SPY)
-            if (shotName === 'shot2') {
-                if (shot2NavGroup) shot2NavGroup.style.display = 'flex';
+            // 1. Tự động Quản lý TABS trên Header (Vạn năng cho Shot 2, 3, 4...)
+            document.querySelectorAll('.header-nav-container').forEach(nav => nav.style.display = 'none');
+            const currentNav = document.getElementById(`${shotName}-nav-group`);
+            if (currentNav) {
+                currentNav.style.display = 'flex';
                 initScrollSpy(); 
-            } else {
-                if (shot2NavGroup) shot2NavGroup.style.display = 'none';
             }
 
-            // B. LOGIC CHO SHOT 1 (QUAN TRỌNG: TẢI GOOGLE SHEETS)
+            // 2. Tải dữ liệu Google Sheets nếu là Shot 1 (Báo cáo tiến độ)
             if (shotName === 'shot1') {
-                initProgressReport(); // Kích hoạt nạp dữ liệu bảng
+                initProgressReport();
             }
 
-            // C. XỬ LÝ SCROLL NẾU CÓ HASH
+            // 3. Xử lý Smart Scroll
             if (targetHash) {
                 setTimeout(() => {
                     const targetEl = document.querySelector(targetHash);
                     if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth' });
-                }, 400);
+                }, 500);
             } else {
                 contentArea.scrollTo(0, 0);
             }
 
         } catch (err) {
             contentArea.style.opacity = '1';
-            console.error("Lỗi tải trang:", err);
+            console.error("Lỗi nạp trang:", err);
         }
     }
 
-    // --- 3. MENU CLICK ---
+    // --- C. XỬ LÝ CLICK SIDEBAR MENU ---
     menuItems.forEach(item => {
         item.addEventListener('click', (e) => {
             const shot = item.getAttribute('data-shot');
-        const title = item.getAttribute('data-title');
             if (shot) {
                 menuItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
+                
+                // Lấy textContent để không bị lỗi khi sidebar đóng
                 const menuName = item.querySelector('span')?.textContent || "";
-            if (headerTitle) {
-                headerTitle.textContent = menuName; 
+                if (headerTitle) headerTitle.textContent = menuName;
+
+                localStorage.setItem('currentShot', shot);
+                localStorage.setItem('currentTitle', menuName);
+                loadPage(shot);
             }
-            loadPage(shot);
-        }
         });
     });
 
-    // --- 4. ỦY THÁC SỰ KIỆN TOÀN APP ---
+    // --- D. ỦY THÁC SỰ KIỆN TOÀN APP (CLICK) ---
     document.addEventListener('click', (e) => {
-        // Roadmap Toggle
-        const remarkCard = e.target.closest('.remark-card');
-        if (remarkCard) {
-            remarkCard.closest('.remark-item')?.classList.toggle('active');
-        }
+        // 1. Roadmap Card Toggle
+        const card = e.target.closest('.remark-card');
+        if (card) card.closest('.remark-item')?.classList.toggle('active');
 
-        // Zoom Ảnh
-        if (e.target.id === 'myImg') {
+        // 2. Zoom Ảnh Modal
+        if (e.target.id === 'myImg' || e.target.classList.contains('img-in-card')) {
             const modal = document.getElementById("imageModal");
             if (modal) {
                 modal.style.display = "flex";
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) modal.style.display = "none";
         }
 
-        // LOGIC BẤM TAB HEADER
+        // 3. Header Tab Click (Cuộn mượt)
         const navLink = e.target.closest('.nav-btn');
         if (navLink) {
             e.preventDefault();
@@ -127,23 +127,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetEl = document.querySelector(hash);
             if (targetEl) {
                 targetEl.scrollIntoView({ behavior: 'smooth' });
-                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                navLink.parentElement.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
                 navLink.classList.add('active');
             }
         }
 
-        // Xuất PDF
+        // 4. Nút Xuất PDF
         if (e.target.closest('#exportPdfBtn')) {
             handleExportPdf(e.target.closest('#exportPdfBtn'));
         }
     });
 
-    // --- 5. HÀM THEO DÕI CUỘN TRANG ---
+    // --- E. HÀM THEO DÕI CUỘN TRANG (SCROLL SPY) ---
     function initScrollSpy() {
         const sections = document.querySelectorAll('.content-section');
         const navButtons = document.querySelectorAll('.nav-btn');
-        const options = { root: contentArea, rootMargin: '-10% 0px -80% 0px', threshold: 0 };
+        if (sections.length === 0) return;
 
+        const options = { root: contentArea, rootMargin: '-10% 0px -80% 0px', threshold: 0 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -158,9 +159,19 @@ document.addEventListener('DOMContentLoaded', () => {
         sections.forEach(section => observer.observe(section));
     }
 
-    loadPage('shot1');
-});
+    // --- F. KHỞI TẠO KHI MỞ WEB (GHI NHỚ TRANG) ---
+    const savedShot = localStorage.getItem('currentShot') || 'shot1';
+    const savedTitle = localStorage.getItem('currentTitle') || 'Báo cáo tiến độ';
+    if (headerTitle) headerTitle.textContent = savedTitle;
+    
+    // Set active cho sidebar theo trang đã lưu
+    menuItems.forEach(i => {
+        if(i.getAttribute('data-shot') === savedShot) i.classList.add('active');
+        else i.classList.remove('active');
+    });
 
+    loadPage(savedShot);
+});
 // ================================================================
 // 2. LOGIC BÁO CÁO TIẾN ĐỘ (SHOT 1)
 // ================================================================
