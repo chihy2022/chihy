@@ -20,11 +20,6 @@
 /* ================================================================
    BOSS DESIGN PIXEL PERFECT - SHOT 6
    ================================================================ */
-.section-header-top { margin-bottom: 40px; }
-.pro-title-s6 { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
-.step-num-s6 { width: 42px; height: 42px; background: #1a4e8a; color: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
-.pro-title-s6 h1 { font-size: 26px; font-weight: 800; color: #1e293b; margin: 0; }
-.section-header-top p { font-size: 14px; color: #64748b; margin: 0; max-width: 900px; line-height: 1.5; }
 
 /* 1. HORIZONTAL ROADMAP */
 .s6-roadmap-container {
