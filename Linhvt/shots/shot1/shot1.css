@@ -1,0 +1,77 @@
+/*SHOT1: BÁO CÁO TIẾN ĐỘ*/
+/* --- STYLE BẢNG TIẾN ĐỘ --- */
+.shot-title {
+    font-weight: 800; 
+    color: #1a4e8a; 
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.sub-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.btn-action {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-add { background: #28a745; }
+.btn-sync { background: #1a4e8a; }
+.btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.table-scroll {
+    overflow-x: auto; 
+    border: 1px solid #eee; 
+    border-radius: 8px;
+    background: white;
+}
+.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.modern-table th {
+    background: #1a4e8a;
+    color: white;
+    padding: 12px 8px;
+    text-transform: uppercase;
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.modern-table td {
+    padding: 10px 8px;
+    border: 1px solid #eee;
+    vertical-align: top;
+    line-height: 1.4;
+}
+
+[contenteditable="true"]:focus {
+    outline: 2px solid #1a4e8a;
+    background: #fdfdfd;
+}
+
+.btn-trash {
+    background: transparent;
+    border: none;
+    color: #e53e3e;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.btn-trash:hover {
+    background: #fff5f5;
+    color: #c53030;
+}
