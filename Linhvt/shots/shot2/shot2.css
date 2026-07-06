@@ -16,6 +16,10 @@
 }
 .pro-title h1 { font-size: 28px; font-weight: 800; color: #111827; margin: 0; }
 
+/* ================================================================
+   SECTION 1: TIMELINE
+   ================================================================ */
+
 /* Layout Ratio 4:6 FIXED (Chống giật Sidebar) */
 .roadmap-layout {
     display: grid;
@@ -30,6 +34,41 @@
     width: 100%; height: auto;
     filter: drop-shadow(0 20px 40px rgba(0,0,0,0.12));
     display: block;
+}
+
+.roadmap-flex-container {
+    display: grid;
+    grid-template-columns: 4fr 6fr; /* 40% - 60% */
+    gap: 40px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.sticky-mockup {
+    position: sticky;
+    top: 100px;
+    width: 100%;
+    /* GIỮ KHUNG TRẮNG CHO ĐIỆN THOẠI TRƯỚC KHI ẢNH HIỆN RA */
+    min-height: 600px; 
+    background: #fdfdfd; /* Tạo nền mờ nhẹ */
+    border-radius: 40px;
+}
+
+.floating-img {
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    /* KHÓA TỶ LỆ 9:19 (iPhone) ĐỂ KHÔNG NHẢY LAYOUT */
+    aspect-ratio: 9 / 19; 
+    display: block;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.1));
+}
+
+/* Card Timeline: Giữ cứng cột đầu để line không bị lệch */
+.remark-item {
+    display: grid;
+    grid-template-columns: 90px 50px 1fr;
+    margin-bottom: 40px;
 }
 
 /* Timeline Alignment */
