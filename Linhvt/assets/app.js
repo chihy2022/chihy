@@ -37,29 +37,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- B. HÀM TẢI TRANG AJAX TỐI ƯU (Nạp HTML + CSS + JS từng shot) ---
+
+
+// --- B. HÀM TẢI TRANG AJAX TỐI ƯU (CHỐNG GIẬT) ---
     async function loadPage(shotName, targetHash = null) {
         if (!contentArea) return;
-        contentArea.style.opacity = '0.4';
+
+        // 1. Tạm ẩn vùng nội dung để người dùng không thấy cảnh "vỡ trận" lúc đang load
+        contentArea.style.opacity = '0';
+        contentArea.style.transform = 'translateY(10px)'; // Thêm hiệu ứng trượt nhẹ
+        contentArea.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
 
         try {
-            // 1. Định nghĩa đường dẫn theo cấu trúc mới: shots/shot1/shot1.html
             const folderPath = `shots/${shotName}`;
             const htmlPath = `${folderPath}/${shotName}.html`;
             const cssPath  = `${folderPath}/${shotName}.css`;
             const jsPath   = `${folderPath}/${shotName}.js`;
 
-            // 2. Nạp nội dung HTML
-            const response = await fetch(htmlPath);
-            if (!response.ok) throw new Error(`Không tìm thấy file: ${htmlPath}`);
-            const html = await response.text();
-
-            // Chèn HTML vào vùng chứa
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            contentArea.innerHTML = doc.body.innerHTML;
-            contentArea.style.opacity = '1';
-
-            // 3. TỰ ĐỘNG NẠP CSS RIÊNG CỦA SHOT (Xóa cái cũ, thêm cái mới)
+            // 2. NẠP CSS TRƯỚC KHI NẠP HTML (Cực kỳ quan trọng)
             let shotLink = document.getElementById('shot-specific-style');
             if (shotLink) shotLink.remove();
             
@@ -69,42 +64,56 @@ document.addEventListener('DOMContentLoaded', () => {
             shotLink.href = cssPath;
             document.head.appendChild(shotLink);
 
-            // 4. TỰ ĐỘNG NẠP JS RIÊNG CỦA SHOT
-            let shotScript = document.getElementById('shot-specific-script');
-            if (shotScript) shotScript.remove();
+            // 3. Tải HTML
+            const response = await fetch(htmlPath);
+            if (!response.ok) throw new Error(`Không tìm thấy file: ${htmlPath}`);
+            const html = await response.text();
 
-            shotScript = document.createElement('script');
-            shotScript.id = 'shot-specific-script';
-            shotScript.src = jsPath;
-            document.body.appendChild(shotScript);
+            // 4. Xử lý qua DOMParser
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
 
-            // 5. Quản lý TABS trên Header (Giữ nguyên logic của bạn)
-            document.querySelectorAll('.header-nav-container').forEach(nav => nav.style.display = 'none');
-            const currentNav = document.getElementById(`${shotName}-nav-group`);
-            if (currentNav) {
-                currentNav.style.display = 'flex';
-                initScrollSpy(); 
-            }
+            // 5. Đợi CSS "ngấm" (khoảng 150ms) rồi mới hiện nội dung
+            setTimeout(() => {
+                contentArea.innerHTML = doc.body.innerHTML;
+                
+                // Hiện nội dung mượt mà
+                contentArea.style.opacity = '1';
+                contentArea.style.transform = 'translateY(0)';
 
-            // 6. Xử lý logic đặc biệt cho Shot 1 (Nếu bạn chưa chuyển code Google Sheet vào shot1.js)
-            if (shotName === 'shot1' && typeof initProgressReport === 'function') {
-                initProgressReport();
-            }
+                // Nạp JS riêng
+                let shotScript = document.getElementById('shot-specific-script');
+                if (shotScript) shotScript.remove();
+                shotScript = document.createElement('script');
+                shotScript.id = 'shot-specific-script';
+                shotScript.src = jsPath;
+                document.body.appendChild(shotScript);
 
-            // 7. Xử lý Smart Scroll (Giữ nguyên)
-            if (targetHash) {
-                setTimeout(() => {
+                // Các logic phụ (Tabs, ScrollSpy...)
+                document.querySelectorAll('.header-nav-container').forEach(nav => nav.style.display = 'none');
+                const currentNav = document.getElementById(`${shotName}-nav-group`);
+                if (currentNav) {
+                    currentNav.style.display = 'flex';
+                    if (typeof initScrollSpy === 'function') initScrollSpy(); 
+                }
+
+                // Logic Shot 1
+                if (shotName === 'shot1' && typeof initProgressReport === 'function') {
+                    initProgressReport();
+                }
+
+                // Xử lý Smart Scroll
+                if (targetHash) {
                     const targetEl = document.querySelector(targetHash);
                     if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth' });
-                }, 500);
-            } else {
-                contentArea.scrollTo(0, 0);
-            }
+                } else {
+                    contentArea.scrollTo(0, 0);
+                }
+            }, 150); 
 
         } catch (err) {
             contentArea.style.opacity = '1';
-            contentArea.innerHTML = `<div class="p-4 text-danger">Lỗi nạp trang: ${err.message}</div>`;
-            console.error(err);
+            contentArea.innerHTML = `<div class="p-4 text-danger">Lỗi: ${err.message}</div>`;
         }
     }
 
