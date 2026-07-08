@@ -24,7 +24,7 @@ async function initProgressReport() {
             window.reportData.push({ 
                 session: "Mới", au: "Unilever", task: "Nhiệm vụ mới", 
                 desc: "", priority: "3", other: "", note: "", 
-                progress: "0%", status: "NEW", timeline: "", actual: "" 
+                progress: "Request", status: "NEW", timeline: "", actual: "" 
             });
             renderTable();
         };
@@ -68,13 +68,33 @@ window.updateStatusCell = (idx, el) => {
     renderTable(); // Vẽ lại để cập nhật màu sắc status
 };
 
-// Xóa dòng
+// ================================================================
+// 3. LOGIC XỬ LÝ (BAO GỒM CẢNH BÁO BẢO MẬT)
+// ================================================================
+
+// HÀM XÓA CÓ BẢO MẬT BẰNG MÃ XÁC NHẬN (NHƯ LINH YÊU CẦU)
 window.deleteRow = function(idx) {
-    const confirmCode = prompt("⚠️ XÁC NHẬN XÓA\nNhập 'DELETERAW' để xác nhận xóa dòng này:");
+    // 1. Hiện prompt yêu cầu nhập mã
+    const confirmCode = prompt("⚠️ CẢNH BÁO BẢO MẬT\n\nBạn đang thực hiện thao tác xóa dữ liệu vĩnh viễn.\nVui lòng nhập đúng mã để xác nhận:");
+
+    // 2. Kiểm tra mã nhập vào
     if (confirmCode === "DELETERAW") {
-        window.reportData.splice(idx, 1);
-        renderTable();
+        window.reportData.splice(idx, 1); // Xóa trong mảng dữ liệu
+        renderTable();                    // Vẽ lại bảng
+        alert("✅ Xác thực thành công! Dòng dữ liệu đã được xóa.");
+    } else if (confirmCode === null) {
+        // Người dùng bấm nút "Cancel"
+        console.log("Hủy thao tác xóa.");
+    } else {
+        // Nhập sai mã hoặc để trống
+        alert("❌ Mã xác nhận không đúng! Thao tác xóa bị từ chối để bảo vệ dữ liệu.");
     }
+};
+
+window.updateCell = (idx, f, el) => { window.reportData[idx][f] = el.innerText; };
+window.updateStatusCell = (idx, el) => { 
+    window.reportData[idx]['status'] = el.innerText; 
+    renderTable(); 
 };
 
 // Style cho Status (Dùng bản Pastel đẹp)
