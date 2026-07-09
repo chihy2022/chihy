@@ -54,6 +54,8 @@
     border: 1px solid #eee;
     vertical-align: top;
     line-height: 1.4;
+    white-space: pre-wrap; 
+    word-wrap: break-word; /* Đảm bảo chữ không bị tràn ra ngoài ô */
 }
 
 [contenteditable="true"]:focus {
