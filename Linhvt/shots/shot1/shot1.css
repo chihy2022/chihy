@@ -116,5 +116,5 @@
 .modern-table td:nth-child(6),
 .modern-table td:nth-child(7) {
     text-align: left;
-    padding-left: 15px; /* Thêm chút khoảng trống bên trái cho dễ đọc */
+    padding-left: 10px; /* Thêm chút khoảng trống bên trái cho dễ đọc */
 }
