@@ -31,43 +31,6 @@ async function initProgressReport() {
     }
 }
 
-// Vẽ lại bảng dữ liệu
-window.renderTable = function() {
-    const tableBody = document.getElementById('table-body');
-    if (!tableBody || !window.reportData) return;
-    
-    tableBody.innerHTML = window.reportData.map((item, index) => {
-        const formatT = (t) => (t || "").includes('T') ? t.split('T')[0] : (t || "");
-        
-        return `
-        <tr style="${getRowStyle(item.status)}">
-            <td contenteditable="true" onblur="updateCell(${index}, 'session', this)">${item.session || ''}</td>
-            <td contenteditable="true" onblur="updateCell(${index}, 'au', this)">${item.au || ''}</td>
-            <td contenteditable="true" onblur="updateCell(${index}, 'task', this)">${item.task || ''}</td>
-            <td contenteditable="true" onblur="updateCell(${index}, 'desc', this)">${item.desc || ''}</td>
-            <td contenteditable="true" onblur="updateCell(${index}, 'priority', this)">${item.priority || ''}</td>
-            <td contenteditable="true" onblur="updateCell(${index}, 'other', this)">${item.other || ''}</td>
-            <td contenteditable="true" onblur="updateCell(${index}, 'note', this)">${item.note || ''}</td>
-            <td contenteditable="true" onblur="updateCell(${index}, 'progress', this)">${item.progress || ''}</td>
-            <td contenteditable="true" onblur="updateStatusCell(${index}, this)">${item.status || ''}</td>
-            <td contenteditable="true" onblur="updateCell(${index}, 'timeline', this)">${formatT(item.timeline)}</td>
-            <td contenteditable="true" onblur="updateCell(${index}, 'actual', this)">${formatT(item.actual)}</td>
-            <td style="text-align:center;">
-                <button class="btn-trash" onclick="deleteRow(${index})" title="Xóa dòng này">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
-            </td>
-        </tr>
-    `}).join('');
-};
-
-// Cập nhật ô dữ liệu
-window.updateCell = (idx, f, el) => { window.reportData[idx][f] = el.innerText; };
-window.updateStatusCell = (idx, el) => { 
-    window.reportData[idx]['status'] = el.innerText; 
-    renderTable(); // Vẽ lại để cập nhật màu sắc status
-};
-
 // ================================================================
 // 3. LOGIC XỬ LÝ (BAO GỒM CẢNH BÁO BẢO MẬT)
 // ================================================================
@@ -97,19 +60,114 @@ window.updateStatusCell = (idx, el) => {
     renderTable(); 
 };
 
-// Style cho Status (Dùng bản Pastel đẹp)
-function getRowStyle(status) {
+// ================================================================
+// LOGIC MÀU SẮC CHUẨN GOOGLE SHEETS (THEO HÌNH CỦA LINH)
+// ================================================================
+function getRowStyle(status, progress) {
     const s = (status || "").toString().trim().toUpperCase();
-    switch (s) {
-        case 'DONE': return 'background-color: #f0fdf4; color: #166534;';
-        case 'PENDING': 
-        case 'PROCESS': return 'background-color: #fffbeb; color: #92400e;';
-        case 'REOPEN': return 'background-color: #fef2f2; color: #991b1b;';
-        case 'OPEN':
-        case 'NEW': return 'background-color: #eff6ff; color: #1e40af;';
-        default: return ''; 
+    const p = (progress || "").toString().trim().toUpperCase();
+
+    // 1. ƯU TIÊN 1: CỘT TIẾN ĐỘ (PROGRESS - CỘT H)
+    // Nếu Tiến độ là "Triển khai" -> Màu Xanh dương nhạt
+    if (p.includes("TRIỂN KHAI") || p.includes("TRIEN KHAI")) {
+        return 'background-color: #dbeafe; color: #1e40af; font-weight: 600;'; 
     }
+
+    // 2. ƯU TIÊN 2: CỘT TRẠNG THÁI (STATUS - CỘT I)
+    
+    // CLOSE -> Màu Xám
+    if (s === 'CLOSE' || s === 'CLOSED' || p === 'CLOSE') {
+        return 'background-color: #f3f4f6; color: #4b5563; font-weight: 600;'; 
+    }
+
+    // PENDING -> Màu Đỏ nhạt
+    if (s === 'PENDING') {
+        return 'background-color: #fee2e2; color: #b91c1c; font-weight: 600;'; 
+    }
+
+    // OPEN -> Màu Vàng nhạt
+    if (s === 'OPEN') {
+        return 'background-color: #fef9c3; color: #854d0e; font-weight: 600;'; 
+    }
+
+    // REOPEN -> Màu Cam đào nhạt
+    if (s === 'REOPEN') {
+        return 'background-color: #ffedd5; color: #9a3412; font-weight: 600;'; 
+    }
+
+    // PHÂN TÍCH YÊU CẦU -> Màu Xanh lá nhạt
+    if (s === 'PHÂN TÍCH YÊU CẦU' || s === 'PHAN TICH YEU CAU') {
+        return 'background-color: #dcfce7; color: #166534; font-weight: 600;'; 
+    }
+
+    // CHƯA BẮT ĐẦU -> Màu Tím nhạt
+    if (s === 'CHƯA BẮT ĐẦU' || s === 'CHUA BAT DAU') {
+        return 'background-color: #f3e8ff; color: #6b21a8; font-weight: 600;'; 
+    }
+
+    return ''; 
 }
+
+// ================================================================
+// CẬP NHẬT HÀM RENDER ĐỂ TỰ ĐỘNG XUỐNG DÒNG (PRE-WRAP)
+// ================================================================
+
+window.renderTable = function() {
+    const tableBody = document.getElementById('table-body');
+    if (!tableBody || !window.reportData) return;
+    
+    // HÀM FIX LỆCH NGÀY CHUẨN GMT+7 (VIỆT NAM)
+    const formatT = (dateStr) => {
+        if (!dateStr) return "";
+        
+        let d = new Date(dateStr);
+        // Nếu dữ liệu không phải dạng Date chuẩn, trả về nguyên bản
+        if (isNaN(d.getTime())) return dateStr;
+
+        /**
+         * Bí quyết ở đây: 
+         * Không dùng split('T') nữa. 
+         * d.getDate(), d.getMonth() sẽ tự động lấy theo giờ máy tính (Việt Nam) 
+         * nên nó sẽ tự bù lại 7 tiếng bị thiếu.
+         */
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}`;
+    };
+
+    tableBody.innerHTML = window.reportData.map((item, index) => {
+        return `
+        <tr style="${getRowStyle(item.status, item.progress)}">
+            <td contenteditable="true" onblur="updateCell(${index}, 'session', this)">${item.session || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'au', this)">${item.au || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'task', this)">${item.task || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'desc', this)">${item.desc || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'priority', this)">${item.priority || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'other', this)">${item.other || ''}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'note', this)">${item.note || ''}</td>
+            <td contenteditable="true" onblur="updateProgressCell(${index}, this)">${item.progress || ''}</td>
+            <td contenteditable="true" onblur="updateStatusCell(${index}, this)">${item.status || ''}</td>
+            
+            <!-- Hiển thị ngày đã được fix GMT+7 -->
+            <td contenteditable="true" onblur="updateCell(${index}, 'timeline', this)">${formatT(item.timeline)}</td>
+            <td contenteditable="true" onblur="updateCell(${index}, 'actual', this)">${formatT(item.actual)}</td>
+            
+            <td style="text-align:center;">
+                <button class="btn-trash" onclick="deleteRow(${index})">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </td>
+        </tr>
+    `}).join('');
+};
+
+// Hàm cập nhật riêng cho Tiến độ để màu nhảy ngay lập tức
+window.updateProgressCell = (idx, el) => { 
+    window.reportData[idx]['progress'] = el.innerText; 
+    renderTable(); 
+};
 
 // Đồng bộ lên Google Sheets
 window.syncToGoogleSheets = async function() {
