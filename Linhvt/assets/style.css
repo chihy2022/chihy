@@ -103,7 +103,7 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 /* Chữ ở Group Header */
 .header-main span {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: 0.5px;
 }
 .header-right {
