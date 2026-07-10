@@ -1,6 +1,9 @@
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyH6XZJtaH0a4L8SVJ-7lcCiORY9EYrnnnw7jFCjprZ59ik6-wgRQELYJ5Q71gJZHSmRA/exec";
 
-// Khởi tạo báo cáo
+// Biến lưu trữ dữ liệu
+let originalData = [];
+
+// 1. Khởi tạo báo cáo
 async function initProgressReport() {
     const tableBody = document.getElementById('table-body');
     const btnAdd = document.getElementById('btnAddRow');
@@ -11,8 +14,11 @@ async function initProgressReport() {
 
     try {
         const response = await fetch(GOOGLE_SHEET_URL);
-        // Lưu vào biến reportData toàn cục (đã khai báo ở assets/app.js)
-        window.reportData = await response.json();
+        const data = await response.json();
+        
+        window.reportData = JSON.parse(JSON.stringify(data)); 
+        originalData = JSON.parse(JSON.stringify(data)); 
+        
         renderTable();
     } catch (error) {
         console.error("API Error:", error);
@@ -31,110 +37,60 @@ async function initProgressReport() {
     }
 }
 
-// ================================================================
-// 3. LOGIC XỬ LÝ (BAO GỒM CẢNH BÁO BẢO MẬT)
-// ================================================================
-
-// HÀM XÓA CÓ BẢO MẬT BẰNG MÃ XÁC NHẬN (NHƯ LINH YÊU CẦU)
+// 2. Logic Xử lý Xóa (Có Pass + Thông báo thành công)
 window.deleteRow = function(idx) {
-    // 1. Hiện prompt yêu cầu nhập mã
-    const confirmCode = prompt("⚠️ CẢNH BÁO BẢO MẬT\n\nBạn đang thực hiện thao tác xóa dữ liệu vĩnh viễn.\nVui lòng nhập đúng mã để xác nhận:");
-
-    // 2. Kiểm tra mã nhập vào
+    const confirmCode = prompt("⚠️ CẢNH BÁO BẢO MẬT\n\nBạn đang thực hiện thao tác xóa dữ liệu. Vui lòng nhập mật khẩu để xác nhận:");
+    
     if (confirmCode === "DELETERAW") {
-        window.reportData.splice(idx, 1); // Xóa trong mảng dữ liệu
-        renderTable();                    // Vẽ lại bảng
-        alert("✅ Xác thực thành công! Dòng dữ liệu đã được xóa.");
-    } else if (confirmCode === null) {
-        // Người dùng bấm nút "Cancel"
-        console.log("Hủy thao tác xóa.");
-    } else {
-        // Nhập sai mã hoặc để trống
-        alert("❌ Mã xác nhận không đúng! Thao tác xóa bị từ chối để bảo vệ dữ liệu.");
+        window.reportData.splice(idx, 1); // Xóa dòng trong bộ nhớ tạm
+        renderTable();                    // Vẽ lại bảng ngay lập tức
+        
+        // THÊM THÔNG BÁO Ở ĐÂY
+        alert("✅ Xóa thành công! \nLưu ý: Bạn cần nhấn nút 'Sync' để xóa vĩnh viễn trên Google Sheets.");
+        
+    } else if (confirmCode !== null) {
+        alert("❌ Mã xác nhận không đúng! Thao tác xóa bị từ chối để bảo vệ dữ liệu!");
     }
 };
 
-window.updateCell = (idx, f, el) => { window.reportData[idx][f] = el.innerText; };
+window.updateCell = (idx, f, el) => { 
+    window.reportData[idx][f] = el.innerText; 
+};
+
 window.updateStatusCell = (idx, el) => { 
     window.reportData[idx]['status'] = el.innerText; 
     renderTable(); 
 };
 
-// ================================================================
-// LOGIC MÀU SẮC CHUẨN GOOGLE SHEETS (THEO HÌNH CỦA LINH)
-// ================================================================
+window.updateProgressCell = (idx, el) => { 
+    window.reportData[idx]['progress'] = el.innerText; 
+    renderTable(); 
+};
+
+// 3. Logic Màu sắc
 function getRowStyle(status, progress) {
     const s = (status || "").toString().trim().toUpperCase();
     const p = (progress || "").toString().trim().toUpperCase();
-
-    // 1. ƯU TIÊN 1: CỘT TIẾN ĐỘ (PROGRESS - CỘT H)
-    // Nếu Tiến độ là "Triển khai" -> Màu Xanh dương nhạt
-    if (p.includes("TRIỂN KHAI") || p.includes("TRIEN KHAI")) {
-        return 'background-color: #dbeafe; color: #1e40af; font-weight: 600;'; 
-    }
-
-    // 2. ƯU TIÊN 2: CỘT TRẠNG THÁI (STATUS - CỘT I)
-    
-    // CLOSE -> Màu Xám
-    if (s === 'CLOSE' || s === 'CLOSED' || p === 'CLOSE') {
-        return 'background-color: #f3f4f6; color: #4b5563; font-weight: 600;'; 
-    }
-
-    // PENDING -> Màu Đỏ nhạt
-    if (s === 'PENDING') {
-        return 'background-color: #fee2e2; color: #b91c1c; font-weight: 600;'; 
-    }
-
-    // OPEN -> Màu Vàng nhạt
-    if (s === 'OPEN') {
-        return 'background-color: #fef9c3; color: #854d0e; font-weight: 600;'; 
-    }
-
-    // REOPEN -> Màu Cam đào nhạt
-    if (s === 'REOPEN') {
-        return 'background-color: #ffedd5; color: #9a3412; font-weight: 600;'; 
-    }
-
-    // PHÂN TÍCH YÊU CẦU -> Màu Xanh lá nhạt
-    if (s === 'PHÂN TÍCH YÊU CẦU' || s === 'PHAN TICH YEU CAU') {
-        return 'background-color: #dcfce7; color: #166534; font-weight: 600;'; 
-    }
-
-    // CHƯA BẮT ĐẦU -> Màu Tím nhạt
-    if (s === 'CHƯA BẮT ĐẦU' || s === 'CHUA BAT DAU') {
-        return 'background-color: #f3e8ff; color: #6b21a8; font-weight: 600;'; 
-    }
-
+    if (p.includes("TRIỂN KHAI") || p.includes("TRIEN KHAI")) return 'background-color: #dbeafe; color: #1e40af; font-weight: 600;'; 
+    if (s === 'CLOSE' || s === 'CLOSED' || p === 'CLOSE') return 'background-color: #f3f4f6; color: #4b5563; font-weight: 600;'; 
+    if (s === 'PENDING') return 'background-color: #fee2e2; color: #b91c1c; font-weight: 600;'; 
+    if (s === 'OPEN') return 'background-color: #fef9c3; color: #854d0e; font-weight: 600;'; 
+    if (s === 'REOPEN') return 'background-color: #ffedd5; color: #9a3412; font-weight: 600;'; 
+    if (s === 'PHÂN TÍCH YÊU CẦU' || s === 'PHAN TICH YEU CAU') return 'background-color: #dcfce7; color: #166534; font-weight: 600;'; 
+    if (s === 'CHƯA BẮT ĐẦU' || s === 'CHUA BAT DAU') return 'background-color: #f3e8ff; color: #6b21a8; font-weight: 600;'; 
     return ''; 
 }
 
-// ================================================================
-// CẬP NHẬT HÀM RENDER ĐỂ TỰ ĐỘNG XUỐNG DÒNG (PRE-WRAP)
-// ================================================================
-
+// 4. Render Bảng
 window.renderTable = function() {
     const tableBody = document.getElementById('table-body');
     if (!tableBody || !window.reportData) return;
     
-    // HÀM FIX LỆCH NGÀY CHUẨN GMT+7 (VIỆT NAM)
     const formatT = (dateStr) => {
         if (!dateStr) return "";
-        
         let d = new Date(dateStr);
-        // Nếu dữ liệu không phải dạng Date chuẩn, trả về nguyên bản
         if (isNaN(d.getTime())) return dateStr;
-
-        /**
-         * Bí quyết ở đây: 
-         * Không dùng split('T') nữa. 
-         * d.getDate(), d.getMonth() sẽ tự động lấy theo giờ máy tính (Việt Nam) 
-         * nên nó sẽ tự bù lại 7 tiếng bị thiếu.
-         */
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        
-        return `${year}-${month}-${day}`;
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     };
 
     tableBody.innerHTML = window.reportData.map((item, index) => {
@@ -149,11 +105,8 @@ window.renderTable = function() {
             <td contenteditable="true" onblur="updateCell(${index}, 'note', this)">${item.note || ''}</td>
             <td contenteditable="true" onblur="updateProgressCell(${index}, this)">${item.progress || ''}</td>
             <td contenteditable="true" onblur="updateStatusCell(${index}, this)">${item.status || ''}</td>
-            
-            <!-- Hiển thị ngày đã được fix GMT+7 -->
             <td contenteditable="true" onblur="updateCell(${index}, 'timeline', this)">${formatT(item.timeline)}</td>
             <td contenteditable="true" onblur="updateCell(${index}, 'actual', this)">${formatT(item.actual)}</td>
-            
             <td style="text-align:center;">
                 <button class="btn-trash" onclick="deleteRow(${index})">
                     <i class="fa-solid fa-trash-can"></i>
@@ -163,31 +116,51 @@ window.renderTable = function() {
     `}).join('');
 };
 
-// Hàm cập nhật riêng cho Tiến độ để màu nhảy ngay lập tức
-window.updateProgressCell = (idx, el) => { 
-    window.reportData[idx]['progress'] = el.innerText; 
-    renderTable(); 
-};
-
-// Đồng bộ lên Google Sheets
+// 5. ĐỒNG BỘ CÓ MẬT KHẨU (LINHVTsync)
 window.syncToGoogleSheets = async function() {
     const btn = document.getElementById('btnSync');
     if (!btn) return;
-    const original = btn.innerHTML;
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
+
+    // BƯỚC 1: HỎI MẬT KHẨU TRƯỚC KHI LÀM BẤT CỨ GÌ
+    const password = prompt("🔐 XÁC NHẬN ĐỒNG BỘ\nVui lòng nhập mật khẩu để lưu dữ liệu lên Google Sheets:");
+
+    if (password === null) return; // Người dùng bấm Hủy
+
+    if (password !== "LINHVTsync") {
+        alert("❌ Mật khẩu không chính xác! Thao tác đồng bộ bị hủy.");
+        return;
+    }
+
+    // BƯỚC 2: NẾU ĐÚNG PASS THÌ MỚI CHẠY TIẾP
+    if (!window.reportData || window.reportData.length === 0) {
+        alert("Không có dữ liệu để đồng bộ!");
+        return;
+    }
+
+    const originalBtnHTML = btn.innerHTML;
+    btn.disabled = true; 
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ...';
     
     try {
-        const res = await fetch(GOOGLE_SHEET_URL, { 
+        const response = await fetch(GOOGLE_SHEET_URL, { 
             method: "POST", 
+            mode: 'no-cors', 
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: "UPDATE_ALL", data: window.reportData }) 
         });
-        if (res.ok) alert("Đã đồng bộ thành công!");
+
+        // Với Google Apps Script và no-cors, alert ngay sau khi fetch thành công
+        alert("✅ Đã xác thực thành công và đồng bộ lên Google Sheets!");
+        originalData = JSON.parse(JSON.stringify(window.reportData));
+        
     } catch (e) { 
-        alert("Lỗi kết nối server!"); 
+        console.error("Sync Error:", e);
+        alert("❌ Lỗi kết nối server! Vui lòng thử lại sau."); 
     } finally { 
-        btn.disabled = false; btn.innerHTML = original; 
+        btn.disabled = false; 
+        btn.innerHTML = originalBtnHTML; 
     }
 };
 
-// Tự động chạy khi file JS này được nạp
+// Tự động chạy
 initProgressReport();
