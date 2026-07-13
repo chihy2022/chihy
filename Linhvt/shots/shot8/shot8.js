@@ -1,4 +1,4 @@
-const GGS_URL = "https://script.google.com/macros/s/AKfycbzU3e-kFQhKQQEQ_ivo--zKps6RZMdiT_xxuJn-bkYDnCjIkuQdkUTencAxCTMblC2ujw/exec?sheet=Goc_phanhoi";
+const GGS_URL = "https://script.google.com/macros/s/AKfycbw3YMIpDCpEPAq4uOZtoNwK1K0cblkTr1ZykUS3dxmJW4P9j1_Xr9PEYq_MZVrfjwWQwg/exec?sheet=Goc_phanhoi";
 let fbCategory = "APP";
 let fbFileData = "";
 let fbFileName = "";
@@ -61,28 +61,3 @@ window.submitFB = async () => {
     } catch (e) { alert("Lỗi gửi!"); }
     finally { btn.disabled = false; }
 };
-
-// 4. Render Bảng Phản hồi (Có hiện ảnh)
-async function loadFeedbackList() {
-    const res = await fetch(`${GGS_URL}?sheet=Goc_phanhoi`);
-    const list = await res.json();
-    const tbody = document.getElementById('feedback-table-body');
-    
-    tbody.innerHTML = list.map(item => {
-        const thumb = getDirectLink(item["Link"]);
-        return `
-            <tr>
-                <td>${new Date(item["Thời gian"]).toLocaleString('vi-VN')}</td>
-                <td><b>${item["Phân loại"]}</b></td>
-                <td>${item["Nội dung chi tiết"]}</td>
-                <td>${item["Mức độ"]}</td>
-                <td>
-                    ${thumb ? `<img src="${thumb}" class="img-thumb" onclick="window.open('${item["Link"]}')">` : "No File"}
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-// Chạy khi load trang
-loadFeedbackList();
