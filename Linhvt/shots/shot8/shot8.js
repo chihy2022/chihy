@@ -1,62 +1,88 @@
-const GGS_URL = "https://script.google.com/macros/s/AKfycbwAy0alQ6WVQEMazLAH-RIqVMCDTwrgZ7ekCbFrOxwxLF6samu_ucUfTeALBSVWxzMB0A/exec";
-let currentCat = "APP";
-let fBase64 = "";
-let fName = "";
+const GGS_URL = "https://script.google.com/macros/s/AKfycbzU3e-kFQhKQQEQ_ivo--zKps6RZMdiT_xxuJn-bkYDnCjIkuQdkUTencAxCTMblC2ujw/exec?sheet=Goc_phanhoi";
+let fbCategory = "APP";
+let fbFileData = "";
+let fbFileName = "";
 
-// 1. Đổi Tab
-window.changeCategory = function(type) {
-    currentCat = type;
-    document.getElementById('tabApp').classList.toggle('active', type === 'APP');
-    document.getElementById('tabPeople').classList.toggle('active', type === 'PEOPLE');
-    document.getElementById('areaApp').style.display = (type === 'APP') ? 'block' : 'none';
-    document.getElementById('areaPeople').style.display = (type === 'PEOPLE') ? 'block' : 'none';
+// 1. Chuyển đổi Link Drive sang Link Ảnh trực tiếp
+function getDirectLink(url) {
+    if (!url || !url.includes("drive.google.com")) return "";
+    const fileId = url.match(/[-\w]{25,}/);
+    return fileId ? `https://lh3.googleusercontent.com/d/${fileId[0]}` : "";
+}
+
+// 2. Xử lý UI Feedback
+window.switchFB = (cat) => {
+    fbCategory = cat;
+    document.getElementById('btnApp').classList.toggle('active', cat === 'APP');
+    document.getElementById('btnPeople').classList.toggle('active', cat === 'PEOPLE');
+    document.getElementById('boxApp').style.display = (cat === 'APP') ? 'block' : 'none';
+    document.getElementById('boxPeople').style.display = (cat === 'PEOPLE') ? 'block' : 'none';
 };
 
-// 2. Slider
-const sInput = document.getElementById('sevInput');
-const sText = document.getElementById('sevText');
-const lvls = ["Nhẹ", "Trung bình", "Nặng", "Nghiêm trọng"];
-if(sInput) sInput.oninput = function() { sText.innerText = lvls[this.value - 1]; };
+window.updateSev = (val) => {
+    const lvls = ["Nhẹ", "Trung bình", "Nặng", "Nghiêm trọng"];
+    document.getElementById('fbSevLabel').innerText = lvls[val - 1];
+};
 
-// 3. Xử lý File
-window.processFile = function() {
+window.onFileChange = () => {
     const file = document.getElementById('fbFile').files[0];
     if (file) {
-        if(file.size > 10*1024*1024) { alert("File quá lớn (>10MB)!"); return; }
-        fName = file.name;
-        document.getElementById('fileInfo').innerText = "📎 Đã chọn: " + fName;
+        fbFileName = file.name;
+        document.getElementById('fbFileName').innerText = "📎 " + file.name;
         const reader = new FileReader();
-        reader.onload = (e) => { fBase64 = e.target.result; };
+        reader.onload = (e) => fbFileData = e.target.result;
         reader.readAsDataURL(file);
     }
 };
 
-// 4. Gửi dữ liệu
-window.sendFeedback = async function() {
-    const btn = document.getElementById('btnSendFB');
-    const content = document.getElementById('fbContent').value;
-    if(!content.trim()) { alert("Vui lòng nhập nội dung!"); return; }
+// 3. Gửi Feedback
+window.submitFB = async () => {
+    const btn = document.getElementById('btnSubmitFB');
+    const content = document.getElementById('fbDesc').value;
+    if (!content.trim()) return alert("Vui lòng nhập nội dung!");
 
     const data = {
         type: "FEEDBACK",
-        category: currentCat === "APP" ? "Ứng dụng" : "Con người",
-        subject: (currentCat === "APP") ? document.getElementById('errType').value : document.getElementById('target').value,
-        severity: sText.innerText,
+        category: fbCategory === "APP" ? "Ứng dụng" : "Con người",
+        subject: (fbCategory === "APP") ? document.getElementById('fbErrorType').value : document.getElementById('fbTarget').value,
+        severity: document.getElementById('fbSevLabel').innerText,
         content: content,
         expectation: document.getElementById('fbExpect').value,
-        isAnonymous: document.getElementById('anonCheck').checked,
-        fileData: fBase64,
-        fileName: fName
+        isAnonymous: document.getElementById('fbAnon').checked,
+        fileData: fbFileData,
+        fileName: fbFileName
     };
 
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
-
+    btn.disabled = true; btn.innerText = "Đang gửi...";
     try {
-        // KHÔNG dùng mode: no-cors khi có upload file nặng
-        await fetch(GGS_URL, { method: "POST", body: JSON.stringify(data) });
-        alert("✅ Thành công!");
+        await fetch(GGS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(data) });
+        alert("✅ Đã gửi thành công!");
         location.reload();
-    } catch (e) {
-        alert("❌ Lỗi!");
-    } finally { btn.disabled = false; }
+    } catch (e) { alert("Lỗi gửi!"); }
+    finally { btn.disabled = false; }
 };
+
+// 4. Render Bảng Phản hồi (Có hiện ảnh)
+async function loadFeedbackList() {
+    const res = await fetch(`${GGS_URL}?sheet=Goc_phanhoi`);
+    const list = await res.json();
+    const tbody = document.getElementById('feedback-table-body');
+    
+    tbody.innerHTML = list.map(item => {
+        const thumb = getDirectLink(item["Link"]);
+        return `
+            <tr>
+                <td>${new Date(item["Thời gian"]).toLocaleString('vi-VN')}</td>
+                <td><b>${item["Phân loại"]}</b></td>
+                <td>${item["Nội dung chi tiết"]}</td>
+                <td>${item["Mức độ"]}</td>
+                <td>
+                    ${thumb ? `<img src="${thumb}" class="img-thumb" onclick="window.open('${item["Link"]}')">` : "No File"}
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Chạy khi load trang
+loadFeedbackList();
