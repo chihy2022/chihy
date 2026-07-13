@@ -1,69 +1,56 @@
-<div class="feedback-container-shot">
-    <div class="fb-card-main">
-        <div class="fb-card-header">
-            <h4>BẠN MUỐN PHẢN HỒI VỀ</h4>
+<!-- TAB 1: FORM GỬI PHẢN HỒI -->
+<div class="feedback-form-card">
+    <div class="fb-card-header"><h4>GỬI PHẢN HỒI HỆ THỐNG</h4></div>
+    <div class="fb-tabs-selector">
+        <button class="fb-tab-btn active" id="btnApp" onclick="switchFB('APP')">Ứng dụng</button>
+        <button class="fb-tab-btn" id="btnPeople" onclick="switchFB('PEOPLE')">Con người</button>
+    </div>
+    <div class="fb-card-body">
+        <div id="boxApp">
+            <label>Loại lỗi</label>
+            <select class="fb-input" id="fbErrorType">
+                <option>Lỗi hiển thị</option><option>Lỗi chức năng</option><option>Khác</option>
+            </select>
+        </div>
+        <div id="boxPeople" style="display:none">
+            <label>Đối tượng</label>
+            <input type="text" class="fb-input" id="fbTarget" placeholder="Tên bộ phận/cá nhân...">
         </div>
         
-        <div class="fb-tabs-row">
-            <div class="fb-tab-item active" id="tabApp" onclick="changeCategory('APP')">
-                <i class="fa-solid fa-laptop-code"></i>
-                <div><strong>Ứng dụng</strong><p>Lỗi, hiệu năng</p></div>
-            </div>
-            <div class="fb-tab-item" id="tabPeople" onclick="changeCategory('PEOPLE')">
-                <i class="fa-solid fa-users-gear"></i>
-                <div><strong>Con người</strong><p>Cách làm việc</p></div>
-            </div>
+        <label>Mức độ nghiêm trọng: <b id="fbSevLabel" style="color:#00599a">Trung bình</b></label>
+        <input type="range" min="1" max="4" value="2" class="fb-range" id="fbSevRange" oninput="updateSev(this.value)">
+        
+        <label>Nội dung chi tiết</label>
+        <textarea class="fb-input" id="fbDesc" rows="3"></textarea>
+        
+        <label>Đính kèm bằng chứng</label>
+        <div class="fb-upload-wrapper">
+            <input type="file" id="fbFile" accept="image/*,video/*" style="display:none" onchange="onFileChange()">
+            <button class="fb-btn-alt" onclick="document.getElementById('fbFile').click()"><i class="fa-solid fa-camera"></i> Chọn Ảnh/Video</button>
+            <span id="fbFileName" style="font-size:11px; color:green; margin-left:10px"></span>
         </div>
 
-        <div class="fb-body-form">
-            <div id="areaApp">
-                <label>Loại lỗi</label>
-                <select class="fb-input-field" id="errType">
-                    <option>Lỗi giao diện (hiển thị sai)</option>
-                    <option>Lỗi chức năng (không bấm được)</option>
-                    <option>Tốc độ xử lý chậm</option>
-                </select>
-            </div>
-            <div id="areaPeople" style="display: none;">
-                <label>Đối tượng phản hồi</label>
-                <input type="text" class="fb-input-field" id="target" placeholder="Tên hoặc bộ phận...">
-            </div>
+        <label>Mong muốn thay đổi</label>
+        <textarea class="fb-input" id="fbExpect" rows="2"></textarea>
 
-            <label>Mức độ nghiêm trọng: <span id="sevText">Trung bình</span></label>
-            <div class="fb-slider-group">
-                <input type="range" min="1" max="4" value="2" class="fb-range-input" id="sevInput">
-                <div class="fb-range-labels">
-                    <span>Nhẹ</span><span>Trung bình</span><span>Nặng</span><span>Nghiêm trọng</span>
-                </div>
-            </div>
-
-            <label>Nội dung chi tiết</label>
-            <textarea class="fb-input-field" id="fbContent" rows="4" placeholder="Mô tả sự việc..."></textarea>
-
-            <label>Đính kèm bằng chứng (Ảnh/Video)</label>
-            <div class="fb-upload-box">
-                <input type="file" id="fbFile" accept="image/*,video/*" style="display:none" onchange="processFile()">
-                <button class="fb-btn-upload" onclick="document.getElementById('fbFile').click()">
-                    <i class="fa-solid fa-camera"></i> Chọn Ảnh hoặc Video
-                </button>
-                <div id="fileInfo" class="fb-file-info"></div>
-            </div>
-
-            <label>Mong muốn thay đổi</label>
-            <textarea class="fb-input-field" id="fbExpect" rows="3" placeholder="Bạn mong muốn điều gì?"></textarea>
-
-            <div class="fb-footer-action">
-                <div class="fb-anon-toggle">
-                    <label class="fb-toggle">
-                        <input type="checkbox" id="anonCheck">
-                        <span class="fb-toggle-slider"></span>
-                    </label>
-                    <span>Gửi ẩn danh</span>
-                </div>
-                <button class="fb-btn-send" id="btnSendFB" onclick="sendFeedback()">
-                    <i class="fa-solid fa-paper-plane"></i> Gửi phản hồi
-                </button>
-            </div>
+        <div class="fb-footer">
+            <label class="fb-anon"><input type="checkbox" id="fbAnon"> Gửi ẩn danh</label>
+            <button class="btn-primary" id="btnSubmitFB" onclick="submitFB()"><i class="fa-solid fa-paper-plane"></i> Gửi ngay</button>
         </div>
     </div>
+</div>
+
+<!-- TAB 2: BẢNG DANH SÁCH PHẢN HỒI (Để xem kết quả và ảnh) -->
+<div class="report-table-container" style="margin-top:30px">
+    <div class="fb-card-header"><h4>DANH SÁCH PHẢN HỒI ĐÃ NHẬN</h4></div>
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Thời gian</th><th>Loại</th><th>Nội dung</th><th>Mức độ</th><th>Đính kèm (Ảnh)</th>
+            </tr>
+        </thead>
+        <tbody id="feedback-table-body">
+            <!-- Dữ liệu phản hồi sẽ render vào đây -->
+        </tbody>
+    </table>
 </div>
