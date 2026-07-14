@@ -1,32 +1,39 @@
+// ================================================================
+// DYNAMIC DASHBOARD ENGINE - UNIME SYSTEM
+// ================================================================
+
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggleBtn');
     const contentArea = document.getElementById('content-area');
     const headerTitle = document.getElementById('dynamic-header-title');
 
-    // --- A. SIDEBAR CONTROL ---
+    // --- A. SIDEBAR PERSISTENCE & CONTROL ---
     if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
             localStorage.setItem('sidebar-state', sidebar.classList.contains('collapsed') ? 'mini' : 'full');
         });
     }
-    if (localStorage.getItem('sidebar-state') === 'mini') sidebar.classList.add('collapsed');
 
-    // Mở/Đóng các Group Menu
+    if (localStorage.getItem('sidebar-state') === 'mini') {
+        sidebar.classList.add('collapsed');
+    }
+
+    // Xử lý mở/đóng Menu Groups
     document.querySelectorAll('.group-header').forEach(header => {
         header.addEventListener('click', () => {
             header.parentElement.classList.toggle('active');
         });
     });
 
-    // --- B. HÀM TẢI TRANG AJAX (DYNAMIC SHOT LOADER) ---
+    // --- B. HÀM TẢI SHOT ĐỘNG (Dynamic Loader) ---
     window.loadPage = async function(shotName) {
         if (!contentArea) return;
-        
-        // Hiệu ứng mượt mà khi đổi trang
+
+        // Hiệu ứng mượt mà khi đổi shot
         contentArea.style.opacity = '0';
-        contentArea.style.transform = 'translateY(10px)';
+        contentArea.style.transform = 'translateY(8px)';
         contentArea.style.transition = 'all 0.3s ease';
 
         try {
@@ -35,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const cssPath  = `${folderPath}/${shotName}.css`;
             const jsPath   = `${folderPath}/${shotName}.js`;
 
-            // 1. Nạp CSS riêng của Shot
+            // 1. Thay đổi CSS riêng của Shot
             let shotLink = document.getElementById('shot-specific-style');
             if (shotLink) shotLink.remove();
             shotLink = document.createElement('link');
@@ -44,17 +51,18 @@ document.addEventListener('DOMContentLoaded', () => {
             shotLink.href = cssPath;
             document.head.appendChild(shotLink);
 
-            // 2. Tải HTML
+            // 2. Tải HTML qua AJAX
             const response = await fetch(htmlPath);
-            if (!response.ok) throw new Error(`Không thấy file: ${htmlPath}`);
+            if (!response.ok) throw new Error(`Không tìm thấy file: ${htmlPath}`);
             const html = await response.text();
-            
+
+            // 3. Đợi tí cho mượt rồi nạp vào DOM
             setTimeout(() => {
                 contentArea.innerHTML = html;
                 contentArea.style.opacity = '1';
                 contentArea.style.transform = 'translateY(0)';
 
-                // 3. Nạp JS riêng của Shot
+                // 4. Nạp JS riêng của Shot
                 let shotScript = document.getElementById('shot-specific-script');
                 if (shotScript) shotScript.remove();
                 shotScript = document.createElement('script');
@@ -62,18 +70,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 shotScript.src = jsPath;
                 document.body.appendChild(shotScript);
 
-                // 4. Cập nhật Tiêu đề & Active Menu
+                // 5. Cập nhật UI Header & Menu Active
                 const activeItem = document.querySelector(`[data-shot="${shotName}"]`);
                 if (activeItem && headerTitle) {
                     headerTitle.textContent = activeItem.innerText.trim();
                 }
                 
+                // Lưu trạng thái trang hiện tại
                 localStorage.setItem('currentShot', shotName);
             }, 150);
 
         } catch (err) {
             contentArea.style.opacity = '1';
-            contentArea.innerHTML = `<div class="p-4 text-danger">Lỗi nạp Shot: ${err.message}</div>`;
+            contentArea.innerHTML = `<div class="p-4 text-danger">⚠️ Lỗi nạp nội dung: ${err.message}</div>`;
         }
     };
 
@@ -81,16 +90,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.menu-item[data-shot]').forEach(item => {
         item.addEventListener('click', () => {
             const shot = item.getAttribute('data-shot');
-            document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-            window.loadPage(shot);
+            if (shot) {
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                window.loadPage(shot);
+            }
         });
     });
 
-    // --- D. ỦY THÁC SỰ KIỆN TOÀN APP (CLICK) ---
+    // --- D. GLOBAL EVENT DELEGATION (IMAGE & PDF & ACCORDION) ---
     document.addEventListener('click', (e) => {
         
-        // 1. Xem ảnh to (Modal)
+        // 1. Phóng to ảnh (Modal)
         if (e.target.id === "myImg" || e.target.classList.contains("img-in-card")) {
             const modal = document.getElementById("imageModal");
             if (modal) {
@@ -106,29 +117,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // 3. Nút Xuất PDF (FIX LỖI TẠI ĐÂY)
+        // 3. Nút Xuất PDF (Header)
         const exportBtn = e.target.closest("#exportPdfBtn");
         if (exportBtn) {
             handleExportPdf(exportBtn);
             return;
         }
 
-        // 4. Accordion (Báo cáo tiến độ)
-        const card = e.target.closest(".remark-card, .timeline-card");
-        if (card) {
-            const item = card.closest(".remark-item, .timeline-item");
-            if (item) {
-                item.classList.toggle("active");
-            }
+        // 4. Logic Accordion (Báo cáo tiến độ)
+        const accordionToggle = e.target.closest(".remark-card, .timeline-card");
+        if (accordionToggle) {
+            const parentItem = accordionToggle.closest(".remark-item, .timeline-item");
+            if (parentItem) parentItem.classList.toggle("active");
         }
     });
-
-    // Tự động load trang cũ khi F5 (Sau khi đã Login)
-    const savedShot = localStorage.getItem('currentShot');
-    const isLoggedIn = !document.getElementById('login-overlay') || document.getElementById('login-overlay').style.display === 'none';
-    if (savedShot && isLoggedIn) {
-        window.loadPage(savedShot);
-    }
 });
 
 // ================================================================
