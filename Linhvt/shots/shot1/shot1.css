@@ -23,7 +23,7 @@
 }
 
 .btn-add { background: #28a745; }
-.btn-sync { background: #1a4e8a; }
+.btn-sync {background: var(--primary-gradient);box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3); transition: 0.3s; }
 .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
 
 .table-scroll {
