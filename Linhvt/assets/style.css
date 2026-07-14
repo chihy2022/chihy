@@ -373,59 +373,95 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
     to { transform: scale(1) translateY(0); }
 }
 
-/* 1. Mặc định ẩn sạch menu và group khi trang mới load */
-.menu-item, .menu-group, .main-header, .content-body {
+/* MẶC ĐỊNH ẨN TOÀN BỘ ĐỂ CHỐNG NHÁY */
+.menu-item, .menu-group, .main-header, .content-body, .sidebar-footer {
     display: none !important;
 }
 
-/* 2. Giao diện màn hình Login */
+/* MÀN HÌNH LOGIN */
 #login-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background: #f4f7f9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    font-family: 'Segoe UI', sans-serif;
+    display: flex; justify-content: center; align-items: center;
+    z-index: 10000; font-family: 'Be Vietnam Pro', sans-serif;
 }
-
 .login-box {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    text-align: center;
-    width: 350px;
+    background: white; padding: 40px; border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    text-align: center; width: 380px;
 }
-
-.login-box img { width: 80px; margin-bottom: 20px; }
-.login-box h2 { color: #00599a; font-size: 1.5rem; margin-bottom: 10px; }
-.login-box p { color: #666; font-size: 0.9rem; margin-bottom: 25px; }
-
+.login-box img { width: 90px; margin-bottom: 20px; }
+.login-box h2 { color: #00599a; font-weight: 700; margin-bottom: 30px; font-size: 1.4rem; }
 .login-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    outline: none;
-    box-sizing: border-box;
-    text-align: center;
-    font-size: 1.1rem;
-    letter-spacing: 2px;
+    width: 100%; padding: 12px; margin-bottom: 20px;
+    border: 1px solid #ddd; border-radius: 10px;
+    text-align: center; font-size: 1.1rem; outline: none;
 }
-
 .btn-login {
-    width: 100%;
-    background: #00599a;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
+    width: 100%; background: #00599a; color: white; border: none;
+    padding: 14px; border-radius: 10px; font-weight: bold; cursor: pointer;
 }
 
-.btn-login:hover { background: #004070; }
+/* Container ở đáy sidebar */
+.sidebar-footer {
+    display: none !important; /* Mặc định ẩn để JS xử lý hiện sau login */
+    padding: 10px;
+    margin-top: auto; /* Đẩy xuống đáy */
+}
+
+/* Khung User Card */
+.user-account-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.user-account-card:hover {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
+}
+
+/* Avatar nhỏ */
+.user-avatar-small {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.user-avatar-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+/* Chữ Email/ID */
+.user-data {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-email {
+    font-size: 13px;
+    color: #444;
+    font-weight: 500;
+}
+
+/* Khi Sidebar thu nhỏ (Collapsed) */
+.sidebar.collapsed .user-data {
+    display: none;
+}
+.sidebar.collapsed .user-account-card {
+    justify-content: center;
+    padding: 8px;
+}
