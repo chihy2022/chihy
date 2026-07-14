@@ -1,77 +1,71 @@
-<div class="unime-fb-wrapper">
-    <div class="fb-goal-card">
-        <h5 class="fb-goal-title">BẠN MUỐN PHẢN HỒI VỀ</h5>
+<div class="fb-container-inner">
+    <div class="fb-main-card">
+        <h5 class="fb-inner-title">BẠN MUỐN PHẢN HỒI VỀ</h5>
 
-        <!-- Khối chọn loại (Dùng ID btnApp, btnPeople và hàm switchFB từ JS của bạn) -->
-        <div class="fb-tab-row">
-            <div class="fb-tab-box active" id="btnApp" onclick="switchFB('APP')">
+        <div class="fb-tabs-row">
+            <div class="fb-tab-item active" id="btnApp" onclick="switchFB('APP')">
                 <div class="fb-tab-icon icon-blue"><i class="fa-regular fa-calendar-check"></i></div>
                 <div class="fb-tab-text">
                     <strong>Ứng dụng</strong>
-                    <span>Lỗi, giao diện, hiệu năng</span>
+                    <span>Lỗi, hiệu năng</span>
                 </div>
             </div>
-            <div class="fb-tab-box" id="btnPeople" onclick="switchFB('PEOPLE')">
+            <div class="fb-tab-item" id="btnPeople" onclick="switchFB('PEOPLE')">
                 <div class="fb-tab-icon icon-pink"><i class="fa-solid fa-users-viewfinder"></i></div>
                 <div class="fb-tab-text">
                     <strong>Con người</strong>
-                    <span>Đồng nghiệp, cách làm việc</span>
+                    <span>Cách làm việc</span>
                 </div>
             </div>
         </div>
 
-        <div class="fb-form-main">
-            <!-- Khối Ứng dụng (ID boxApp) -->
+        <div class="fb-form-fields">
             <div id="boxApp">
                 <label class="fb-label">Loại lỗi</label>
-                <select class="fb-input-select" id="fbErrorType">
-                    <option value="Lỗi giao diện (hiển thị sai)">Lỗi giao diện (hiển thị sai)</option>
-                    <option value="Lỗi chức năng">Lỗi chức năng</option>
-                    <option value="Tốc độ xử lý chậm">Tốc độ xử lý chậm</option>
+                <select class="fb-input" id="fbErrorType">
+                    <option>Lỗi giao diện (hiển thị sai)</option>
+                    <option>Lỗi chức năng (không bấm được)</option>
+                    <option>Tốc độ xử lý chậm</option>
                 </select>
             </div>
 
-            <!-- Khối Con người (ID boxPeople) -->
             <div id="boxPeople" style="display: none;">
                 <label class="fb-label">Đối tượng phản hồi</label>
-                <input type="text" class="fb-input-text" id="fbTarget" placeholder="Tên, vai trò hoặc bộ phận...">
+                <input type="text" class="fb-input" id="fbTarget" placeholder="Tên hoặc bộ phận...">
             </div>
 
-            <!-- Mức độ (ID fbSevRange, fbSevLabel và hàm updateSev) -->
             <label class="fb-label">Mức độ nghiêm trọng: <span id="fbSevLabel">Trung bình</span></label>
-            <div class="fb-slider-container">
-                <input type="range" min="1" max="4" value="2" class="fb-range-slider" id="fbSevRange" oninput="updateSev(this.value)">
+            <div class="fb-slider-area">
+                <input type="range" min="1" max="4" value="2" class="fb-range" id="fbSevRange" oninput="updateSev(this.value)">
                 <div class="fb-range-labels">
                     <span>Nhẹ</span><span>Trung bình</span><span>Nặng</span><span>Nghiêm trọng</span>
                 </div>
             </div>
 
-            <label class="fb-label">Mô tả chi tiết</label>
-            <textarea class="fb-input-text" id="fbDesc" rows="3" placeholder="Mô tả sự việc bạn gặp phải..."></textarea>
+            <label class="fb-label">Nội dung chi tiết sự việc</label>
+            <textarea class="fb-input" id="fbDesc" rows="3" placeholder="Mô tả sự việc bạn gặp phải..."></textarea>
 
-            <!-- File (ID fbFile, fbFileName và hàm onFileChange) -->
             <label class="fb-label">Đính kèm bằng chứng (Ảnh/Video)</label>
             <div class="fb-upload-box">
                 <input type="file" id="fbFile" accept="image/*,video/*" style="display:none" onchange="onFileChange()">
                 <button class="fb-upload-btn" type="button" onclick="document.getElementById('fbFile').click()">
                     <i class="fa-solid fa-camera"></i> Chọn Ảnh/Video chụp màn hình
                 </button>
-                <div id="fbFileName" class="fb-file-name-info"></div>
+                <div id="fbFileName" class="fb-file-info"></div>
             </div>
 
             <label class="fb-label">Bạn mong muốn điều gì thay đổi?</label>
-            <textarea class="fb-input-text" id="fbExpect" rows="2" placeholder="Ví dụ: điều chỉnh quy trình làm việc..."></textarea>
+            <textarea class="fb-input" id="fbExpect" rows="2" placeholder="Ví dụ: điều chỉnh quy trình..."></textarea>
 
-            <!-- Footer (ID fbAnon, btnSubmitFB và hàm submitFB) -->
-            <div class="fb-footer-row">
-                <div class="fb-anon-check">
+            <div class="fb-footer-action">
+                <div class="fb-anon-toggle">
                     <label class="fb-switch">
                         <input type="checkbox" id="fbAnon">
                         <span class="fb-slider-round"></span>
                     </label>
                     <span>Gửi ẩn danh</span>
                 </div>
-                <button class="fb-btn-send" id="btnSubmitFB" onclick="submitFB()">
+                <button class="fb-send-btn" id="btnSubmitFB" onclick="submitFB()">
                     <i class="fa-solid fa-paper-plane"></i> Gửi phản hồi
                 </button>
             </div>
