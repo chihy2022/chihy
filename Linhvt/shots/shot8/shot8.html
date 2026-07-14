@@ -1,71 +1,76 @@
-<div class="fb-container-inner">
-    <div class="fb-main-card">
-        <h5 class="fb-inner-title">BẠN MUỐN PHẢN HỒI VỀ</h5>
+<div class="fb-wrapper-premium">
+    <div class="fb-card-premium">
+        <h5 class="fb-section-title font-16">BẠN MUỐN GỬI PHẢN HỒI VỀ</h5>
 
-        <div class="fb-tabs-row">
-            <div class="fb-tab-item active" id="btnApp" onclick="switchFB('APP')">
-                <div class="fb-tab-icon icon-blue"><i class="fa-regular fa-calendar-check"></i></div>
-                <div class="fb-tab-text">
-                    <strong>Ứng dụng</strong>
-                    <span>Lỗi, hiệu năng</span>
+        <!-- Khối chọn phân loại -->
+        <div class="fb-category-grid">
+            <div class="fb-cat-item active" id="btnApp" onclick="switchFB('APP')">
+                <div class="fb-cat-icon icon-tech"><i class="fa-solid fa-laptop-code"></i></div>
+                <div class="fb-cat-info">
+                    <strong class="font-16">Hệ thống & Công cụ</strong>
+                    <span class="font-12">Báo cáo lỗi kỹ thuật hoặc góp ý tính năng ứng dụng</span>
                 </div>
             </div>
-            <div class="fb-tab-item" id="btnPeople" onclick="switchFB('PEOPLE')">
-                <div class="fb-tab-icon icon-pink"><i class="fa-solid fa-users-viewfinder"></i></div>
-                <div class="fb-tab-text">
-                    <strong>Con người</strong>
-                    <span>Cách làm việc</span>
+            <div class="fb-cat-item" id="btnPeople" onclick="switchFB('PEOPLE')">
+                <div class="fb-cat-icon icon-hr"><i class="fa-solid fa-user-tie"></i></div>
+                <div class="fb-cat-info">
+                    <strong class="font-16">Nhân sự & Quy trình</strong>
+                    <span class="font-12">Góp ý về thái độ phối hợp hoặc quy trình làm việc</span>
                 </div>
             </div>
         </div>
 
-        <div class="fb-form-fields">
+        <div class="fb-form-premium">
+            <!-- Khu vực Ứng dụng -->
             <div id="boxApp">
-                <label class="fb-label">Loại lỗi</label>
-                <select class="fb-input" id="fbErrorType">
-                    <option>Lỗi giao diện (hiển thị sai)</option>
-                    <option>Lỗi chức năng (không bấm được)</option>
-                    <option>Tốc độ xử lý chậm</option>
+                <label class="fb-label-premium font-14">Danh mục vấn đề</label>
+                <select class="fb-input-premium font-14" id="fbErrorType">
+                    <option>Sự cố hiển thị (Giao diện bị lệch, mất font... Alvarado)</option>
+                    <option>Sự cố chức năng (Nút không bấm được, lỗi dữ liệu...)</option>
+                    <option>Hiệu suất (Ứng dụng tải chậm, giật lag...)</option>
+                    <option>Khác</option>
                 </select>
             </div>
 
+            <!-- Khu vực Con người -->
             <div id="boxPeople" style="display: none;">
-                <label class="fb-label">Đối tượng phản hồi</label>
-                <input type="text" class="fb-input" id="fbTarget" placeholder="Tên hoặc bộ phận...">
+                <label class="fb-label-premium font-14">Đối tượng/Bộ phận liên quan</label>
+                <input type="text" class="fb-input-premium font-14" id="fbTarget" placeholder="Ví dụ: Team Tech, GSTB khu vực, Điều phối...">
             </div>
 
-            <label class="fb-label">Mức độ nghiêm trọng: <span id="fbSevLabel">Trung bình</span></label>
-            <div class="fb-slider-area">
-                <input type="range" min="1" max="4" value="2" class="fb-range" id="fbSevRange" oninput="updateSev(this.value)">
-                <div class="fb-range-labels">
-                    <span>Nhẹ</span><span>Trung bình</span><span>Nặng</span><span>Nghiêm trọng</span>
+            <!-- Thanh kéo mức độ (Slider đổi màu) -->
+            <label class="fb-label-premium font-14">Mức độ ưu tiên: <span id="fbSevLabel" class="sev-highlight">Trung bình</span></label>
+            <div class="fb-range-wrapper">
+                <input type="range" min="1" max="4" value="2" class="fb-range-premium" id="fbSevRange" oninput="updateSev(this.value)">
+                <div class="fb-range-markers font-12">
+                    <span>Thấp</span><span>Trung bình</span><span>Cao</span><span>Khẩn cấp</span>
                 </div>
             </div>
 
-            <label class="fb-label">Nội dung chi tiết sự việc</label>
-            <textarea class="fb-input" id="fbDesc" rows="3" placeholder="Mô tả sự việc bạn gặp phải..."></textarea>
+            <label class="fb-label-premium font-14">Chi tiết phản hồi</label>
+            <textarea class="fb-input-premium font-14" id="fbDesc" rows="4" placeholder="Hãy mô tả chi tiết sự việc giúp chúng tôi nắm bắt thông tin tốt nhất..."></textarea>
 
-            <label class="fb-label">Đính kèm bằng chứng (Ảnh/Video)</label>
-            <div class="fb-upload-box">
+            <div class="fb-upload-section">
                 <input type="file" id="fbFile" accept="image/*,video/*" style="display:none" onchange="onFileChange()">
-                <button class="fb-upload-btn" type="button" onclick="document.getElementById('fbFile').click()">
-                    <i class="fa-solid fa-camera"></i> Chọn Ảnh/Video chụp màn hình
+                <button class="fb-btn-outline font-14" type="button" onclick="document.getElementById('fbFile').click()">
+                    <i class="fa-solid fa-camera"></i> Đính kèm hình ảnh hoặc video minh chứng
                 </button>
-                <div id="fbFileName" class="fb-file-info"></div>
+                <div id="fbFileName" class="fb-file-text font-12"></div>
             </div>
 
-            <label class="fb-label">Bạn mong muốn điều gì thay đổi?</label>
-            <textarea class="fb-input" id="fbExpect" rows="2" placeholder="Ví dụ: điều chỉnh quy trình..."></textarea>
+            <label class="fb-label-premium font-14">Giải pháp đề xuất hoặc Kỳ vọng</label>
+            <textarea class="fb-input-premium font-14" id="fbExpect" rows="3" placeholder="Ví dụ: Mong muốn được hướng dẫn lại, điều chỉnh quy trình..."></textarea>
 
-            <div class="fb-footer-action">
-                <div class="fb-anon-toggle">
-                    <label class="fb-switch">
+            <!-- Footer -->
+            <div class="fb-footer-premium">
+                <div class="fb-anon-box">
+                    <label class="fb-switch-premium">
                         <input type="checkbox" id="fbAnon">
-                        <span class="fb-slider-round"></span>
+                        <span class="fb-slider-premium"></span>
                     </label>
-                    <span>Gửi ẩn danh</span>
+                    <span class="font-12">Gửi ẩn danh (Thông tin cá nhân sẽ được bảo mật)</span>
                 </div>
-                <button class="fb-send-btn" id="btnSubmitFB" onclick="submitFB()">
+                <button class="fb-btn-submit-premium font-14" id="btnSubmitFB" onclick="submitFB()">
                     <i class="fa-solid fa-paper-plane"></i> Gửi phản hồi
                 </button>
             </div>
