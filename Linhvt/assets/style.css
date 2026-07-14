@@ -389,7 +389,7 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 .login-box {
     background: white; padding: 40px; border-radius: 20px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    text-align: center; width: 380px;
+    text-align: center; width: 500px;
 }
 .login-box img { width: 90px; margin-bottom: 20px; }
 .login-box h2 { color: #00599a; font-weight: 700; margin-bottom: 30px; font-size: 1.4rem; }
