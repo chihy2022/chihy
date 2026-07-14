@@ -22,13 +22,15 @@
     <div id="login-overlay">
         <div class="login-box">
             <img src="assets/images/logoUNILEVER.png" alt="Unilever Logo">
-            <h2>UNIME SYSTEM</h2>
-            <p style="font-size: 16px; color: #666; margin-bottom: 25px;">Vui lòng nhập User ID để truy cập hệ thống</p>
-            
-            <input type="password" id="login-uid" class="login-input" placeholder="USER ID" onkeypress="if(event.key === 'Enter') performLogin()">
-            
+            <h2>Unime System</h2>
+            <p style="font-size: 16px; color: #666; margin-bottom: 25px;">Vui lòng nhập User CODE để truy cập hệ thống</p>
+
+            <div class="password-container">
+            <input type="password" id="login-uid" class="login-input" placeholder="USER CODE" onkeypress="if(event.key === 'Enter') performLogin()">
+            <i class="fa-solid fa-eye-slash" id="togglePassword" onclick="togglePasswordVisibility()"></i></div>
+        
             <button class="btn-login" onclick="performLogin()" id="btnLogin">ĐĂNG NHẬP</button>
-            <div id="login-msg" style="color: red; font-size: 0.75rem; margin-top: 15px;"></div>
+            <div id="login-msg" style="color: red; font-size: 16px; margin-top: 15px;"></div>
         </div>
     </div>
 
@@ -131,6 +133,24 @@
         // Cấu hình URL của bạn
         const GGS_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec";
 
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('login-uid');
+            const toggleIcon = document.getElementById('togglePassword');
+            
+            if (passwordInput.type === 'password') {
+                // Hiện mật khẩu
+                passwordInput.type = 'text';
+                // Đổi icon sang con mắt mở
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            } else {
+                // Ẩn mật khẩu
+                passwordInput.type = 'password';
+                // Đổi icon sang con mắt gạch chéo
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            }
+        }
         // 1. Hàm Xử lý Đăng nhập
         async function performLogin() {
             const uidInput = document.getElementById('login-uid');
@@ -152,7 +172,7 @@
                     applyPermissions(user); // Phân quyền và hiện giao diện
                     document.getElementById('login-overlay').style.display = "none";
                 } else {
-                    msg.innerText = "ID không chính xác hoặc không có quyền!";
+                    msg.innerText = "User CODE không chính xác hoặc không có quyền!\n. Liên hệ Linhvt để update thông tin.";
                     uidInput.value = "";
                 }
             } catch (e) {
