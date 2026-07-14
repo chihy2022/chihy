@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unime System Dashboard</title>
     
-    <!-- FONT CHỮ CAO CẤP -->
+    <!-- FONT CHỮ & CSS HỆ THỐNG -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/style.css">
 
-    <!-- THƯ VIỆN HỖ TRỢ -->
+    <!-- THƯ VIỆN HỖ TRỢ XUẤT PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -22,7 +22,7 @@
     <div id="login-overlay">
         <div class="login-box">
             <img src="assets/images/logoUNILEVER.png" alt="Unilever Logo">
-            <h2 style="font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;">Unime System</h2>
+            <h2>Unime System</h2>
             <p style="font-size: 14px; color: #666; margin-bottom: 25px;">Vui lòng nhập User CODE để truy cập hệ thống</p>
 
             <div class="password-container">
@@ -31,11 +31,11 @@
             </div>
         
             <button class="btn-login" onclick="performLogin()" id="btnLogin">ĐĂNG NHẬP</button>
-            <div id="login-msg" style="color: red; font-size: 13px; margin-top: 15px; font-weight: 500;"></div>
+            <div id="login-msg" style="color: red; font-size: 14px; margin-top: 15px;"></div>
         </div>
     </div>
 
-    <!-- 2. CONTAINER CHÍNH -->
+    <!-- 2. GIAO DIỆN CHÍNH -->
     <div class="app-container">
         <!-- SIDEBAR -->
         <aside class="sidebar" id="sidebar">
@@ -53,6 +53,7 @@
             </div>
 
             <div class="sidebar-menu">
+                <!-- Data-shot phải khớp chính xác với tên thư mục trong /shots/ -->
                 <div class="menu-item" data-shot="shot1">
                     <i class="fa-solid fa-table-columns"></i> <span>Báo cáo tiến độ</span>
                 </div>
@@ -83,12 +84,14 @@
                 </div>
             </div>
 
-            <!-- FOOTER SIDEBAR (GOOGLE AI STUDIO STYLE) -->
+            <!-- CHÂN SIDEBAR: USER ACCOUNT CARD -->
             <div class="sidebar-footer" id="sidebar-footer">
-                <div class="user-account-card" onclick="logout()" title="Đăng xuất khỏi hệ thống">
-                    <div class="user-avatar-small"><img src="assets/images/avtuser.png"></div>
+                <div class="user-account-card" onclick="logout()" title="Đăng xuất">
+                    <div class="user-avatar-small">
+                        <img src="assets/images/avtuser.png" alt="User">
+                    </div>
                     <div class="user-data">
-                        <span class="user-display-name" id="display-user-name">Loading...</span>
+                        <span class="user-display-name" id="display-user-name">...</span>
                     </div>
                 </div>
             </div>
@@ -101,28 +104,31 @@
                     <h5 id="dynamic-header-title" class="current-title">Hệ thống</h5>
                 </div>
                 <div class="header-right">
+                    <div id="nav-groups-container"></div> <!-- Để chứa các nút tab phụ nếu cần -->
                     <button id="exportPdfBtn" class="btn-export">
                         <i class="fa-solid fa-file-pdf"></i> <span>Xuất PDF</span>
                     </button>
                 </div>
             </header>
-            <div id="content-area" class="content-body"></div>
+
+            <div id="content-area" class="content-body">
+                <!-- Nội dung các shot sẽ được nạp động vào đây -->
+            </div>
         </main>
     </div>
 
-    <!-- MODAL ẢNH -->
+    <!-- MODAL XEM ẢNH -->
     <div id="imageModal" class="image-modal">
         <span class="close">&times;</span>
         <img id="imgFull">
     </div>
 
-    <!-- SCRIPT CHÍNH -->
+    <!-- NẠP APP JS -->
     <script src="assets/app.js"></script>
 
-    <!-- LOGIC LOGIN & PHÂN QUYỀN -->
+    <!-- LOGIC LOGIN & PERMISSIONS (ĐỂ ĐÂY ĐỂ CHẠY NHANH NHẤT) -->
     <script>
-        // Dán URL Google Script của bạn vào đây
-        const GGS_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec";
+        const GGS_URL = "https://script.google.com/macros/s/AKfycbw33MIpDCpEPAq4uOZtoNwK1K0cblkTr1ZykUS3dxmJW4P9j1_Xr9PEYq_MZVrfjwWQwg/exec";
 
         function togglePasswordVisibility() {
             const inp = document.getElementById('login-uid');
@@ -147,28 +153,23 @@
             btn.innerText = "ĐANG KIỂM TRA...";
 
             try {
-                // Tối ưu fetch để tránh lỗi CORS và Redirect
                 const response = await fetch(`${GGS_URL}?action=getRole&uid=${uid}`);
-                
-                if (!response.ok) throw new Error("Server không phản hồi");
-
                 const user = await response.json();
 
                 if (user && user.rights) {
                     localStorage.setItem("Unime_UID", uid);
-                    applyPermissions(user);
+                    applyPermissions(user); 
                     document.getElementById('login-overlay').style.display = "none";
                     
-                    // Nạp Shot cuối cùng người dùng đã xem hoặc shot1 mặc định
+                    // Tự động load shot cuối cùng đã xem hoặc shot1 mặc định
                     const lastShot = localStorage.getItem('currentShot') || 'shot1';
                     if (window.loadPage) window.loadPage(lastShot);
                 } else {
-                    msg.innerText = "User CODE không tồn tại hoặc bị khóa!";
+                    msg.innerText = "Mã truy cập sai hoặc không có quyền!";
                     uidInput.value = "";
                 }
             } catch (e) {
-                console.error("Login Error:", e);
-                msg.innerText = "Lỗi kết nối! Hãy kiểm tra mạng hoặc URL Script.";
+                msg.innerText = "Lỗi kết nối máy chủ!";
             } finally {
                 btn.disabled = false;
                 btn.innerText = "ĐĂNG NHẬP";
@@ -178,7 +179,7 @@
         function applyPermissions(user) {
             const rights = user.rights;
             
-            // 1. Hiện các menu được phép
+            // Hiện các menu item
             document.querySelectorAll('.menu-item[data-shot]').forEach(item => {
                 const shotKey = item.getAttribute('data-shot');
                 const perm = (rights[shotKey] || "").toLowerCase().trim();
@@ -187,30 +188,34 @@
                 }
             });
 
-            // 2. Hiện các Group nếu có chứa menu con được phép
+            // Hiện các group menu
             document.querySelectorAll('.menu-group').forEach(group => {
-                const subItems = Array.from(group.querySelectorAll('.sub-item'));
-                const hasVisible = subItems.some(s => s.style.display === 'flex');
-                if (hasVisible) {
-                    group.style.setProperty('display', 'block', 'important');
-                }
+                const visibleSub = Array.from(group.querySelectorAll('.sub-item')).some(s => s.style.display === 'flex');
+                if (hasVisibleSub) group.style.setProperty('display', 'block', 'important');
             });
 
-            // 3. Hiện User Card và Header
-            document.getElementById('display-user-name').innerText = user.name || "User";
+            // 1. CẬP NHẬT TÊN NGƯỜI DÙNG VÀO CARD FOOTER
+            const nameEl = document.getElementById('display-user-name');
+            if (nameEl) nameEl.innerText = user.name || "User";
+
+            // 2. ÉP HIỆN CÁC THÀNH PHẦN CHÍNH
             document.querySelector('.main-header').style.setProperty('display', 'flex', 'important');
             document.querySelector('.content-body').style.setProperty('display', 'block', 'important');
-            document.getElementById('sidebar-footer').style.setProperty('display', 'block', 'important');
+            
+            // 3. ÉP HIỆN FOOTER (USER CARD)
+            const footer = document.getElementById('sidebar-footer');
+            if (footer) {
+                footer.style.setProperty('display', 'block', 'important');
+            }
         }
 
         window.logout = () => {
-            if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi Unime System?")) {
+            if (confirm("Bạn có chắc chắn muốn đăng xuất?")) {
                 localStorage.removeItem("Unime_UID");
                 location.reload();
             }
         };
 
-        // Khi mở web, điền sẵn CODE nếu đã từng login
         window.addEventListener('DOMContentLoaded', () => {
             const savedUID = localStorage.getItem("Unime_UID");
             if (savedUID) document.getElementById('login-uid').value = savedUID;
