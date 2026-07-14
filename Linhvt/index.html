@@ -18,6 +18,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
+    <!-- 1. MÀN HÌNH LOGIN (CHUYÊN NGHIỆP) -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <img src="assets/images/logoUNILEVER.png" alt="Unilever Logo">
+            <h2>UNIME SYSTEM</h2>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 25px;">Vui lòng nhập User ID để truy cập hệ thống</p>
+            
+            <input type="password" id="login-uid" class="login-input" placeholder="USER ID" onkeypress="if(event.key === 'Enter') performLogin()">
+            
+            <button class="btn-login" onclick="performLogin()" id="btnLogin">ĐĂNG NHẬP</button>
+            <div id="login-msg" style="color: red; font-size: 0.75rem; margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <!-- 2. CONTAINER CHÍNH -->
     <div class="app-container">
         <!-- SIDEBAR -->
         <aside class="sidebar" id="sidebar">
@@ -46,8 +61,8 @@
                 <div class="menu-group">
                     <div class="group-header">
                         <div class="header-main">
-                            <i class="fa-solid fa-diagram-project"></i> <!-- Icon ở Group ngoài -->
-                            <span>UMER Ecosystem</span> <!-- Chữ to hơn -->
+                            <i class="fa-solid fa-diagram-project"></i>
+                            <span>UMER Ecosystem</span>
                         </div>
                         <i class="fa-solid fa-chevron-down chevron-icon"></i>
                     </div>
@@ -55,7 +70,6 @@
                         <div class="menu-item sub-item" data-shot="shot7" data-title="Mobile Dashboard"><span>Mobile Dashboard</span></div>
                         <div class="menu-item sub-item" data-shot="shot6" data-title="POSM Inventory"><span>POSM Inventory</span></div>
                     </div>
-
                 </div>
 
                 <!-- Group 2: KHÁC -->
@@ -72,73 +86,137 @@
                         <div class="menu-item sub-item" data-shot="shot8" data-title="[DEMO] Góc phản hồi"><span>Demo_Góc phản hồi</span></div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Group 3: Nếu thêm -->
-                <!-- <div class="menu-group">
-                    <div class="group-header">
-                        <div class="header-main">
-                            <i class="fa-solid fa-bullhorn"></i>
-                            <span>PROMOTE</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-down chevron-icon"></i>
+            <!-- FOOTER SIDEBAR (GOOGLE AI STUDIO STYLE) -->
+            <div class="sidebar-footer" id="sidebar-footer">
+                <div class="user-account-card" onclick="logout()" title="Click để Đăng xuất">
+                    <div class="user-avatar-small">
+                        <img src="assets/images/logoUNILEVER.png" alt="User Avatar">
                     </div>
-                    <div class="group-content">
-                        <div class="menu-item sub-item" data-shot="shot..."><span>thêm</span></div>
+                    <div class="user-data">
+                        <span class="user-display-name" id="display-user-name">Loading...</span>
                     </div>
-                </div> -->
+                </div>
             </div>
         </aside>
 
         <!-- NỘI DUNG CHÍNH -->
         <main class="main-content">
             <header class="main-header">
-            <div class="header-left">
-                <h5 id="dynamic-header-title" class="current-title">Báo cáo tiến độ</h5>
-            </div>
-
-            <div class="header-right">
-                <div id="shot2-nav-group" class="header-nav-container" style="display: none;">
-                    <a href="#execution-roadmap" class="nav-btn active">Excution Roadmap</a>
-                    <a href="#use-case-powerhouse" class="nav-btn">Use Case</a>
-                    <a href="#raci-matrix" class="nav-btn">Raci Matrix</a>
-                </div>
-                <div id="shot3-nav-group" class="header-nav-container" style="display: none;">
-                    <a href="#timeline" class="nav-btn active">Timeline</a>
-                    <a href="#usecase" class="nav-btn">Use Case</a>
-                    <a href="#matrix" class="nav-btn">Matrix</a>
-                </div>
-                <div id="shot6-nav-group" class="header-nav-container" style="display: none;">
-                    <a href="#execution-roadmap" class="nav-btn active">Excution Roadmap</a>
-                    <a href="#use-case-powerhouse" class="nav-btn">Use Case</a>
-                    <a href="#raci-matrix" class="nav-btn">Raci Matrix</a>
+                <div class="header-left">
+                    <h5 id="dynamic-header-title" class="current-title">Báo cáo tiến độ</h5>
                 </div>
 
-                <button id="exportPdfBtn" class="btn-export">
-                    <i class="fa-solid fa-file-pdf"></i> <span>Xuất PDF</span>
-                </button>
-            </div>
+                <div class="header-right">
+                    <button id="exportPdfBtn" class="btn-export">
+                        <i class="fa-solid fa-file-pdf"></i> <span>Xuất PDF</span>
+                    </button>
+                </div>
             </header>
 
             <div id="content-area" class="content-body"></div>
         </main>
     </div>
+
+    <!-- MODAL ẢNH -->
     <div id="imageModal" class="image-modal">
-    <span class="close">&times;</span>
-    <img id="imgFull">
+        <span class="close">&times;</span>
+        <img id="imgFull">
     </div>
+
+    <!-- SCRIPTS -->
     <script src="assets/app.js"></script>
+    <script>
+        // Cấu hình URL của bạn
+        const GGS_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec";
+
+        // 1. Hàm Xử lý Đăng nhập
+        async function performLogin() {
+            const uidInput = document.getElementById('login-uid');
+            const btn = document.getElementById('btnLogin');
+            const msg = document.getElementById('login-msg');
+            
+            const uid = uidInput.value.trim().toUpperCase();
+            if (!uid) return;
+
+            btn.disabled = true;
+            btn.innerText = "ĐANG KIỂM TRA...";
+
+            try {
+                const response = await fetch(`${GGS_URL}?action=getRole&uid=${uid}`);
+                const user = await response.json();
+
+                if (user) {
+                    localStorage.setItem("Unime_UID", uid);
+                    applyPermissions(user); // Phân quyền và hiện giao diện
+                    document.getElementById('login-overlay').style.display = "none";
+                } else {
+                    msg.innerText = "ID không chính xác hoặc không có quyền!";
+                    uidInput.value = "";
+                }
+            } catch (e) {
+                msg.innerText = "Lỗi kết nối máy chủ!";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "ĐĂNG NHẬP";
+            }
+        }
+
+        // 2. Hàm Phân quyền & Hiển thị User Card
+        function applyPermissions(user) {
+            const rights = user.rights;
+            
+            // Hiện các Menu Item dựa trên quyền Root/View
+            document.querySelectorAll('.menu-item[data-shot]').forEach(item => {
+                const shotKey = item.getAttribute('data-shot');
+                const perm = (rights[shotKey] || "").toLowerCase().trim();
+                if (perm === "root" || perm === "view") {
+                    item.style.setProperty('display', 'flex', 'important');
+                }
+            });
+
+            // Hiện Group nếu có item bên trong hiện
+            document.querySelectorAll('.menu-group').forEach(group => {
+                const hasVisibleSub = Array.from(group.querySelectorAll('.sub-item')).some(sub => 
+                    sub.style.display === 'flex'
+                );
+                if (hasVisibleSub) {
+                    group.style.setProperty('display', 'block', 'important');
+                }
+            });
+
+            // Cập nhật tên vào User Card dưới chân Sidebar
+            const nameEl = document.getElementById('display-user-name');
+            if (nameEl) nameEl.innerText = user.name;
+
+            // Hiện các thành phần chính
+            document.querySelector('.main-header').style.setProperty('display', 'flex', 'important');
+            document.querySelector('.content-body').style.setProperty('display', 'block', 'important');
+            document.getElementById('sidebar-footer').style.setProperty('display', 'block', 'important');
+            
+            // Tự động load Shot 1 nếu có quyền
+            if (rights.shot1 === "root" || rights.shot1 === "view") {
+                console.log("Quyền Shot 1:", rights.shot1);
+                // Gọi hàm load dữ liệu của bạn ở đây nếu cần
+            }
+        }
+
+        // 3. Hàm Đăng xuất
+        window.logout = () => {
+            if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi Unime System?")) {
+                localStorage.removeItem("Unime_UID");
+                location.reload();
+            }
+        };
+
+        // 4. Kiểm tra khi load trang (Điền sẵn ID nếu có)
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUID = localStorage.getItem("Unime_UID");
+            if (savedUID) {
+                document.getElementById('login-uid').value = savedUID;
+            }
+        });
+    </script>
 </body>
-<!-- MÀN HÌNH LOGIN -->
-<div id="login-overlay">
-    <div class="login-box">
-        <img src="assets/images/logoUNILEVER.png" alt="Unilever Logo">
-        <h2>UNIME SYSTEM</h2>
-        <p>Vui lòng nhập User ID để truy cập hệ thống</p>
-        
-        <input type="password" id="login-uid" class="login-input" placeholder="USER ID" onkeypress="if(event.key === 'Enter') performLogin()">
-        
-        <button class="btn-login" onclick="performLogin()" id="btnLogin">ĐĂNG NHẬP</button>
-        <div id="login-msg" style="color: red; font-size: 0.8rem; margin-top: 10px;"></div>
-    </div>
-</div>
 </html>
