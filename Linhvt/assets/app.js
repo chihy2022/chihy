@@ -366,3 +366,80 @@ async function handleExportPdf(btn) {
         btn.innerHTML = originalText;
     }
 }
+
+const GGS_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec";
+
+// Hàm xử lý Đăng nhập
+async function performLogin() {
+    const uidInput = document.getElementById('login-uid');
+    const btn = document.getElementById('btnLogin');
+    const msg = document.getElementById('login-msg');
+    
+    const uid = uidInput.value.trim().toUpperCase();
+    if (!uid) return;
+
+    btn.disabled = true;
+    btn.innerText = "ĐANG KIỂM TRA...";
+
+    try {
+        const response = await fetch(`${GGS_URL}?action=getRole&uid=${uid}`);
+        const user = await response.json();
+
+        if (user) {
+            localStorage.setItem("Unime_UID", uid);
+            applyPermissions(user); // Chạy hàm phân quyền và hiện menu
+            document.getElementById('login-overlay').style.display = "none"; // Ẩn màn hình login
+        } else {
+            msg.innerText = "ID không chính xác hoặc không có quyền!";
+            uidInput.value = "";
+        }
+    } catch (e) {
+        msg.innerText = "Lỗi kết nối máy chủ!";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "ĐĂNG NHẬP";
+    }
+}
+
+// Hàm Phân quyền và Hiển thị (Chỉ hiện những gì hợp lệ)
+function applyPermissions(user) {
+    const rights = user.rights;
+    
+    // 1. Hiện các Menu Item hợp lệ
+    document.querySelectorAll('.menu-item[data-shot]').forEach(item => {
+        const shotKey = item.getAttribute('data-shot');
+        const perm = (rights[shotKey] || "").toLowerCase().trim();
+
+        if (perm === "root" || perm === "view") {
+            item.setAttribute('style', 'display: flex !important'); // Ép buộc hiện
+        }
+    });
+
+    // 2. Hiện Group nếu có item bên trong hiện
+    document.querySelectorAll('.menu-group').forEach(group => {
+        const hasVisibleSub = Array.from(group.querySelectorAll('.sub-item')).some(sub => sub.style.display === 'flex');
+        if (hasVisibleSub) {
+            group.setAttribute('style', 'display: block !important');
+        }
+    });
+
+    // 3. Hiện Nội dung chính và Header
+    document.querySelector('.main-header').setAttribute('style', 'display: flex !important');
+    document.querySelector('.content-body').setAttribute('style', 'display: block !important');
+    
+    // Tự động load Shot đầu tiên được phép (Shot 1)
+    if (rights.shot1 === "root" || rights.shot1 === "view") {
+        // Gọi hàm load dữ liệu shot 1 của bạn ở đây
+        console.log("Quyền:", rights.shot1);
+    }
+}
+
+// Kiểm tra nếu đã đăng nhập trước đó
+window.addEventListener('DOMContentLoaded', async () => {
+    const savedUID = localStorage.getItem("Unime_UID");
+    if (savedUID) {
+        // Tự động login nếu đã có UID trong máy
+        document.getElementById('login-uid').value = savedUID;
+        performLogin();
+    }
+});
