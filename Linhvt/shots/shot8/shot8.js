@@ -3,7 +3,7 @@ let s8FileData = "";
 let s8FileName = "";
 let s8Category = "Ứng dụng";
 
-const GGS_LINK_FB = "https://script.google.com/macros/s/AKfycbw33MIpDCpEPAq4uOZtoNwK1K0cblkTr1ZykUS3dxmJW4P9j1_Xr9PEYq_MZVrfjwWQwg/exec?sheet=Goc_phanhoi";
+var GGS_LINK_FB = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec?sheet=Goc_phanhoi";
 
 // 1. Chuyển đổi Tab
 window.switchFB = (cat) => {
@@ -16,11 +16,11 @@ window.switchFB = (cat) => {
 
 // 2. Cập nhật mức độ (Đổi màu Line & Thumb)
 window.updateSev = (val) => {
-    const texts = ["Thấp", "Trung bình", "Cao", "Khẩn cấp"];
-    const colors = ["#10b981", "#00599a", "#f59e0b", "#d93025"];
+    var texts = ["Thấp", "Trung bình", "Cao", "Khẩn cấp"];
+    var colors = ["#10b981", "#00599a", "#f59e0b", "#d93025"];
     
-    const label = document.getElementById('fbSevLabel');
-    const slider = document.getElementById('fbSevRange');
+    var label = document.getElementById('fbSevLabel');
+    var slider = document.getElementById('fbSevRange');
 
     if(label) {
         label.innerText = texts[val - 1];
@@ -28,8 +28,8 @@ window.updateSev = (val) => {
     }
 
     // Tính % để tô màu thanh line
-    const percent = ((val - 1) / (slider.max - slider.min)) * 100;
-    const activeColor = colors[val - 1];
+    var percent = ((val - 1) / (slider.max - slider.min)) * 100;
+    var activeColor = colors[val - 1];
     
     slider.style.background = `linear-gradient(to right, ${activeColor} 0%, ${activeColor} ${percent}%, #e2e8f0 ${percent}%, #e2e8f0 100%)`;
     slider.style.setProperty('--thumb-color', activeColor);
@@ -37,13 +37,13 @@ window.updateSev = (val) => {
 
 // 3. Xử lý File đính kèm
 window.onFileChange = () => {
-    const file = document.getElementById('fbFile').files[0];
-    const nameLabel = document.getElementById('fbFileName');
+    var file = document.getElementById('fbFile').files[0];
+    var nameLabel = document.getElementById('fbFileName');
     if (file) {
         if(file.size > 15 * 1024 * 1024) { alert("Dung lượng file tối đa 15MB"); return; }
         s8FileName = file.name;
         nameLabel.innerText = "📎 Đã chọn: " + file.name;
-        const reader = new FileReader();
+        var reader = new FileReader();
         reader.onload = (e) => s8FileData = e.target.result;
         reader.readAsDataURL(file);
     }
@@ -51,15 +51,15 @@ window.onFileChange = () => {
 
 // 4. Gửi dữ liệu
 window.submitFB = async () => {
-    const content = document.getElementById('fbDesc').value;
-    const btn = document.getElementById('btnSubmitFB');
+    var content = document.getElementById('fbDesc').value;
+    var btn = document.getElementById('btnSubmitFB');
 
     if (!content.trim()) return alert("Vui lòng mô tả chi tiết nội dung phản hồi!");
 
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
 
-    const payload = {
+    var payload = {
         type: "FEEDBACK",
         category: s8Category,
         subject: (s8Category === "Ứng dụng") ? document.getElementById('fbErrorType').value : document.getElementById('fbTarget').value,
@@ -84,6 +84,6 @@ window.submitFB = async () => {
 
 // Khởi tạo slider lúc mới nạp
 setTimeout(() => {
-    const s = document.getElementById('fbSevRange');
+    var s = document.getElementById('fbSevRange');
     if(s) updateSev(s.value);
 }, 300);
