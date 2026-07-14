@@ -128,4 +128,17 @@
     </div>
     <script src="assets/app.js"></script>
 </body>
+<!-- MÀN HÌNH LOGIN -->
+<div id="login-overlay">
+    <div class="login-box">
+        <img src="assets/images/logoUNILEVER.png" alt="Unilever Logo">
+        <h2>UNIME SYSTEM</h2>
+        <p>Vui lòng nhập User ID để truy cập hệ thống</p>
+        
+        <input type="password" id="login-uid" class="login-input" placeholder="USER ID" onkeypress="if(event.key === 'Enter') performLogin()">
+        
+        <button class="btn-login" onclick="performLogin()" id="btnLogin">ĐĂNG NHẬP</button>
+        <div id="login-msg" style="color: red; font-size: 0.8rem; margin-top: 10px;"></div>
+    </div>
+</div>
 </html>
