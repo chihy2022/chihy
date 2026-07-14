@@ -1,20 +1,20 @@
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec";
+var GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec";
 
 // Biến lưu trữ dữ liệu
 let originalData = [];
 
 // 1. Khởi tạo báo cáo
 async function initProgressReport() {
-    const tableBody = document.getElementById('table-body');
-    const btnAdd = document.getElementById('btnAddRow');
+    var tableBody = document.getElementById('table-body');
+    var btnAdd = document.getElementById('btnAddRow');
     
     if (!tableBody) return;
 
     tableBody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin"></i> Đang kết nối dữ liệu từ Google Sheets...</td></tr>';
 
     try {
-        const response = await fetch(GOOGLE_SHEET_URL);
-        const data = await response.json();
+        var response = await fetch(GOOGLE_SHEET_URL);
+        var data = await response.json();
         
         window.reportData = JSON.parse(JSON.stringify(data)); 
         originalData = JSON.parse(JSON.stringify(data)); 
@@ -39,7 +39,7 @@ async function initProgressReport() {
 
 // 2. Logic Xử lý Xóa (Có Pass + Thông báo thành công)
 window.deleteRow = function(idx) {
-    const confirmCode = prompt("⚠️ CẢNH BÁO BẢO MẬT\n\nBạn đang thực hiện thao tác xóa dữ liệu. Vui lòng nhập mật khẩu để xác nhận:");
+    var confirmCode = prompt("⚠️ CẢNH BÁO BẢO MẬT\n\nBạn đang thực hiện thao tác xóa dữ liệu. Vui lòng nhập mật khẩu để xác nhận:");
     
     if (confirmCode === "DELETERAW") {
         window.reportData.splice(idx, 1); // Xóa dòng trong bộ nhớ tạm
@@ -69,8 +69,8 @@ window.updateProgressCell = (idx, el) => {
 
 // 3. Logic Màu sắc
 function getRowStyle(status, progress) {
-    const s = (status || "").toString().trim().toUpperCase();
-    const p = (progress || "").toString().trim().toUpperCase();
+    var s = (status || "").toString().trim().toUpperCase();
+    var p = (progress || "").toString().trim().toUpperCase();
     if (p.includes("TRIỂN KHAI") || p.includes("TRIEN KHAI")) return 'background-color: #dbeafe; color: #1e40af; font-weight: 600;'; 
     if (s === 'CLOSE' || s === 'CLOSED' || p === 'CLOSE') return 'background-color: #f3f4f6; color: #4b5563; font-weight: 600;'; 
     if (s === 'PENDING') return 'background-color: #fee2e2; color: #b91c1c; font-weight: 600;'; 
@@ -83,10 +83,10 @@ function getRowStyle(status, progress) {
 
 // 4. Render Bảng
 window.renderTable = function() {
-    const tableBody = document.getElementById('table-body');
+    var tableBody = document.getElementById('table-body');
     if (!tableBody || !window.reportData) return;
     
-    const formatT = (dateStr) => {
+    var formatT = (dateStr) => {
         if (!dateStr) return "";
         let d = new Date(dateStr);
         if (isNaN(d.getTime())) return dateStr;
@@ -118,11 +118,11 @@ window.renderTable = function() {
 
 // 5. ĐỒNG BỘ CÓ MẬT KHẨU (LINHVTsync)
 window.syncToGoogleSheets = async function() {
-    const btn = document.getElementById('btnSync');
+    var btn = document.getElementById('btnSync');
     if (!btn) return;
 
     // BƯỚC 1: HỎI MẬT KHẨU TRƯỚC KHI LÀM BẤT CỨ GÌ
-    const password = prompt("🔐 XÁC NHẬN ĐỒNG BỘ\nVui lòng nhập mật khẩu để lưu dữ liệu lên Google Sheets:");
+    var password = prompt("🔐 XÁC NHẬN ĐỒNG BỘ\nVui lòng nhập mật khẩu để lưu dữ liệu lên Google Sheets:");
 
     if (password === null) return; // Người dùng bấm Hủy
 
@@ -137,12 +137,12 @@ window.syncToGoogleSheets = async function() {
         return;
     }
 
-    const originalBtnHTML = btn.innerHTML;
+    var originalBtnHTML = btn.innerHTML;
     btn.disabled = true; 
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ...';
     
     try {
-        const response = await fetch(GOOGLE_SHEET_URL, { 
+        var response = await fetch(GOOGLE_SHEET_URL, { 
             method: "POST", 
             mode: 'no-cors', 
             headers: { 'Content-Type': 'application/json' },
