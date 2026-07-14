@@ -1,4 +1,4 @@
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw3YMIpDCpEPAq4uOZtoNwK1K0cblkTr1ZykUS3dxmJW4P9j1_Xr9PEYq_MZVrfjwWQwg/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec";
 
 // Biến lưu trữ dữ liệu
 let originalData = [];
