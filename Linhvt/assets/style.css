@@ -372,3 +372,60 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
     from { transform: scale(0.9) translateY(20px); }
     to { transform: scale(1) translateY(0); }
 }
+
+/* 1. Mặc định ẩn sạch menu và group khi trang mới load */
+.menu-item, .menu-group, .main-header, .content-body {
+    display: none !important;
+}
+
+/* 2. Giao diện màn hình Login */
+#login-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #f4f7f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 350px;
+}
+
+.login-box img { width: 80px; margin-bottom: 20px; }
+.login-box h2 { color: #00599a; font-size: 1.5rem; margin-bottom: 10px; }
+.login-box p { color: #666; font-size: 0.9rem; margin-bottom: 25px; }
+
+.login-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
+.btn-login {
+    width: 100%;
+    background: #00599a;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-login:hover { background: #004070; }
