@@ -1,63 +1,68 @@
-const GGS_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec?sheet=Goc_phanhoi";
-let fbCategory = "APP";
-let fbFileData = "";
-let fbFileName = "";
+let shot8FileData = "";
+let shot8FileName = "";
+let shot8Category = "APP";
 
-// 1. Chuyển đổi Link Drive sang Link Ảnh trực tiếp
-function getDirectLink(url) {
-    if (!url || !url.includes("drive.google.com")) return "";
-    const fileId = url.match(/[-\w]{25,}/);
-    return fileId ? `https://lh3.googleusercontent.com/d/${fileId[0]}` : "";
-}
+const GGS_URL_FEEDBACK = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec?sheet=Goc_phanhoi";
 
-// 2. Xử lý UI Feedback
+// 1. Chuyển Tab
 window.switchFB = (cat) => {
-    fbCategory = cat;
+    shot8Category = cat;
     document.getElementById('btnApp').classList.toggle('active', cat === 'APP');
     document.getElementById('btnPeople').classList.toggle('active', cat === 'PEOPLE');
     document.getElementById('boxApp').style.display = (cat === 'APP') ? 'block' : 'none';
     document.getElementById('boxPeople').style.display = (cat === 'PEOPLE') ? 'block' : 'none';
 };
 
+// 2. Slider
 window.updateSev = (val) => {
     const lvls = ["Nhẹ", "Trung bình", "Nặng", "Nghiêm trọng"];
     document.getElementById('fbSevLabel').innerText = lvls[val - 1];
 };
 
+// 3. Xử lý File
 window.onFileChange = () => {
     const file = document.getElementById('fbFile').files[0];
     if (file) {
-        fbFileName = file.name;
-        document.getElementById('fbFileName').innerText = "📎 " + file.name;
+        shot8FileName = file.name;
+        document.getElementById('fbFileName').innerText = "📎 Đã chọn: " + file.name;
         const reader = new FileReader();
-        reader.onload = (e) => fbFileData = e.target.result;
+        reader.onload = (e) => shot8FileData = e.target.result;
         reader.readAsDataURL(file);
     }
 };
 
-// 3. Gửi Feedback
+// 4. Gửi Feedback
 window.submitFB = async () => {
     const btn = document.getElementById('btnSubmitFB');
     const content = document.getElementById('fbDesc').value;
-    if (!content.trim()) return alert("Vui lòng nhập nội dung!");
+    if (!content.trim()) return alert("Vui lòng nhập nội dung chi tiết!");
 
-    const data = {
+    btn.disabled = true; 
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
+
+    const payload = {
         type: "FEEDBACK",
-        category: fbCategory === "APP" ? "Ứng dụng" : "Con người",
-        subject: (fbCategory === "APP") ? document.getElementById('fbErrorType').value : document.getElementById('fbTarget').value,
+        category: shot8Category === "APP" ? "Ứng dụng" : "Con người",
+        subject: (shot8Category === "APP") ? document.getElementById('fbErrorType').value : document.getElementById('fbTarget').value,
         severity: document.getElementById('fbSevLabel').innerText,
         content: content,
         expectation: document.getElementById('fbExpect').value,
         isAnonymous: document.getElementById('fbAnon').checked,
-        fileData: fbFileData,
-        fileName: fbFileName
+        fileData: shot8FileData,
+        fileName: shot8FileName
     };
 
-    btn.disabled = true; btn.innerText = "Đang gửi...";
     try {
-        await fetch(GGS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(data) });
-        alert("✅ Đã gửi thành công!");
-        location.reload();
-    } catch (e) { alert("Lỗi gửi!"); }
-    finally { btn.disabled = false; }
+        await fetch(GGS_URL_FEEDBACK, { 
+            method: "POST", 
+            mode: 'no-cors', 
+            body: JSON.stringify(payload) 
+        });
+        alert("✅ Gửi phản hồi thành công!");
+        location.reload(); // Hoặc gọi loadShot('shot8') để làm mới form
+    } catch (e) {
+        alert("❌ Lỗi mạng, vui lòng thử lại!");
+        btn.disabled = false;
+        btn.innerText = "Gửi phản hồi";
+    }
 };
