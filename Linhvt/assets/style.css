@@ -55,7 +55,7 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 .avatar { width: 48px; height: 48px; border-radius: 12px; border: 1px solid var(--border-color); padding: 4px; flex-shrink: 0; }
 .avatar img { width: 100%; height: 100%; object-fit: contain; }
 .user-info-text { display: flex; flex-direction: column; overflow: hidden; }
-.username { font-weight: 900; font-size: 22px; color: var(--primary-blue); letter-spacing: -0.5px; }
+.username { font-weight: 700; font-size: 22px; color: #00599a; letter-spacing: -0.5px; }
 .user-description { font-size: 11px; color: var(--text-muted); }
 
 /* 3. MENU LIST */
@@ -377,7 +377,9 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
 .menu-item, .menu-group, .main-header, .content-body, .sidebar-footer {
     display: none !important;
 }
-
+input, button, select, textarea {
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+}
 /* MÀN HÌNH LOGIN */
 #login-overlay {
     position: fixed;
@@ -392,11 +394,42 @@ body { background: var(--bg-app); overflow: hidden; color: var(--text-main); }
     text-align: center; width: 500px;
 }
 .login-box img { width: 90px; margin-bottom: 20px; }
-.login-box h2 { color: #00599a; font-weight: 700; margin-bottom: 30px; font-size: 1.4rem; }
+.login-box h2 { color: #00599a; font-weight: 700; margin-bottom: 30px; font-size: 22px; }
 .login-input {
-    width: 100%; padding: 12px; margin-bottom: 20px;
-    border: 1px solid #ddd; border-radius: 10px;
-    text-align: center; font-size: 1.1rem; outline: none;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 0 !important;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.1rem;
+    outline: none;
+    font-family: 'Be Vietnam Pro', sans-serif !important; 
+    letter-spacing: 1px;
+    color: #333;
+}
+
+/* Container bao quanh input và icon */
+.password-container {
+    font-family: var(--font-family);
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+}
+/* Định vị icon con mắt */
+#togglePassword {
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    font-size: 16px;
+    z-index: 10001; /* Nằm trên input */
+}
+
+#togglePassword:hover {
+    color: #00599a;
 }
 .btn-login {
     width: 100%; background: #00599a; color: white; border: none;
