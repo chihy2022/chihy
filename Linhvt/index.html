@@ -18,19 +18,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <!-- 1. MÀN HÌNH LOGIN (CHUYÊN NGHIỆP) -->
+    <!-- 1. MÀN HÌNH LOGIN -->
     <div id="login-overlay">
         <div class="login-box">
             <img src="assets/images/logoUNILEVER.png" alt="Unilever Logo">
-            <h2>Unime System</h2>
-            <p style="font-size: 16px; color: #666; margin-bottom: 25px;">Vui lòng nhập User CODE để truy cập hệ thống</p>
+            <h2 style="font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;">Unime System</h2>
+            <p style="font-size: 14px; color: #666; margin-bottom: 25px;">Vui lòng nhập User CODE để truy cập hệ thống</p>
 
             <div class="password-container">
-            <input type="password" id="login-uid" class="login-input" placeholder="USER CODE" onkeypress="if(event.key === 'Enter') performLogin()">
-            <i class="fa-solid fa-eye-slash" id="togglePassword" onclick="togglePasswordVisibility()"></i></div>
+                <input type="password" id="login-uid" class="login-input" placeholder="USER CODE" onkeypress="if(event.key === 'Enter') performLogin()">
+                <i class="fa-solid fa-eye-slash" id="togglePassword" onclick="togglePasswordVisibility()"></i>
+            </div>
         
             <button class="btn-login" onclick="performLogin()" id="btnLogin">ĐĂNG NHẬP</button>
-            <div id="login-msg" style="color: red; font-size: 16px; margin-top: 15px;"></div>
+            <div id="login-msg" style="color: red; font-size: 13px; margin-top: 15px; font-weight: 500;"></div>
         </div>
     </div>
 
@@ -43,9 +44,7 @@
             </button>
             <div class="sidebar-header">
                 <div class="user-profile">
-                    <div class="avatar">
-                        <img src="assets/images/logoUNILEVER.png" alt="Logo">
-                    </div>
+                    <div class="avatar"><img src="assets/images/logoUNILEVER.png"></div>
                     <div class="user-info-text">
                         <span class="username">Unime System</span>
                         <span class="user-description">DT Merchandising Channel</span>
@@ -54,51 +53,40 @@
             </div>
 
             <div class="sidebar-menu">
-                <!-- Mục Báo cáo chính -->
-                <div class="menu-item active" data-shot="shot1" data-title="BÁO CÁO TIẾN ĐỘ">
+                <div class="menu-item" data-shot="shot1">
                     <i class="fa-solid fa-table-columns"></i> <span>Báo cáo tiến độ</span>
                 </div>
 
-                <!-- Group 1: UMER Ecosystem -->
                 <div class="menu-group">
                     <div class="group-header">
-                        <div class="header-main">
-                            <i class="fa-solid fa-diagram-project"></i>
-                            <span>UMER Ecosystem</span>
-                        </div>
+                        <div class="header-main"><i class="fa-solid fa-diagram-project"></i> <span>UMER Ecosystem</span></div>
                         <i class="fa-solid fa-chevron-down chevron-icon"></i>
                     </div>
                     <div class="group-content">
-                        <div class="menu-item sub-item" data-shot="shot7" data-title="Mobile Dashboard"><span>Mobile Dashboard</span></div>
-                        <div class="menu-item sub-item" data-shot="shot6" data-title="POSM Inventory"><span>POSM Inventory</span></div>
+                        <div class="menu-item sub-item" data-shot="shot7"><span>Mobile Dashboard</span></div>
+                        <div class="menu-item sub-item" data-shot="shot6"><span>POSM Inventory</span></div>
                     </div>
                 </div>
 
-                <!-- Group 2: KHÁC -->
                 <div class="menu-group">
                     <div class="group-header">
-                        <div class="header-main">
-                            <i class="fa-solid fa-folder-tree"></i>
-                            <span>Khác</span>
-                        </div>
+                        <div class="header-main"><i class="fa-solid fa-folder-tree"></i> <span>Khác</span></div>
                         <i class="fa-solid fa-chevron-down chevron-icon"></i>
                     </div>
                     <div class="group-content">
-                        <div class="menu-item sub-item" data-shot="shot5" data-title="[DEMO] POSM Inventory"><span>Demo_POSM Inventory</span></div>
-                        <div class="menu-item sub-item" data-shot="shot8" data-title="[DEMO] Góc phản hồi"><span>Demo_Góc phản hồi</span></div>
-                        <div class="menu-item sub-item" data-shot="shot2" data-title="[DEMO] Góc phản hồi"><span>shot2</span></div>
-                        <div class="menu-item sub-item" data-shot="shot3" data-title="[DEMO] Góc phản hồi"><span>shot3</span></div>
-                        <div class="menu-item sub-item" data-shot="shot4" data-title="[DEMO] Góc phản hồi"><span>shot4</span></div>
+                        <div class="menu-item sub-item" data-shot="shot5"><span>Demo_POSM Inventory</span></div>
+                        <div class="menu-item sub-item" data-shot="shot8"><span>Demo_Góc phản hồi</span></div>
+                        <div class="menu-item sub-item" data-shot="shot2"><span>Shot 2</span></div>
+                        <div class="menu-item sub-item" data-shot="shot3"><span>Shot 3</span></div>
+                        <div class="menu-item sub-item" data-shot="shot4"><span>Shot 4</span></div>
                     </div>
                 </div>
             </div>
 
             <!-- FOOTER SIDEBAR (GOOGLE AI STUDIO STYLE) -->
             <div class="sidebar-footer" id="sidebar-footer">
-                <div class="user-account-card" onclick="logout()" title="Click để Đăng xuất">
-                    <div class="user-avatar-small">
-                        <img src="assets/images/avtuser.png" alt="User Avatar">
-                    </div>
+                <div class="user-account-card" onclick="logout()" title="Đăng xuất khỏi hệ thống">
+                    <div class="user-avatar-small"><img src="assets/images/avtuser.png"></div>
                     <div class="user-data">
                         <span class="user-display-name" id="display-user-name">Loading...</span>
                     </div>
@@ -110,16 +98,14 @@
         <main class="main-content">
             <header class="main-header">
                 <div class="header-left">
-                    <h5 id="dynamic-header-title" class="current-title">Báo cáo tiến độ</h5>
+                    <h5 id="dynamic-header-title" class="current-title">Hệ thống</h5>
                 </div>
-
                 <div class="header-right">
                     <button id="exportPdfBtn" class="btn-export">
                         <i class="fa-solid fa-file-pdf"></i> <span>Xuất PDF</span>
                     </button>
                 </div>
             </header>
-
             <div id="content-area" class="content-body"></div>
         </main>
     </div>
@@ -130,67 +116,69 @@
         <img id="imgFull">
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- SCRIPT CHÍNH -->
     <script src="assets/app.js"></script>
+
+    <!-- LOGIC LOGIN & PHÂN QUYỀN -->
     <script>
-        // Cấu hình URL của bạn
+        // Dán URL Google Script của bạn vào đây
         const GGS_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec";
 
         function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('login-uid');
-            const toggleIcon = document.getElementById('togglePassword');
-            
-            if (passwordInput.type === 'password') {
-                // Hiện mật khẩu
-                passwordInput.type = 'text';
-                // Đổi icon sang con mắt mở
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
+            const inp = document.getElementById('login-uid');
+            const ico = document.getElementById('togglePassword');
+            if (inp.type === 'password') {
+                inp.type = 'text'; ico.classList.replace('fa-eye-slash', 'fa-eye');
             } else {
-                // Ẩn mật khẩu
-                passwordInput.type = 'password';
-                // Đổi icon sang con mắt gạch chéo
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
+                inp.type = 'password'; ico.classList.replace('fa-eye', 'fa-eye-slash');
             }
         }
-        // 1. Hàm Xử lý Đăng nhập
+
         async function performLogin() {
             const uidInput = document.getElementById('login-uid');
             const btn = document.getElementById('btnLogin');
             const msg = document.getElementById('login-msg');
-            
             const uid = uidInput.value.trim().toUpperCase();
-            if (!uid) return;
 
+            if (!uid) { msg.innerText = "Vui lòng nhập User CODE!"; return; }
+
+            msg.innerText = "";
             btn.disabled = true;
             btn.innerText = "ĐANG KIỂM TRA...";
 
             try {
+                // Tối ưu fetch để tránh lỗi CORS và Redirect
                 const response = await fetch(`${GGS_URL}?action=getRole&uid=${uid}`);
+                
+                if (!response.ok) throw new Error("Server không phản hồi");
+
                 const user = await response.json();
 
-                if (user) {
+                if (user && user.rights) {
                     localStorage.setItem("Unime_UID", uid);
-                    applyPermissions(user); // Phân quyền và hiện giao diện
+                    applyPermissions(user);
                     document.getElementById('login-overlay').style.display = "none";
+                    
+                    // Nạp Shot cuối cùng người dùng đã xem hoặc shot1 mặc định
+                    const lastShot = localStorage.getItem('currentShot') || 'shot1';
+                    if (window.loadPage) window.loadPage(lastShot);
                 } else {
-                    msg.innerText = "User CODE không chính xác hoặc không có quyền!\n. Liên hệ Linhvt để update thông tin.";
+                    msg.innerText = "User CODE không tồn tại hoặc bị khóa!";
                     uidInput.value = "";
                 }
             } catch (e) {
-                msg.innerText = "Lỗi kết nối máy chủ!";
+                console.error("Login Error:", e);
+                msg.innerText = "Lỗi kết nối! Hãy kiểm tra mạng hoặc URL Script.";
             } finally {
                 btn.disabled = false;
                 btn.innerText = "ĐĂNG NHẬP";
             }
         }
 
-        // 2. Hàm Phân quyền & Hiển thị User Card
         function applyPermissions(user) {
             const rights = user.rights;
             
-            // Hiện các Menu Item dựa trên quyền Root/View
+            // 1. Hiện các menu được phép
             document.querySelectorAll('.menu-item[data-shot]').forEach(item => {
                 const shotKey = item.getAttribute('data-shot');
                 const perm = (rights[shotKey] || "").toLowerCase().trim();
@@ -199,33 +187,22 @@
                 }
             });
 
-            // Hiện Group nếu có item bên trong hiện
+            // 2. Hiện các Group nếu có chứa menu con được phép
             document.querySelectorAll('.menu-group').forEach(group => {
-                const hasVisibleSub = Array.from(group.querySelectorAll('.sub-item')).some(sub => 
-                    sub.style.display === 'flex'
-                );
-                if (hasVisibleSub) {
+                const subItems = Array.from(group.querySelectorAll('.sub-item'));
+                const hasVisible = subItems.some(s => s.style.display === 'flex');
+                if (hasVisible) {
                     group.style.setProperty('display', 'block', 'important');
                 }
             });
 
-            // Cập nhật tên vào User Card dưới chân Sidebar
-            const nameEl = document.getElementById('display-user-name');
-            if (nameEl) nameEl.innerText = user.name;
-
-            // Hiện các thành phần chính
+            // 3. Hiện User Card và Header
+            document.getElementById('display-user-name').innerText = user.name || "User";
             document.querySelector('.main-header').style.setProperty('display', 'flex', 'important');
             document.querySelector('.content-body').style.setProperty('display', 'block', 'important');
             document.getElementById('sidebar-footer').style.setProperty('display', 'block', 'important');
-            
-            // Tự động load Shot 1 nếu có quyền
-            if (rights.shot1 === "root" || rights.shot1 === "view") {
-                console.log("Quyền Shot 1:", rights.shot1);
-                // Gọi hàm load dữ liệu của bạn ở đây nếu cần
-            }
         }
 
-        // 3. Hàm Đăng xuất
         window.logout = () => {
             if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi Unime System?")) {
                 localStorage.removeItem("Unime_UID");
@@ -233,12 +210,10 @@
             }
         };
 
-        // 4. Kiểm tra khi load trang (Điền sẵn ID nếu có)
+        // Khi mở web, điền sẵn CODE nếu đã từng login
         window.addEventListener('DOMContentLoaded', () => {
             const savedUID = localStorage.getItem("Unime_UID");
-            if (savedUID) {
-                document.getElementById('login-uid').value = savedUID;
-            }
+            if (savedUID) document.getElementById('login-uid').value = savedUID;
         });
     </script>
 </body>
