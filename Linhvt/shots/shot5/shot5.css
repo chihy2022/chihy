@@ -21,9 +21,15 @@
 
 .shot-title {
     font-weight: 800;
-    color: #1a4e8a;
-    font-size: 1.4rem;
+    color: var(--primary);
+    font-size: 24px;
     text-transform: uppercase;
+}
+
+.text-muted.font-16 {
+    color: #64748b !important;
+    margin-top: 5px;
+    font-size: 16px;
 }
 
 /* Grid ảnh Demo */
