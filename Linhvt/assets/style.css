@@ -69,7 +69,7 @@ img { max-width: 100%; height: auto; display: block; }
 .main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; min-width: 0; }
 .main-header { align-items: center; height: 70px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; border-bottom: 1px solid var(--border); z-index: 100; position: relative; }
 .header-divider { width: 1px; height: 24px; background: var(--border); margin: 0 10px; }
-.content-area { min-height: calc(100vh - 70px); height: auto; overflow-y: auto; }
+.content-area { min-height: calc(100vh - 70px); height: auto !important; overflow-y: auto; }
 
 /* CÁC NÚT BẤM DÀNH CHO SHOT */
 #shot-actions-slot .btn-action { height: 38px; padding: 0 16px; border-radius: 10px; border: none; font-weight: 600; font-size: 13px; color: white; display: flex; align-items: center; gap: 8px; cursor: pointer; }
@@ -80,12 +80,15 @@ img { max-width: 100%; height: auto; display: block; }
 
 .content-body { flex: 1; padding: 25px; overflow-y: auto; transition: opacity 0.3s; }
 
-/* ZOOM MODAL */
-.modal-preview { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 10000; justify-content: center; align-items: center; }
-.modal-content { max-width: 90%; max-height: 90%; border-radius: 16px; transform: scale(0.9); transition: 0.3s; object-fit: contain; }
-.modal-preview.active { display: flex; }
+/* ZOOM MODAL - ZOOM IMAGE*/
+.modal-preview { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(10px);}
+.modal-content { max-width: 95%; max-height: 95%; border-radius: 16px; transform: scale(1); transition: 0.3s; object-fit: contain; cursor: default;}
+.modal-preview.active { display: flex; animation: fadeIn 0.3s ease; }
 .close-modal { position: absolute; top: 30px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
-
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 .sidebar.collapsed .user-info, .sidebar.collapsed .menu-item span, .sidebar.collapsed .header-main span, .sidebar.collapsed .chevron, .sidebar.collapsed .user-details { display: none; }
 
 .is-exporting #content-area {
