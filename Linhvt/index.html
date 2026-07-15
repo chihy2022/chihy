@@ -18,20 +18,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <!-- LOGIN OVERLAY -->
-    <div id="login-overlay" class="auth-overlay">
-        <div class="login-box">
-            <img src="assets/images/logoUNILEVER.png" alt="Unilever Logo">
-            <h2 style="color: var(--primary); font-weight: 800;">Unime System</h2>
-            <p>Vui lòng nhập User CODE để tiếp tục</p>
-            <div class="password-container">
-                <input type="password" id="login-uid" class="login-input" placeholder="USER CODE">
-                <i class="fa-solid fa-eye-slash" id="togglePassword"></i>
+            <!-- LOGIN OVERLAY ĐÃ FIX FORM -->
+        <div id="login-overlay" class="auth-overlay">
+            <div class="login-box">
+                <img src="assets/images/logoUNILEVER.png" alt="Unilever Logo">
+                <h2 style="color: var(--primary); font-weight: 800;">Unime System</h2>
+                <p>Vui lòng nhập User CODE để tiếp tục</p>
+                
+                <!-- Bọc Form vào đây -->
+                <form id="loginForm" onsubmit="event.preventDefault();">
+                    <div class="password-container">
+                        <input type="password" id="login-uid" class="login-input" placeholder="USER CODE" autocomplete="current-password">
+                        <i class="fa-solid fa-eye-slash" id="togglePassword"></i>
+                    </div>
+                    <button type="submit" class="btn-login" id="btnLogin">ĐĂNG NHẬP</button>
+                </form>
+
+                <div id="login-msg" style="color: red; margin-top: 10px;"></div>
             </div>
-            <button class="btn-login" id="btnLogin">ĐĂNG NHẬP</button>
-            <div id="login-msg" style="color: red; margin-top: 10px;"></div>
         </div>
-    </div>
 
     <!-- APP CONTAINER -->
     <div class="app-container hidden">
