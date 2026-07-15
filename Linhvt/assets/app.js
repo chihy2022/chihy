@@ -1,8 +1,3 @@
-/**
- * UNIME SYSTEM - CORE JAVASCRIPT
- * Tối ưu hóa: Dọn dẹp script, Quản lý trạng thái, Phân quyền
- */
-
 const CONFIG = {
     GGS_URL: "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec",
     STORAGE_KEY: "Unime_UID",
@@ -17,11 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
 class UnimeApp {
     constructor() {
         this.contentArea = document.getElementById('content-area');
+        this.actionSlot = document.getElementById('shot-actions-slot');
         this.headerTitle = document.getElementById('dynamic-header-title');
         this.sidebar = document.getElementById('sidebar');
         this.loginOverlay = document.getElementById('login-overlay');
         this.appContainer = document.querySelector('.app-container');
-        this.userPermissions = null;
     }
 
     init() {
@@ -31,209 +26,131 @@ class UnimeApp {
     }
 
     setupEventListeners() {
-        // Toggle Sidebar
         document.getElementById('toggleBtn').addEventListener('click', () => this.toggleSidebar());
-
-        // Login Actions
         document.getElementById('btnLogin').addEventListener('click', () => this.performLogin());
-        document.getElementById('login-uid').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.performLogin();
-        });
         document.getElementById('togglePassword').addEventListener('click', () => this.togglePassword());
+        document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
+        document.getElementById('exportPdfBtn').addEventListener('click', (e) => handleExportPdf(e.currentTarget));
 
-        // Sidebar Menu Clicks
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', () => this.handleMenuClick(item));
         });
 
-        // Group Headers
         document.querySelectorAll('.group-header').forEach(header => {
             header.addEventListener('click', () => header.parentElement.classList.toggle('active'));
         });
 
-        // Global Image Click (Delegation)
         document.addEventListener('click', (e) => this.handleGlobalClicks(e));
-
-        // Logout
-        document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
-
-        // Export PDF
-        document.getElementById('exportPdfBtn').addEventListener('click', (e) => handleExportPdf(e.currentTarget));
-    }
-
-    // --- AUTHENTICATION ---
-    async checkAuth() {
-        const savedUID = localStorage.getItem(CONFIG.STORAGE_KEY);
-        if (savedUID) {
-            document.getElementById('login-uid').value = savedUID;
-            // Tự động login nếu đã có UID trong máy
-            await this.performLogin(savedUID);
-        }
     }
 
     async performLogin(forcedUid = null) {
         const uidInput = document.getElementById('login-uid');
         const btn = document.getElementById('btnLogin');
-        const msg = document.getElementById('login-msg');
         const uid = forcedUid || uidInput.value.trim().toUpperCase();
 
         if (!uid) return;
-
-        btn.disabled = true;
-        btn.innerText = "ĐANG KIỂM TRA...";
-        msg.innerText = "";
-
+        btn.disabled = true; btn.innerText = "ĐANG KIỂM TRA...";
+        
         try {
-            const response = await fetch(`${CONFIG.GGS_URL}?action=getRole&uid=${uid}`);
-            const user = await response.json();
-
+            const res = await fetch(`${CONFIG.GGS_URL}?action=getRole&uid=${uid}`);
+            const user = await res.json();
             if (user && user.rights) {
                 localStorage.setItem(CONFIG.STORAGE_KEY, uid);
-                this.userPermissions = user.rights;
                 this.applyPermissions(user);
                 this.loginOverlay.classList.add('hidden');
                 this.appContainer.classList.remove('hidden');
-                
-                // Load shot mặc định hoặc shot đang xem dở
-                const startShot = localStorage.getItem('currentShot') || 'shot1';
-                this.loadPage(startShot);
-            } else {
-                msg.innerText = "Sai mã hoặc không có quyền truy cập!";
-                localStorage.removeItem(CONFIG.STORAGE_KEY);
+                this.loadPage(localStorage.getItem('currentShot') || 'shot1');
+            } else { 
+                document.getElementById('login-msg').innerText = "Sai User CODE!"; 
             }
-        } catch (e) {
-            msg.innerText = "Lỗi kết nối máy chủ!";
-        } finally {
-            btn.disabled = false;
-            btn.innerText = "ĐĂNG NHẬP";
-        }
+        } catch(e) {
+            document.getElementById('login-msg').innerText = "Lỗi kết nối!";
+        } finally { btn.disabled = false; btn.innerText = "ĐĂNG NHẬP"; }
     }
 
     applyPermissions(user) {
         document.getElementById('display-user-name').innerText = user.name;
-        
         document.querySelectorAll('.menu-item[data-shot]').forEach(item => {
             const shot = item.getAttribute('data-shot');
-            const perm = (this.userPermissions[shot] || "").toLowerCase();
-            if (perm === "root" || perm === "view") {
-                item.classList.remove('hidden');
-            } else {
-                item.classList.add('hidden');
-            }
+            const perm = (user.rights[shot] || "").toLowerCase();
+            item.classList.toggle('hidden', !(perm === "root" || perm === "view"));
+        });
+        document.querySelectorAll('.menu-group').forEach(group => {
+            const hasVisible = group.querySelectorAll('.menu-item:not(.hidden)').length > 0;
+            group.classList.toggle('hidden', !hasVisible);
         });
     }
 
-    // --- PAGE LOADER (OPTIMIZED) ---
     async loadPage(shotName) {
-        if (!shotName || !this.contentArea) return;
-
-        // Hiệu ứng mờ dần khi chuyển
+        if (!shotName) return;
         this.contentArea.style.opacity = '0.3';
+        this.actionSlot.innerHTML = ''; 
 
         try {
             const path = `shots/${shotName}/${shotName}`;
-            
-            // 1. Dọn dẹp tài nguyên cũ của shot trước
             this.cleanupShotAssets();
 
-            // 2. Tải CSS trước để không bị "nháy" giao diện
-            const link = document.createElement('link');
-            link.id = 'shot-css';
-            link.rel = 'stylesheet';
-            link.href = `${path}.css`;
-            document.head.appendChild(link);
-
-            // 3. Tải HTML
             const res = await fetch(`${path}.html`);
-            if (!res.ok) throw new Error("Không thể tải nội dung trang");
             const html = await res.text();
-            this.contentArea.innerHTML = html;
 
-            // 4. Tải JS sau khi DOM đã có
-            const script = document.createElement('script');
-            script.id = 'shot-js';
-            script.src = `${path}.js`;
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const shotActions = doc.querySelector('.shot-actions');
+            const shotBody = doc.querySelector('.shot-body');
+
+            if (shotActions) this.actionSlot.innerHTML = shotActions.innerHTML;
+            this.contentArea.innerHTML = shotBody ? shotBody.innerHTML : html;
+
+            // Load CSS/JS
+            const link = document.createElement('link'); link.id = 'shot-css'; link.rel = 'stylesheet'; link.href = `${path}.css`;
+            document.head.appendChild(link);
+            const script = document.createElement('script'); script.id = 'shot-js'; script.src = `${path}.js`;
             document.body.appendChild(script);
 
-            // Cập nhật UI
             localStorage.setItem('currentShot', shotName);
             this.contentArea.style.opacity = '1';
-            this.contentArea.scrollTo(0, 0);
-
-        } catch (err) {
-            this.contentArea.innerHTML = `<div class="p-5 text-danger">Lỗi tải trang: ${err.message}</div>`;
-            this.contentArea.style.opacity = '1';
-        }
+        } catch (err) { this.contentArea.innerHTML = `<div class="p-4">Đang cập nhật nội dung cho ${shotName}...</div>`; this.contentArea.style.opacity = '1'; }
     }
 
-    cleanupShotAssets() {
-        ['shot-css', 'shot-js'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        });
-    }
+    cleanupShotAssets() { ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove()); }
 
-    // --- UTILS ---
     handleMenuClick(item) {
         const shot = item.getAttribute('data-shot');
         const title = item.getAttribute('data-title');
-        
         document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
         item.classList.add('active');
         this.headerTitle.innerText = title;
-        
         this.loadPage(shot);
     }
 
     toggleSidebar() {
         this.sidebar.classList.toggle('collapsed');
-        const isMini = this.sidebar.classList.contains('collapsed');
-        localStorage.setItem(CONFIG.SIDEBAR_KEY, isMini ? 'mini' : 'full');
+        localStorage.setItem(CONFIG.SIDEBAR_KEY, this.sidebar.classList.contains('collapsed') ? 'mini' : 'full');
     }
 
-    restoreSidebarState() {
-        if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === 'mini') {
-            this.sidebar.classList.add('collapsed');
-        }
-    }
+    restoreSidebarState() { if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === 'mini') this.sidebar.classList.add('collapsed'); }
 
     togglePassword() {
         const input = document.getElementById('login-uid');
-        const icon = document.getElementById('togglePassword');
-        const isPass = input.type === 'password';
-        input.type = isPass ? 'text' : 'password';
-        icon.classList.toggle('fa-eye-slash', !isPass);
-        icon.classList.toggle('fa-eye', isPass);
+        input.type = input.type === 'password' ? 'text' : 'password';
+        document.getElementById('togglePassword').classList.toggle('fa-eye');
     }
 
     handleGlobalClicks(e) {
-        // Modal ảnh
-        if (e.target.classList.contains('img-previewable') || e.target.id === 'myImg') {
+        // ZOOM ẢNH
+        if (e.target.tagName === 'IMG' && (e.target.id === 'myImg' || e.target.classList.contains('img-previewable'))) {
             const modal = document.getElementById('imageModal');
             document.getElementById('imgFull').src = e.target.src;
             modal.classList.add('active');
         }
-
         if (e.target.classList.contains('close-modal') || e.target.id === 'imageModal') {
             document.getElementById('imageModal').classList.remove('active');
         }
-
-        // Accordion Card logic
-        const cardHeader = e.target.closest('.card-header-toggle');
-        if (cardHeader) {
-            const item = cardHeader.closest('.collapsible-item');
-            item.classList.toggle('active');
-        }
     }
 
-    logout() {
-        if (confirm("Đăng xuất khỏi hệ thống?")) {
-            localStorage.removeItem(CONFIG.STORAGE_KEY);
-            location.reload();
-        }
-    }
+    logout() { if (confirm("Đăng xuất?")) { localStorage.clear(); location.reload(); } }
+    checkAuth() { const uid = localStorage.getItem(CONFIG.STORAGE_KEY); if (uid) this.performLogin(uid); }
 }
-
 // --- PDF EXPORT FUNCTION (GLOBAL) ---
 async function handleExportPdf(btn) {
     const source = document.getElementById('content-area');
