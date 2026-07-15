@@ -62,11 +62,6 @@
     margin-top: 35px; padding-top: 20px; border-top: 1px solid #f1f5f9;
     display: flex; justify-content: space-between; align-items: center;
 }
-/* .fb-btn-submit-premium {
-    background: #00599a; color: #fff; border: none; padding: 14px 30px;
-    border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.3s;
-}
-.fb-btn-submit-premium:hover { background: #004070; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 89, 154, 0.2); } */
 .fb-btn-submit-premium { background: var(--primary-gradient);box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3); transition: 0.3s; color: white; border: none; padding: 8px 18px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px;}
 .fb-btn-submit-premium:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4); filter: brightness(1.1); }
 .fb-btn-submit-premium:active { transform: translateY(0); }
