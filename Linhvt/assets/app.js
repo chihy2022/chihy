@@ -80,36 +80,80 @@ class UnimeApp {
             group.classList.toggle('hidden', !hasVisible);
         });
     }
-
     async loadPage(shotName) {
         if (!shotName) return;
-        this.contentArea.style.opacity = '0.3';
-        this.actionSlot.innerHTML = ''; 
+
+        // Đảm bảo các phần tử tồn tại trước khi chạy
+        const content = document.getElementById('content-area');
+        const actionSlot = document.getElementById('shot-actions-slot');
+        
+        if (!content || !actionSlot) {
+            console.error("Không tìm thấy content-area hoặc shot-actions-slot");
+            return;
+        }
+
+        content.style.opacity = '0';
+        actionSlot.innerHTML = ''; 
 
         try {
             const path = `shots/${shotName}/${shotName}`;
+            
+            // Gọi hàm dọn dẹp (đã khai báo bên dưới)
             this.cleanupShotAssets();
 
-            const res = await fetch(`${path}.html`);
-            const html = await res.text();
+            // 1. Tải HTML (thêm timestamp để tránh cache)
+            const res = await fetch(`${path}.html?t=${Date.now()}`);
+            if (!res.ok) throw new Error("File HTML không tồn tại");
+            const htmlText = await res.text();
 
             const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
+            const doc = parser.parseFromString(htmlText, 'text/html');
             const shotActions = doc.querySelector('.shot-actions');
             const shotBody = doc.querySelector('.shot-body');
 
-            if (shotActions) this.actionSlot.innerHTML = shotActions.innerHTML;
-            this.contentArea.innerHTML = shotBody ? shotBody.innerHTML : html;
+            if (shotActions) actionSlot.innerHTML = shotActions.innerHTML;
+            content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
 
-            // Load CSS/JS
-            const link = document.createElement('link'); link.id = 'shot-css'; link.rel = 'stylesheet'; link.href = `${path}.css`;
+            // 2. Nạp CSS
+            const link = document.createElement('link');
+            link.id = 'shot-css';
+            link.rel = 'stylesheet';
+            link.href = `${path}.css?t=${Date.now()}`;
             document.head.appendChild(link);
-            const script = document.createElement('script'); script.id = 'shot-js'; script.src = `${path}.js`;
+
+            // 3. Nạp JS
+            const script = document.createElement('script');
+            script.id = 'shot-js';
+            script.src = `${path}.js?t=${Date.now()}`;
+            
+            script.onload = () => {
+                // Sau khi file JS nạp xong, tìm hàm Init của Shot đó để chạy
+                const initFuncName = `${shotName}Init`;
+                if (typeof window[initFuncName] === 'function') {
+                    window[initFuncName]();
+                }
+            };
+
             document.body.appendChild(script);
 
             localStorage.setItem('currentShot', shotName);
-            this.contentArea.style.opacity = '1';
-        } catch (err) { this.contentArea.innerHTML = `<div class="p-4">Đang cập nhật nội dung cho ${shotName}...</div>`; this.contentArea.style.opacity = '1'; }
+            
+            // Hiện nội dung mượt mà
+            setTimeout(() => content.style.opacity = '1', 150);
+
+        } catch (err) { 
+            console.error("Lỗi LoadPage:", err);
+            content.innerHTML = `<div class="p-5 text-center text-muted">Dữ liệu đang được cập nhật cho ${shotName}...</div>`;
+            content.style.opacity = '1';
+        }
+    }
+
+    // ĐẢM BẢO BẠN CÓ HÀM NÀY TRONG CLASS UNIMEAPP
+    cleanupShotAssets() {
+        const oldCss = document.getElementById('shot-css');
+        if (oldCss) oldCss.remove();
+        const oldJs = document.getElementById('shot-js');
+        if (oldJs) oldJs.remove();
     }
 
     cleanupShotAssets() { ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove()); }
