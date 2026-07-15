@@ -195,37 +195,104 @@ class UnimeApp {
     logout() { if (confirm("Đăng xuất?")) { localStorage.clear(); location.reload(); } }
     checkAuth() { const uid = localStorage.getItem(CONFIG.STORAGE_KEY); if (uid) this.performLogin(uid); }
 }
-// --- PDF EXPORT FUNCTION (GLOBAL) ---
+
 async function handleExportPdf(btn) {
     const source = document.getElementById('content-area');
-    if (!source || typeof html2canvas === 'undefined') return;
+    if (!source || typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') return;
 
     const originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+    btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang trích xuất...';
+
+    // 1. TẠO SANDBOX ĐỂ CHỤP
+    const sandbox = document.createElement('div');
+    Object.assign(sandbox.style, {
+        position: 'absolute',
+        left: '-9999px',
+        top: '0',
+        width: source.clientWidth + 'px', 
+        background: 'white',
+        padding: '0' // Không thêm padding để tránh lệch lề
+    });
+
+    const clone = source.cloneNode(true);
+    sandbox.appendChild(clone);
+    document.body.appendChild(sandbox);
 
     try {
-        const canvas = await html2canvas(source, {
+        // 2. GIỮ NGUYÊN SETUP CỦA BẠN - CHỈ FIX NHỮNG THỨ LÀM HỎNG PDF
+        const originalTable = source.querySelector('.modern-table');
+        const clonedTable = clone.querySelector('.modern-table');
+
+        if (originalTable && clonedTable) {
+            // Ép chiều rộng bảng clone bằng đúng bảng thật để không rớt chữ
+            clonedTable.style.width = originalTable.offsetWidth + 'px';
+            clonedTable.style.tableLayout = 'fixed';
+
+            const originalRows = originalTable.rows;
+            const clonedRows = clonedTable.rows;
+
+            for (let r = 0; r < originalRows.length; r++) {
+                for (let c = 0; c < originalRows[r].cells.length; c++) {
+                    const origCell = originalRows[r].cells[c];
+                    const clonedCell = clonedRows[r].cells[c];
+                    if (!clonedCell) continue;
+
+                    // LẤY STYLE THỰC TẾ TRÌNH DUYỆT ĐANG HIỂN THỊ (bao gồm màu từ getRowStyleShot1)
+                    const computedStyle = window.getComputedStyle(origCell);
+                    
+                    clonedCell.style.width = origCell.offsetWidth + 'px';
+                    clonedCell.style.backgroundColor = computedStyle.backgroundColor;
+                    clonedCell.style.color = computedStyle.color;
+                    clonedCell.style.textAlign = computedStyle.textAlign; // GIỮ NGUYÊN CANH LỀ CỦA BẠN
+                    clonedCell.style.padding = computedStyle.padding;
+                    clonedCell.style.fontWeight = computedStyle.fontWeight;
+                    clonedCell.style.verticalAlign = 'middle'; // Chỉ ép cái này để PDF đẹp
+                    
+                    // Chỉ dùng nowrap cho cột A/U để tránh rớt chữ "r" do sai số font
+                    if (c === 1) {
+                        clonedCell.style.whiteSpace = 'nowrap';
+                        clonedCell.style.width = (origCell.offsetWidth + 1) + 'px'; // Thêm 1px dự phòng
+                    }
+                }
+            }
+        }
+
+        // 3. DỌN UI RÁC (Nút và thùng rác)
+        clone.querySelectorAll('button, .actions, .sidebar-toggle, .btn-trash, .fa-trash-can').forEach(el => el.remove());
+        
+        // Loại bỏ min-height 100vh để hết lỗi canh dưới
+        clone.style.minHeight = '0';
+        clone.style.height = 'auto';
+
+        await new Promise(r => setTimeout(r, 300));
+
+        // 4. CHỤP ẢNH
+        const canvas = await html2canvas(sandbox, {
             scale: 2,
             useCORS: true,
-            logging: false,
-            windowWidth: source.scrollWidth,
-            windowHeight: source.scrollHeight
+            backgroundColor: "#ffffff"
         });
 
-        const imgData = canvas.toDataURL('image/png');
+        // 5. XUẤT PDF VỪA KHÍT (KHÔNG DƯ TRẮNG)
+        const imgData = canvas.toDataURL('image/png', 1.0);
+        const imgW = canvas.width / 2;
+        const imgH = canvas.height / 2;
+
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
-            orientation: canvas.width > canvas.height ? 'l' : 'p',
+            orientation: imgW > imgH ? 'l' : 'p',
             unit: 'px',
-            format: [canvas.width / 2, canvas.height / 2]
+            format: [imgW, imgH] // PDF dài đúng bằng nội dung của bạn
         });
 
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
-        pdf.save(`Unime_Export_${new Date().getTime()}.pdf`);
-    } catch (err) {
-        alert("Lỗi khi tạo PDF!");
+        pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
+        pdf.save(`Unime_Report_${new Date().getTime()}.pdf`);
+
+    } catch (e) {
+        console.error(e);
     } finally {
+        sandbox.remove();
         btn.disabled = false;
         btn.innerHTML = originalText;
     }
