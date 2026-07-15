@@ -1,3 +1,45 @@
+/* Style nút điều hướng siêu gọn cho Header */
+.btn-nav-scroll {
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+    height: 32px;
+    white-space: nowrap; /* Chống rớt chữ trong nút */
+}
+
+.btn-nav-scroll i {
+    font-size: 13px;
+    color: #1a4e8a;
+}
+
+.btn-nav-scroll:hover {
+    background: #ffffff;
+    border-color: #1a4e8a;
+    color: #1a4e8a;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Khi nút đang ở section đó (hiệu ứng active nếu muốn) */
+.btn-nav-scroll.active {
+    background: #e0f2fe;
+    border-color: #0369a1;
+    color: #0369a1;
+}
+
+/* Đảm bảo content-area cho phép cuộn mượt */
+#content-area {
+    scroll-behavior: smooth;
+}
+
 /* --- SHOT 6: PREMIUM DESIGN --- */
 .shot-body { padding: 20px; background: #f8fafc; }
 
@@ -97,7 +139,7 @@
 
 /* 3. RACI MATRIX */
 .boss-raci-table { width: 100%; margin-top: 20px; border-collapse: separate; border-spacing: 0; border: 1px solid #f1f5f9; border-radius: 16px; overflow: hidden; }
-.boss-raci-table thead th { background: #f8fafc; padding: 20px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; text-align: center; }
+.boss-raci-table thead th { background: #f8fafc; padding: 20px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;}
 .th-box { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .th-box i { font-size: 20px; color: #1d4ed8; margin-bottom: 2px; }
 .th-box strong { font-size: 14px; color: #1e293b; }
