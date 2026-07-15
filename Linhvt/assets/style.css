@@ -13,7 +13,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Be Vietnam Pro', sans-serif; }
-body { background: var(--bg-app); color: var(--text-dark); overflow: hidden; width: 100vw; height: 100vh; }
+body { background: var(--bg-app); color: var(--text-dark); width: 100vw; height: 100vh; }
 img { max-width: 100%; height: auto; display: block; }
 .hidden { display: none !important; }
 
@@ -38,7 +38,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 .sidebar-header { padding: 25px 20px; }
 .user-profile { display: flex; align-items: center; gap: 12px; }
-.avatar { width: 45px; height: 45px; flex-shrink: 0; overflow: hidden; margin-bottom: 5px; }
+.avatar { width: 45px; height: 45px; flex-shrink: 0; overflow: hidden; }
 .app-name { display: block; font-weight: 800; font-size: 19px; color: var(--primary); white-space: nowrap; }
 .app-sub { display: block; font-size: 11px; color: var(--text-gray); white-space: nowrap; }
 
@@ -67,8 +67,9 @@ img { max-width: 100%; height: auto; display: block; }
 
 /* MAIN CONTENT */
 .main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; min-width: 0; }
-.main-header { height: 70px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; border-bottom: 1px solid var(--border); z-index: 100; position: relative; }
+.main-header { align-items: center; height: 70px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; border-bottom: 1px solid var(--border); z-index: 100; position: relative; }
 .header-divider { width: 1px; height: 24px; background: var(--border); margin: 0 10px; }
+.content-area { min-height: calc(100vh - 70px); height: auto; overflow-y: auto; }
 
 /* CÁC NÚT BẤM DÀNH CHO SHOT */
 #shot-actions-slot .btn-action { height: 38px; padding: 0 16px; border-radius: 10px; border: none; font-weight: 600; font-size: 13px; color: white; display: flex; align-items: center; gap: 8px; cursor: pointer; }
@@ -86,3 +87,24 @@ img { max-width: 100%; height: auto; display: block; }
 .close-modal { position: absolute; top: 30px; right: 30px; color: white; font-size: 40px; cursor: pointer; }
 
 .sidebar.collapsed .user-info, .sidebar.collapsed .menu-item span, .sidebar.collapsed .header-main span, .sidebar.collapsed .chevron, .sidebar.collapsed .user-details { display: none; }
+
+.is-exporting #content-area {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+}
+
+.is-exporting .main-content, 
+.is-exporting .app-container {
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.is-exporting .sidebar,
+.is-exporting .main-header,
+.is-exporting .actions,
+.is-exporting .btn-trash,
+.is-exporting .sidebar-toggle {
+    display: none !important;
+}
