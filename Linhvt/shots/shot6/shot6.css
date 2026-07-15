@@ -1,40 +1,37 @@
-/* --- SHOT 6: PREMIUM FIXED STYLING --- */
-.shot6-wrapper { padding: 10px; min-height: 100vh; }
-.content-section { scroll-margin-top: 110px; margin-bottom: 20px; }
+/* --- SHOT 6: PREMIUM DESIGN --- */
+.shot-body { padding: 20px; background: #f8fafc; }
 
 .section-card {
     background: #fff; border-radius: 28px; padding: 40px;
-    border: 1px solid #f0f0f0; box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    border: 1px solid #f0f3f7; box-shadow: 0 10px 40px rgba(0, 89, 154, 0.03);
+    margin-bottom: 30px;
 }
 
+.content-section { margin-bottom: 30px; }
+
 /* Titles */
-.pro-title { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 10px; }
+.pro-title { display: flex; align-items: center; gap: 18px; margin-bottom: 10px; }
 .step-num {
     width: 48px; height: 48px; background: #1a4e8a; color: #fff;
     border-radius: 14px; display: flex; align-items: center; justify-content: center;
     font-size: 20px; font-weight: 800; flex-shrink: 0;
 }
-.pro-title h1 { font-size: 28px; font-weight: 800; color: #111827; margin: 0; }
-/* --- SECTION 1: HORIZONTAL ROADMAP --- */
-
-/* ================================================================
-   BOSS DESIGN PIXEL PERFECT - SHOT 6
-   ================================================================ */
+.pro-title h1 { font-size: 26px; font-weight: 800; color: #1e293b; margin: 0; text-transform: uppercase; }
+.section-desc { font-size: 14px; color: #64748b; margin-left: 65px; margin-bottom: 25px; line-height: 1.5; }
 
 /* 1. HORIZONTAL ROADMAP */
 .s6-roadmap-container {
     display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px;
-    position: relative; padding: 60px 0 20px;
+    position: relative; padding: 40px 0 20px;
 }
 
 .s6-roadmap-line {
-    position: absolute; top: 110px; left: 5%; right: 5%;
+    position: absolute; top: 90px; left: 10%; right: 10%;
     height: 0; border-top: 2px dashed #cbd5e1; z-index: 1;
 }
 
 .s6-step-box { text-align: center; position: relative; z-index: 2; }
 
-/* Icons with double border look */
 .s6-icon-outer {
     width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 20px;
     display: flex; align-items: center; justify-content: center;
@@ -42,7 +39,6 @@
 }
 .s6-icon-inner { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; background: #f8fafc; }
 
-/* Colors */
 .color-1 .s6-icon-outer { border-color: #3b82f6; color: #3b82f6; }
 .color-2 .s6-icon-outer { border-color: #10b981; color: #10b981; }
 .color-3 .s6-icon-outer { border-color: #0d9488; color: #0d9488; }
@@ -59,24 +55,17 @@
 .color-4 .s6-step-badge { background: #f59e0b; }
 .color-5 .s6-step-badge { background: #d97706; }
 
-.s6-step-box h3 { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 8px; height: 42px; display: flex; align-items: center; justify-content: center; }
-.s6-step-box p { font-size: 14px; color: #64748b; margin-bottom: 20px; line-height: 1.4; padding: 0 10px; }
+.s6-step-box h3 { font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 8px; height: 40px; display: flex; align-items: center; justify-content: center; }
+.s6-step-box p { font-size: 12px; color: #64748b; margin-bottom: 20px; line-height: 1.4; padding: 0 5px; }
 
-/* Input/Output Boxes */
-.s6-io-group { text-align: left; background: #fcfdfe; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; min-height: 140px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+.s6-io-group { text-align: left; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; min-height: 130px; }
 .io-row { margin-bottom: 12px; }
-.io-row:last-child { margin-bottom: 0; }
-.io-row strong { display: block; font-size: 12px; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; }
-.io-row p { font-size: 12px; color: #475569; margin: 0; padding: 0; }
+.io-row strong { display: block; font-size: 10px; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; color: #1a4e8a; }
+.io-row p { font-size: 11px; color: #475569; margin: 0; padding: 0; line-height: 1.3; }
 
-.color-1 strong { color: #3b82f6; } .color-2 strong { color: #10b981; } .color-3 strong { color: #0d9488; }
-.color-4 strong { color: #f59e0b; } .color-5 strong { color: #d97706; }
-
-/* 2. USECASE POWERHOUSE SECTION */
-.s6-usecase-main { display: grid; grid-template-columns: 320px 1fr; gap: 30px; margin-top: 30px; }
-
-/* Sidebar Actors */
-.s6-uc-sidebar { background: #eff6ff; border-radius: 16px; padding: 25px 20px; border: 1px solid #dbeafe; }
+/* 2. USECASE POWERHOUSE */
+.s6-usecase-main { display: grid; grid-template-columns: 300px 1fr; gap: 30px; margin-top: 10px; }
+.s6-uc-sidebar { background: #eff6ff; border-radius: 20px; padding: 30px 25px; border: 1px solid #dbeafe; }
 .s6-sb-title { font-weight: 800; color: #1d4ed8; font-size: 13px; margin-bottom: 25px; text-align: center; letter-spacing: 0.5px; }
 .s6-sb-actor { display: flex; gap: 15px; margin-bottom: 25px; align-items: flex-start; }
 .sb-avatar { width: 42px; height: 42px; border-radius: 50%; color: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
@@ -84,82 +73,57 @@
 .sb-info strong { font-size: 14px; color: #1e293b; display: block; margin-bottom: 4px; }
 .sb-info p { font-size: 12px; color: #64748b; line-height: 1.4; margin: 0; }
 
-/* UC List Grid */
 .s6-uc-list { display: flex; flex-direction: column; gap: 15px; }
 .uc-row-item { 
     background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; 
-    display: grid; grid-template-columns: 80px 220px 1.2fr 1fr 1fr 130px; 
-    padding: 20px; align-items: center; transition: 0.3s;
+    display: grid; grid-template-columns: 70px 200px 1.2fr 1fr 1fr 120px; 
+    padding: 20px; align-items: center; transition: 0.2s;
 }
-.uc-row-item:hover { transform: translateX(10px); box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
-
 .uc-id { font-weight: 800; font-size: 16px; }
 .text-cda { color: #2563eb; } .text-npp { color: #10b981; } .text-gstb { color: #0d9488; } .text-manager { color: #f59e0b; } .text-orange { color: #f97316; }
 
-.uc-main strong { font-size: 16px; color: #1e293b; display: block; margin-bottom: 5px; }
+.uc-main strong { font-size: 15px; color: #1e293b; display: block; margin-bottom: 5px; }
 .uc-main p { font-size: 12px; color: #64748b; margin: 0; line-height: 1.4; }
 
 .uc-col { padding: 0 15px; border-left: 1px solid #f1f5f9; }
-.uc-col strong { font-size: 12px; font-weight: 800; display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
+.uc-col strong { font-size: 11px; font-weight: 800; display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; }
 .uc-col p { font-size: 12px; color: #475569; margin: 0; line-height: 1.4; }
 
 .uc-user { font-size: 14px; font-weight: 700; color: #1a4e8a; display: flex; align-items: center; gap: 8px; border-left: 1px solid #f1f5f9; padding-left: 15px; }
-.uc-user i { font-size: 16px; opacity: 0.7; }
 
-/* Note Footer */
-.s6-note-footer { background: #f0f9ff; padding: 18px 30px; border-radius: 12px; display: flex; gap: 15px; align-items: center; margin-top: 25px; }
-.s6-note-footer i { color: #2563eb; font-size: 20px; }
-.s6-note-footer p { margin: 0; font-size: 13px; color: #475569; }
+.s6-note-footer { background: #f0f9ff; padding: 15px 25px; border-radius: 12px; display: flex; gap: 15px; align-items: center; margin-top: 25px; }
+.s6-note-footer i { color: #2563eb; font-size: 18px; }
+.s6-note-footer p { margin: 0; font-size: 13px; color: #475569; line-height: 1.4; }
 
-
-/* --- SECTION 03 : BOSS RACI TABLE --- */
-
-.section-desc { font-size: 14px; color: #64748b; margin: 5px 0 25px 65px; font-weight: 500; }
-
+/* 3. RACI MATRIX */
 .boss-raci-table { width: 100%; margin-top: 20px; border-collapse: separate; border-spacing: 0; border: 1px solid #f1f5f9; border-radius: 16px; overflow: hidden; }
-
-/* Table Header */
-.boss-raci-table thead th { background: #fff; padding: 20px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-.th-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.th-box i { font-size: 22px; color: #1d4ed8; margin-bottom: 5px; opacity: 0.8; }
+.boss-raci-table thead th { background: #f8fafc; padding: 20px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; text-align: center; }
+.th-box { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.th-box i { font-size: 20px; color: #1d4ed8; margin-bottom: 2px; }
 .th-box strong { font-size: 14px; color: #1e293b; }
-.th-box small { font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
+.th-box small { font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
 
-.col-activity { text-align: left !important; padding-left: 30px !important; background: #f8fafc !important; color: #1e293b !important; font-weight: 800; font-size: 14px; border-right: 1px solid #f1f5f9; }
-
-/* Table Body Cells */
-.boss-raci-table tbody td { padding: 18px 10px; border-bottom: 1px solid #f1f5f9; text-align: center; vertical-align: middle; background: #fff; }
-.boss-raci-table tbody tr:last-child td { border-bottom: none; }
-
-/* Activity Column with Icon */
-.activity-cell { display: flex; align-items: center; gap: 20px; text-align: left !important; padding-left: 30px !important; border-right: 1px solid #f1f5f9; }
-.activity-cell i { width: 40px; height: 40px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1d4ed8; font-size: 18px; flex-shrink: 0; }
-.activity-cell strong { font-size: 14px; color: #1e293b; display: block; line-height: 1.2; }
+.boss-raci-table tbody td { padding: 15px 10px; border-bottom: 1px solid #f1f5f9; text-align: center; vertical-align: middle; background: #fff; }
+.activity-cell { display: flex; align-items: center; gap: 15px; text-align: left !important; padding-left: 25px !important; border-right: 1px solid #f1f5f9; min-width: 320px; }
+.activity-cell i { width: 36px; height: 36px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1d4ed8; font-size: 16px; flex-shrink: 0; }
+.activity-cell strong { font-size: 14px; color: #1e293b; display: block; line-height: 1.2; margin-bottom: 2px; }
 .activity-cell small { font-size: 12px; color: #64748b; font-weight: 500; }
 
-/* RACI BADGES - PREMIUM STYLE */
 .r-badge { 
-    width: 90px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 14px; transition: 0.3s;
+    width: 80px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 13px;
 }
-
 .r-badge.ar { background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; }
 .r-badge.r { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
 .r-badge.c { background: #fffbeb; color: #d97706; border: 1px solid #fef3c7; }
 .r-badge.a { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
 .r-badge.i { background: #f8fafc; color: #94a3b8; border: 1px solid #e2e8f0; }
 
-/* LEGEND GRID */
 .raci-legend-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
-.legend-card { background: #fff; border: 1px solid #f1f5f9; border-radius: 12px; padding: 15px; display: flex; gap: 15px; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-.legend-card strong { font-size: 14px; color: #1e293b; display: block; margin-bottom: 2px; }
-.legend-card p { font-size: 12px; color: #64748b; margin: 0; line-height: 1.3; font-weight: 600; }
+.legend-card { background: #fff; border: 1px solid #f1f5f9; border-radius: 12px; padding: 15px; display: flex; gap: 12px; align-items: center; }
+.legend-card strong { font-size: 13px; color: #1e293b; display: block; margin-bottom: 2px; }
+.legend-card p { font-size: 11px; color: #64748b; margin: 0; line-height: 1.3; }
 
-/* NOTE BAR */
-.boss-note-bar { background: #eff6ff; border: 1px solid #dbeafe; border-radius: 12px; padding: 15px 25px; display: flex; gap: 15px; align-items: center; }
-.boss-note-bar i { color: #1d4ed8; font-size: 16px; }
-.boss-note-bar strong { font-size: 14px; color: #1e293b; }
-.boss-note-bar p { font-size: 12px; color: #475569; margin: 0; font-weight: 500; }
-
-/* HOVER EFFECT */
-.boss-raci-table tbody tr:hover td { background: #fcfdfe; }
+.boss-note-bar { background: #f8fafc; padding: 15px 25px; display: flex; gap: 15px; align-items: center; border-radius: 12px; }
+.boss-note-bar i { color: #1d4ed8; }
+.boss-note-bar p { margin: 0; font-size: 13px; color: #64748b; }
