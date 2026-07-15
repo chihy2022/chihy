@@ -1,8 +1,7 @@
-SHOT1: BÁO CÁO TIẾN ĐỘ
-/* --- STYLE BẢNG TIẾN ĐỘ --- */
+
 .shot-title {
     font-weight: 800; 
-    color: #1a4e8a; 
+    color: var(--primary); 
     margin: 0;
     font-size: 1.25rem;
 }
@@ -97,10 +96,6 @@ SHOT1: BÁO CÁO TIẾN ĐỘ
 .modern-table td {
     border: 1px solid #94a3b8 !important; 
     padding: 10px 8px;
-    
-    /* 1. Canh giữa theo chiều dọc (Vertical Center) */
-    vertical-align: middle !important; 
-    
     /* 2. Canh giữa theo chiều ngang (Horizontal Center) mặc định cho tất cả */
     text-align: center; 
     
