@@ -1,14 +1,13 @@
-<div class="body-shot">
-
-    <!-- ================= SECTION 01 : EXECUTION ROADMAP ================= -->
-    <section id="execution-roadmap" class="content-section">
+<div class="shot-body">
+    <!-- SECTION 01 : EXECUTION ROADMAP -->
+    <section class="content-section">
         <div class="section-card">
             <div class="section-header-top">
                 <div class="pro-title">
                     <span class="step-num">01</span>
                     <h1>Execution Roadmap</h1>
                 </div>
-                <p>Quy trình WEB TỒN KHO – LOGIC mô tả luồng xử lý dữ liệu POSM từ khi lập kế hoạch đến khi tổng hợp báo cáo tồn kho phục vụ đối soát và quản lý.</p>
+                <p class="section-desc">Quy trình WEB TỒN KHO – LOGIC mô tả luồng xử lý dữ liệu POSM từ khi lập kế hoạch đến khi tổng hợp báo cáo tồn kho phục vụ đối soát và quản lý.</p>
             </div>
 
             <div class="s6-roadmap-container">
@@ -22,8 +21,8 @@
                         <h3>CDA - Import Planout</h3>
                         <p>CDA import dữ liệu kế hoạch phân bổ POSM lên hệ thống.</p>
                         <div class="s6-io-group">
-                            <div class="io-row"><strong>Đầu vào</strong><p>File kế hoạch POSM (Planout)</p></div>
-                            <div class="io-row"><strong>Đầu ra</strong><p>Kế hoạch POSM được duyệt</p></div>
+                            <div class="io-row"><strong>ĐẦU VÀO</strong><p>File kế hoạch POSM (Planout)</p></div>
+                            <div class="io-row"><strong>ĐẦU RA</strong><p>Kế hoạch POSM được duyệt</p></div>
                         </div>
                     </div>
                 </div>
@@ -36,8 +35,8 @@
                         <h3>NPP nhận POSM</h3>
                         <p>Nhà phân phối tiếp nhận POSM và xác nhận số lượng thực nhận.</p>
                         <div class="s6-io-group">
-                            <div class="io-row"><strong>Đầu vào</strong><p>Kế hoạch POSM, Phiếu giao hàng</p></div>
-                            <div class="io-row"><strong>Đầu ra</strong><p>Số lượng POSM đã nhận</p></div>
+                            <div class="io-row"><strong>ĐẦU VÀO</strong><p>Kế hoạch POSM, Phiếu giao hàng</p></div>
+                            <div class="io-row"><strong>ĐẦU RA</strong><p>Số lượng POSM đã nhận</p></div>
                         </div>
                     </div>
                 </div>
@@ -50,8 +49,8 @@
                         <h3>GSTB kiểm kho, input số lượng nhận</h3>
                         <p>GSTB đối chiếu hàng hóa thực tế và cập nhật số lượng vào hệ thống.</p>
                         <div class="s6-io-group">
-                            <div class="io-row"><strong>Đầu vào</strong><p>Số lượng POSM đã nhận, Kiểm kê thực tế</p></div>
-                            <div class="io-row"><strong>Đầu ra</strong><p>Số lượng tồn kho thực tế</p></div>
+                            <div class="io-row"><strong>ĐẦU VÀO</strong><p>Số lượng POSM đã nhận, Kiểm kê thực tế</p></div>
+                            <div class="io-row"><strong>ĐẦU RA</strong><p>Số lượng tồn kho thực tế</p></div>
                         </div>
                     </div>
                 </div>
@@ -64,8 +63,8 @@
                         <h3>System update SL nhận & GAP tồn kho</h3>
                         <p>Hệ thống cập nhật tồn kho và tính chênh lệch (GAP) giữa thực tế và dữ liệu.</p>
                         <div class="s6-io-group">
-                            <div class="io-row"><strong>Đầu vào</strong><p>Số lượng nhận thực tế, Số lượng tồn kho thực tế</p></div>
-                            <div class="io-row"><strong>Đầu ra</strong><p>GAP tồn kho, cảnh báo lệch</p></div>
+                            <div class="io-row"><strong>ĐẦU VÀO</strong><p>Số lượng nhận thực tế, Số lượng tồn kho thực tế</p></div>
+                            <div class="io-row"><strong>ĐẦU RA</strong><p>GAP tồn kho, cảnh báo lệch</p></div>
                         </div>
                     </div>
                 </div>
@@ -78,8 +77,8 @@
                         <h3>POSM TOP Dashboard</h3>
                         <p>Tổng hợp và xuất báo cáo tồn kho POSM phục vụ theo dõi & quản lý.</p>
                         <div class="s6-io-group">
-                            <div class="io-row"><strong>Đầu vào</strong><p>Dữ liệu GAP tồn kho</p></div>
-                            <div class="io-row"><strong>Đầu ra</strong><p>Dashboard & báo cáo POSM</p></div>
+                            <div class="io-row"><strong>ĐẦU VÀO</strong><p>Dữ liệu GAP tồn kho</p></div>
+                            <div class="io-row"><strong>ĐẦU RA</strong><p>Dashboard & báo cáo POSM</p></div>
                         </div>
                     </div>
                 </div>
@@ -87,19 +86,18 @@
         </div>
     </section>
 
-    <!-- ================= SECTION 02 : USECASE POWERHOUSE ================= -->
-    <section id="use-case-powerhouse" class="content-section">
+    <!-- SECTION 02 : USECASE POWERHOUSE -->
+    <section class="content-section">
         <div class="section-card">
             <div class="section-header">
                 <div class="pro-title">
                     <span class="step-num">02</span>
                     <h1>Usecase Powerhouse</h1>
                 </div>
-                <p>Các use case chính trong hệ thống WEB TỒN KHO - LOGIC POSM.</p>
+                <p class="section-desc">Các use case chính trong hệ thống WEB TỒN KHO – LOGIC POSM.</p>
             </div>
 
             <div class="s6-usecase-main">
-                <!-- Sidebar -->
                 <aside class="s6-uc-sidebar">
                     <div class="s6-sb-title">AI SỬ DỤNG?</div>
                     <div class="s6-sb-actor">
@@ -120,7 +118,6 @@
                     </div>
                 </aside>
 
-                <!-- Grid List -->
                 <div class="s6-uc-list">
                     <div class="uc-row-item border-cda">
                         <div class="uc-id text-cda">UC01</div>
@@ -176,18 +173,17 @@
         </div>
     </section>
 
-    <!-- ================= SECTION 03 : RACI MATRIX ================= -->
-    <section id="raci-matrix" class="content-section">
+    <!-- SECTION 03 : RACI MATRIX -->
+    <section class="content-section">
         <div class="section-card">
-            <!-- Header -->
             <div class="section-header">
                 <div class="pro-title">
                     <span class="step-num">03</span>
-                        <h1>RACI Matrix</h1>
+                    <h1>RACI Matrix</h1>
                 </div>
-                <p>Xác định nhanh vai trò và trách nhiệm của từng bộ phận trong các hoạt động chính.</p>
+                <p class="section-desc">Xác định nhanh vai trò và trách nhiệm của từng bộ phận trong các hoạt động chính.</p>
+            </div>
 
-            <!-- Matrix Table -->
             <div class="table-responsive">
                 <table class="boss-raci-table">
                     <thead>
@@ -253,7 +249,7 @@
                 </table>
             </div>
 
-            <!-- RACI Legend Grid -->
+            <!-- Legend -->
             <div class="raci-legend-grid mt-4">
                 <div class="legend-card"><span class="r-badge ar">A/R</span><div><strong>Accountable & Responsible</strong><p>Chịu trách nhiệm chính & thực hiện</p></div></div>
                 <div class="legend-card"><span class="r-badge r">R</span><div><strong>Responsible</strong><p>Thực hiện</p></div></div>
@@ -262,13 +258,9 @@
                 <div class="legend-card"><span class="r-badge i">I</span><div><strong>Informed</strong><p>Nhận thông tin</p></div></div>
             </div>
 
-            <!-- Note Bar -->
             <div class="boss-note-bar mt-3">
                 <i class="fa-solid fa-circle-info"></i>
-                <div>
-                    <strong>Ghi chú:</strong>
-                    <p>Ma trận RACI giúp làm rõ ai chịu trách nhiệm, ai thực hiện, ai tham vấn và ai cần được thông báo cho từng hoạt động.</p>
-                </div>
+                <p><strong>Ghi chú:</strong> Ma trận RACI giúp làm rõ ai chịu trách nhiệm, ai thực hiện, ai tham vấn và ai cần được thông báo cho từng hoạt động.</p>
             </div>
         </div>
     </section>
