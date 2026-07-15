@@ -75,7 +75,7 @@ function renderShot1Table() {
         <tr style="${getRowStyleShot1(item.status, item.progress)}">
             <td contenteditable="true" onblur="updateShot1Cell(${index}, 'session', this)">${item.session || ''}</td>
             <td contenteditable="true" onblur="updateShot1Cell(${index}, 'au', this)" class="text-center">${item.au || ''}</td>
-            <td contenteditable="true" onblur="updateShot1Cell(${index}, 'task', this)" class="fw-bold">${item.task || ''}</td>
+            <td contenteditable="true" onblur="updateShot1Cell(${index}, 'task', this)">${item.task || ''}</td>
             <td contenteditable="true" onblur="updateShot1Cell(${index}, 'desc', this)">${item.desc || ''}</td>
             <td contenteditable="true" onblur="updateShot1Cell(${index}, 'priority', this)" class="text-center">${item.priority || ''}</td>
             <td contenteditable="true" onblur="updateShot1Cell(${index}, 'other', this)">${item.other || ''}</td>
@@ -132,12 +132,12 @@ function getRowStyleShot1(status, progress) {
     const s = (status || "").toString().trim().toUpperCase();
     const p = (progress || "").toString().trim().toUpperCase();
     
-    if (p.includes("TRIỂN KHAI")) return 'background-color: #dbeafe; color: #1e40af; font-weight: 600;'; 
+    if (p.includes("TRIỂN KHAI")) return 'background-color: #dbeafe; color: #1e40af;'; 
     if (s === 'CLOSE' || s === 'CLOSED' || p === 'CLOSE') return 'background-color: #f3f4f6; color: #4b5563;'; 
-    if (s === 'PENDING') return 'background-color: #fee2e2; color: #b91c1c; font-weight: 600;'; 
+    if (s === 'PENDING') return 'background-color: #fee2e2; color: #b91c1c;'; 
     if (s === 'OPEN') return 'background-color: #fef9c3; color: #854d0e;'; 
     if (s === 'REOPEN') return 'background-color: #ffedd5; color: #9a3412;'; 
-    if (s.includes('PHÂN TÍCH')) return 'background-color: #dcfce7; color: #166534; font-weight: 600;'; 
+    if (s.includes('PHÂN TÍCH')) return 'background-color: #dcfce7; color: #166534;'; 
     if (s.includes('CHƯA BẮT ĐẦU')) return 'background-color: #f3e8ff; color: #6b21a8;'; 
     return ''; 
 }
