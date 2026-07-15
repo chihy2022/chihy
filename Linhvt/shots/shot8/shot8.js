@@ -1,89 +1,104 @@
-// Biến toàn cục cho Shot 8
-let s8FileData = "";
-let s8FileName = "";
-let s8Category = "Ứng dụng";
-
-var GGS_LINK_FB = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec?sheet=Goc_phanhoi";
-
-// 1. Chuyển đổi Tab
-window.switchFB = (cat) => {
-    s8Category = (cat === 'APP') ? "Ứng dụng" : "Con người";
-    document.getElementById('btnApp').classList.toggle('active', cat === 'APP');
-    document.getElementById('btnPeople').classList.toggle('active', cat === 'PEOPLE');
-    document.getElementById('boxApp').style.display = (cat === 'APP') ? 'block' : 'none';
-    document.getElementById('boxPeople').style.display = (cat === 'PEOPLE') ? 'block' : 'none';
-};
-
-// 2. Cập nhật mức độ (Đổi màu Line & Thumb)
-window.updateSev = (val) => {
-    var texts = ["Thấp", "Trung bình", "Cao", "Khẩn cấp"];
-    var colors = ["#10b981", "#00599a", "#f59e0b", "#d93025"];
+window.shot8Init = function() {
+    const GGS_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec?sheet=Goc_phanhoi";
     
-    var label = document.getElementById('fbSevLabel');
-    var slider = document.getElementById('fbSevRange');
+    let fileData = "";
+    let fileName = "";
+    let category = "Ứng dụng";
 
-    if(label) {
-        label.innerText = texts[val - 1];
-        label.style.color = colors[val - 1];
-    }
+    // --- DOM Elements ---
+    const sevRange = document.getElementById('fbSevRange');
+    const sevLabel = document.getElementById('fbSevLabel');
+    const btnApp = document.getElementById('btnApp');
+    const btnPeople = document.getElementById('btnPeople');
+    const boxApp = document.getElementById('boxApp');
+    const boxPeople = document.getElementById('boxPeople');
+    const btnSubmit = document.getElementById('btnSubmitFB');
+    const fileInput = document.getElementById('fbFile');
 
-    // Tính % để tô màu thanh line
-    var percent = ((val - 1) / (slider.max - slider.min)) * 100;
-    var activeColor = colors[val - 1];
-    
-    slider.style.background = `linear-gradient(to right, ${activeColor} 0%, ${activeColor} ${percent}%, #e2e8f0 ${percent}%, #e2e8f0 100%)`;
-    slider.style.setProperty('--thumb-color', activeColor);
-};
+    // 1. Logic cập nhật Slider (Màu sắc & Label)
+    const updateSev = (val) => {
+        const texts = ["Thấp", "Trung bình", "Cao", "Khẩn cấp"];
+        const colors = ["#10b981", "#00599a", "#f59e0b", "#d93025"];
+        const idx = val - 1;
 
-// 3. Xử lý File đính kèm
-window.onFileChange = () => {
-    var file = document.getElementById('fbFile').files[0];
-    var nameLabel = document.getElementById('fbFileName');
-    if (file) {
-        if(file.size > 15 * 1024 * 1024) { alert("Dung lượng file tối đa 15MB"); return; }
-        s8FileName = file.name;
-        nameLabel.innerText = "📎 Đã chọn: " + file.name;
-        var reader = new FileReader();
-        reader.onload = (e) => s8FileData = e.target.result;
-        reader.readAsDataURL(file);
-    }
-};
+        if (sevLabel) {
+            sevLabel.innerText = texts[idx];
+            sevLabel.style.color = colors[idx];
+        }
 
-// 4. Gửi dữ liệu
-window.submitFB = async () => {
-    var content = document.getElementById('fbDesc').value;
-    var btn = document.getElementById('btnSubmitFB');
-
-    if (!content.trim()) return alert("Vui lòng mô tả chi tiết nội dung phản hồi!");
-
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
-
-    var payload = {
-        type: "FEEDBACK",
-        category: s8Category,
-        subject: (s8Category === "Ứng dụng") ? document.getElementById('fbErrorType').value : document.getElementById('fbTarget').value,
-        severity: document.getElementById('fbSevLabel').innerText,
-        content: content,
-        expectation: document.getElementById('fbExpect').value,
-        isAnonymous: document.getElementById('fbAnon').checked,
-        fileData: s8FileData,
-        fileName: s8FileName
+        const percent = (idx / 3) * 100;
+        sevRange.style.background = `linear-gradient(to right, ${colors[idx]} 0%, ${colors[idx]} ${percent}%, #e2e8f0 ${percent}%, #e2e8f0 100%)`;
+        sevRange.style.setProperty('--thumb-color', colors[idx]);
     };
 
-    try {
-        await fetch(GGS_LINK_FB, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
-        alert("✅ Gửi phản hồi thành công. Cảm ơn sự đóng góp của bạn!");
-        location.reload(); 
-    } catch (e) {
-        alert("Có lỗi kết nối. Vui lòng thử lại!");
-        btn.disabled = false;
-        btn.innerText = "Gửi phản hồi";
-    }
-};
+    // 2. Sự kiện Slider
+    sevRange.addEventListener('input', (e) => updateSev(e.target.value));
 
-// Khởi tạo slider lúc mới nạp
-setTimeout(() => {
-    var s = document.getElementById('fbSevRange');
-    if(s) updateSev(s.value);
-}, 300);
+    // 3. Sự kiện chuyển Tab
+    const switchTab = (cat) => {
+        category = (cat === 'APP') ? "Ứng dụng" : "Con người";
+        btnApp.classList.toggle('active', cat === 'APP');
+        btnPeople.classList.toggle('active', cat === 'PEOPLE');
+        boxApp.style.display = (cat === 'APP') ? 'block' : 'none';
+        boxPeople.style.display = (cat === 'PEOPLE') ? 'block' : 'none';
+    };
+
+    btnApp.addEventListener('click', () => switchTab('APP'));
+    btnPeople.addEventListener('click', () => switchTab('PEOPLE'));
+
+    // 4. Xử lý File đính kèm
+    document.getElementById('btnFileTrigger').addEventListener('click', () => fileInput.click());
+    
+    fileInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            if (file.size > 15 * 1024 * 1024) { alert("File tối đa 15MB"); return; }
+            document.getElementById('fbFileName').innerText = "📎 Đã chọn: " + file.name;
+            fileName = file.name;
+            const reader = new FileReader();
+            reader.onload = (e) => fileData = e.target.result;
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // 5. Gửi Phản Hồi
+    btnSubmit.addEventListener('click', async function() {
+        const desc = document.getElementById('fbDesc').value;
+        if (!desc.trim()) return alert("Vui lòng mô tả nội dung chi tiết!");
+
+        this.disabled = true;
+        const originalHTML = this.innerHTML;
+        this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
+
+        const payload = {
+            type: "FEEDBACK",
+            category: category,
+            subject: (category === "Ứng dụng") ? document.getElementById('fbErrorType').value : document.getElementById('fbTarget').value,
+            severity: sevLabel.innerText,
+            content: desc,
+            expectation: document.getElementById('fbExpect').value,
+            isAnonymous: document.getElementById('fbAnon').checked,
+            fileData: fileData,
+            fileName: fileName,
+            uid: localStorage.getItem('Unime_UID') || 'Guest'
+        };
+
+        try {
+            await fetch(GGS_URL, { method: "POST", mode: 'no-cors', body: JSON.stringify(payload) });
+            alert("✅ Cảm ơn bạn! Phản hồi đã được gửi đi.");
+            // Reset form thay vì reload trang
+            document.getElementById('fbDesc').value = "";
+            document.getElementById('fbExpect').value = "";
+            document.getElementById('fbFileName').innerText = "";
+            fileData = ""; fileName = "";
+        } catch (e) {
+            alert("Lỗi kết nối!");
+        } finally {
+            this.disabled = false;
+            this.innerHTML = originalHTML;
+        }
+    });
+
+    // Chạy khởi tạo UI ngay lập tức
+    updateSev(sevRange.value);
+};
