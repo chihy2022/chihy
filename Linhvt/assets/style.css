@@ -36,11 +36,13 @@ img { max-width: 100%; height: auto; display: block; }
 .sidebar-toggle:hover { background: var(--primary-gradient); color: white; transform: translateY(-50%) scale(1.1); }
 .sidebar.collapsed .sidebar-toggle i { transform: rotate(180deg); }
 
-.sidebar-header { padding: 25px 20px; }
+.sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); }
 .user-profile { display: flex; align-items: center; gap: 12px; }
-.avatar { width: 45px; height: 45px; flex-shrink: 0; overflow: hidden; }
-.app-name { display: block; font-weight: 800; font-size: 19px; color: var(--primary); white-space: nowrap; }
-.app-sub { display: block; font-size: 11px; color: var(--text-gray); white-space: nowrap; }
+.user-info { display: flex; flex-direction: column; justify-content: center; }
+.avatar { width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;}
+.avatar img { width: 100%; height: auto; object-fit: contain; }
+.app-name { display: block; font-weight: 800; font-size: 18px; color: var(--primary); white-space: nowrap; line-height: 1.1;margin-bottom: 2px; }
+.app-sub { display: block; font-size: 11px; color: var(--text-gray); white-space: nowrap;line-height: 1; }
 
 .sidebar-menu { flex: 1; padding: 10px 12px; overflow-y: auto; overflow-x: hidden; }
 .menu-item { font-weight: 600; display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 12px; cursor: pointer; font-size: 14px; margin-bottom: 4px; color: var(--text-dark); transition: 0.2s; }
@@ -71,6 +73,10 @@ img { max-width: 100%; height: auto; display: block; }
 .header-divider { width: 1px; height: 24px; background: var(--border); margin: 0 10px; }
 .content-area { min-height: calc(100vh - 70px); height: auto !important; overflow-y: auto; }
 
+/* CÁC NÚT BẤM DÀNH CHO SHOT */
+/* ÉP Header Actions nằm hàng ngang */
+.header-actions { display: flex; align-items: center; gap: 12px; }
+#shot-actions-slot { display: flex; align-items: center; gap: 8px;}
 /* CÁC NÚT BẤM DÀNH CHO SHOT */
 #shot-actions-slot .btn-action { height: 38px; padding: 0 16px; border-radius: 10px; border: none; font-weight: 600; font-size: 13px; color: white; display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .btn-add { background: #28a745; }
