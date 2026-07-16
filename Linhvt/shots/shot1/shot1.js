@@ -114,7 +114,7 @@ window.updateShot1ProgressCell = (idx, el) => {
  * HÀM XÓA DÒNG
  */
 window.deleteShot1Row = function(idx) {
-    const confirmCode = prompt("⚠️ CẢNH BÁO BẢO MẬT\nNhập mật khẩu (DELETERAW) để xác nhận xóa:");
+    const confirmCode = prompt("⚠️ CẢNH BÁO BẢO MẬT\nNhập mật khẩu để xác nhận xóa:");
     
     if (confirmCode === "DELETERAW") {
         window.reportData.splice(idx, 1);
@@ -147,7 +147,7 @@ function getRowStyleShot1(status, progress) {
  */
 async function syncShot1ToGoogleSheets(url) {
     const btn = document.getElementById('btnSync');
-    const password = prompt("🔐 XÁC NHẬN ĐỒNG BỘ\nNhập mật khẩu (LINHVTsync) để lưu dữ liệu:");
+    const password = prompt("🔐 XÁC NHẬN ĐỒNG BỘ\nNhập mật khẩu để lưu dữ liệu:");
 
     if (password === null) return;
     if (password !== "LINHVTsync") return alert("❌ Sai mật khẩu!");
