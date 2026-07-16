@@ -1,6 +1,7 @@
 const CONFIG = {
     GGS_URL: "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec",
     STORAGE_KEY: "Unime_UID",
+    USER_DATA_KEY: "Unime_UserData", // Lưu cache thông tin user
     SIDEBAR_KEY: "sidebar-state"
 };
 
@@ -43,32 +44,80 @@ class UnimeApp {
         document.addEventListener('click', (e) => this.handleGlobalClicks(e));
     }
 
+    // --- TỐI ƯU LOGIN: CHẠY NGAY LẬP TỨC NẾU CÓ CACHE ---
+    checkAuth() {
+        const uid = localStorage.getItem(CONFIG.STORAGE_KEY);
+        const cachedUser = localStorage.getItem(CONFIG.USER_DATA_KEY);
+
+        if (uid && cachedUser) {
+            try {
+                const user = JSON.parse(cachedUser);
+                // Hiển thị ngay lập tức từ Cache
+                this.applyPermissions(user);
+                this.loginOverlay.classList.add('hidden');
+                this.appContainer.classList.remove('hidden');
+                this.loadPage(localStorage.getItem('currentShot') || 'shot1');
+                
+                // Kiểm tra ngầm để cập nhật quyền mới nhất (không bắt người dùng chờ)
+                this.silentCheckAuth(uid);
+            } catch (e) {
+                this.performLogin(uid); // Nếu cache lỗi thì login lại
+            }
+        }
+    }
+
+    async silentCheckAuth(uid) {
+        try {
+            const res = await fetch(`${CONFIG.GGS_URL}?action=getRole&uid=${uid}`);
+            const user = await res.json();
+            if (user && user.rights) {
+                localStorage.setItem(CONFIG.USER_DATA_KEY, JSON.stringify(user));
+                this.applyPermissions(user);
+            } else {
+                this.forceLogout(); // Nếu mã bị xóa trên GGS thì đẩy ra ngoài
+            }
+        } catch(e) { console.warn("Background auth check failed (Offline?)"); }
+    }
+
     async performLogin(forcedUid = null) {
         const uidInput = document.getElementById('login-uid');
         const btn = document.getElementById('btnLogin');
         const uid = forcedUid || uidInput.value.trim().toUpperCase();
 
         if (!uid) return;
-        btn.disabled = true; btn.innerText = "ĐANG KIỂM TRA...";
+
+        // XÓA SẠCH DỮ LIỆU CŨ KHI ĐĂNG NHẬP MỚI
+        if (!forcedUid) {
+            localStorage.removeItem(CONFIG.USER_DATA_KEY);
+            document.getElementById('login-msg').innerText = "";
+        }
+
+        btn.disabled = true; 
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ĐANG KIỂM TRA...';
         
         try {
             const res = await fetch(`${CONFIG.GGS_URL}?action=getRole&uid=${uid}`);
             const user = await res.json();
             if (user && user.rights) {
                 localStorage.setItem(CONFIG.STORAGE_KEY, uid);
+                localStorage.setItem(CONFIG.USER_DATA_KEY, JSON.stringify(user)); // Lưu cache mới
+                
                 this.applyPermissions(user);
                 this.loginOverlay.classList.add('hidden');
                 this.appContainer.classList.remove('hidden');
                 
-                // Nạp shot cũ hoặc mặc định shot1
                 const savedShot = localStorage.getItem('currentShot') || 'shot1';
                 this.loadPage(savedShot);
             } else { 
-                document.getElementById('login-msg').innerText = "Sai User CODE!"; 
+                document.getElementById('login-msg').innerText = "Sai User CODE hoặc quyền truy cập bị từ chối!"; 
+                localStorage.clear();
             }
         } catch(e) {
-            document.getElementById('login-msg').innerText = "Lỗi kết nối!";
-        } finally { btn.disabled = false; btn.innerText = "ĐĂNG NHẬP"; }
+            document.getElementById('login-msg').innerText = "Lỗi kết nối Server!";
+        } finally { 
+            btn.disabled = false; 
+            btn.innerText = "ĐĂNG NHẬP"; 
+        }
     }
 
     applyPermissions(user) {
@@ -87,92 +136,81 @@ class UnimeApp {
     handleMenuClick(item) {
         const shotId = item.getAttribute('data-shot');
         const title = item.getAttribute('data-title');
-
         if (!shotId) return;
 
-        // 1. Cập nhật menu active
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
         item.classList.add('active');
 
-        // 2. Cập nhật tiêu đề Header
         if (this.headerTitle) this.headerTitle.innerText = title;
 
-        // 3. Ẩn/Hiện nút Xuất PDF (Ẩn ở shot7 - Mobile Dashboard)
         const exportBtn = document.getElementById('exportPdfBtn');
         if (exportBtn) {
             exportBtn.style.display = (shotId === 'shot7') ? 'none' : 'flex';
         }
 
-        // 4. Gọi hàm nạp trang
         this.loadPage(shotId);
     }
 
     async loadPage(shotName) {
-    if (!shotName) return;
-    const content = this.contentArea;
-    const actionSlot = this.actionSlot;
-    
-    // 1. Ẩn ngay lập tức để không thấy cảnh bị giật
-    content.style.transition = 'none';
-    content.style.opacity = '0';
-    if (actionSlot) actionSlot.innerHTML = ''; 
+        if (!shotName) return;
+        const content = this.contentArea;
+        const actionSlot = this.actionSlot;
+        
+        content.style.opacity = '0';
+        if (actionSlot) actionSlot.innerHTML = ''; 
 
-    try {
-        const path = `shots/${shotName}/${shotName}`;
-        this.cleanupShotAssets();
+        try {
+            const path = `shots/${shotName}/${shotName}`;
+            this.cleanupShotAssets();
 
-        // 2. Tải song song HTML và tạo link CSS
-        const htmlRes = await fetch(`${path}.html?t=${Date.now()}`);
-        if (!htmlRes.ok) throw new Error("File không tồn tại");
-        const htmlText = await htmlRes.text();
+            // Tải HTML
+            const htmlRes = await fetch(`${path}.html?t=${Date.now()}`);
+            if (!htmlRes.ok) throw new Error("File không tồn tại");
+            const htmlText = await htmlRes.text();
 
-        // 3. Nạp CSS trước
-        const cssLoadPromise = new Promise((resolve) => {
-            const link = document.createElement('link');
-            link.id = 'shot-css';
-            link.rel = 'stylesheet';
-            link.href = `${path}.css?t=${Date.now()}`;
-            link.onload = resolve; // Chỉ tiếp tục khi CSS nạp xong
-            link.onerror = resolve; // Tránh treo nếu file CSS lỗi
-            document.head.appendChild(link);
-        });
-
-        await cssLoadPromise; // CHỜ CSS NẠP XONG
-
-        // 4. Đổ HTML vào sau khi đã có CSS
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, 'text/html');
-        const shotActions = doc.querySelector('.shot-actions');
-        const shotBody = doc.querySelector('.shot-body');
-
-        if (shotActions && actionSlot) actionSlot.innerHTML = shotActions.innerHTML;
-        content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
-
-        // 5. Nạp JS và Init
-        const script = document.createElement('script');
-        script.id = 'shot-js';
-        script.src = `${path}.js?t=${Date.now()}`;
-        script.onload = () => {
-            const initFuncName = `${shotName}Init`;
-            if (typeof window[initFuncName] === 'function') {
-                window[initFuncName]();
-            }
-            // Hiện nội dung mượt mà sau khi JS Init xong
-            requestAnimationFrame(() => {
-                content.style.transition = 'opacity 0.3s ease';
-                content.style.opacity = '1';
+            // Nạp CSS và ĐỢI CSS nạp xong (Chống giật layout)
+            const cssLoadPromise = new Promise((resolve) => {
+                const link = document.createElement('link');
+                link.id = 'shot-css';
+                link.rel = 'stylesheet';
+                link.href = `${path}.css?t=${Date.now()}`;
+                link.onload = resolve;
+                link.onerror = resolve;
+                document.head.appendChild(link);
             });
-        };
-        document.body.appendChild(script);
+            await cssLoadPromise;
 
-        localStorage.setItem('currentShot', shotName);
+            // Đổ dữ liệu HTML
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            const shotActions = doc.querySelector('.shot-actions');
+            const shotBody = doc.querySelector('.shot-body');
 
-    } catch (err) { 
-        console.error("Lỗi:", err);
-        content.innerHTML = `<div class="p-5 text-center text-danger">Lỗi nạp ${shotName}</div>`;
-        content.style.opacity = '1';
+            if (shotActions && actionSlot) actionSlot.innerHTML = shotActions.innerHTML;
+            content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
+
+            // Nạp JS
+            const script = document.createElement('script');
+            script.id = 'shot-js';
+            script.src = `${path}.js?t=${Date.now()}`;
+            script.onload = () => {
+                const initFuncName = `${shotName}Init`;
+                if (typeof window[initFuncName] === 'function') {
+                    window[initFuncName]();
+                }
+                // Chỉ hiện nội dung sau khi mọi thứ (CSS/JS) đã sẵn sàng
+                requestAnimationFrame(() => content.style.opacity = '1');
+            };
+            document.body.appendChild(script);
+
+            localStorage.setItem('currentShot', shotName);
+
+        } catch (err) { 
+            console.error("Lỗi:", err);
+            content.innerHTML = `<div class="p-5 text-center text-muted">Dữ liệu đang được cập nhật...</div>`;
+            content.style.opacity = '1';
+        }
     }
-}
 
     cleanupShotAssets() { 
         ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove()); 
@@ -194,18 +232,30 @@ class UnimeApp {
     }
 
     handleGlobalClicks(e) {
-        if (e.target.tagName === 'IMG' && (e.target.id === 'myImg' || e.target.classList.contains('img-previewable'))) {
+        if (e.target.tagName === 'IMG' && e.target.classList.contains('img-previewable')) {
             const modal = document.getElementById('imageModal');
             document.getElementById('imgFull').src = e.target.src;
             modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
         if (e.target.classList.contains('close-modal') || e.target.id === 'imageModal') {
             document.getElementById('imageModal').classList.remove('active');
+            document.body.style.overflow = '';
         }
     }
 
-    logout() { if (confirm("Đăng xuất?")) { localStorage.clear(); location.reload(); } }
-    checkAuth() { const uid = localStorage.getItem(CONFIG.STORAGE_KEY); if (uid) this.performLogin(uid); }
+    logout() { 
+        if (confirm("Đăng xuất khỏi hệ thống?")) {
+            this.forceLogout();
+        }
+    }
+
+    forceLogout() {
+        localStorage.removeItem(CONFIG.STORAGE_KEY);
+        localStorage.removeItem(CONFIG.USER_DATA_KEY);
+        localStorage.removeItem('currentShot');
+        location.reload();
+    }
 }
 
 // ==========================================
