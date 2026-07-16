@@ -39,9 +39,9 @@
         </div>
 
     <!-- APP CONTAINER -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
     <div class="app-container hidden">
         <aside class="sidebar" id="sidebar">
-            <button class="sidebar-toggle" id="toggleBtn"><i class="fa-solid fa-chevron-left"></i></button>
             <div class="sidebar-header">
                 <div class="user-profile">
                     <div class="avatar"><img src="assets/images/logoUNILEVER.png" alt="Logo"></div>
@@ -72,7 +72,7 @@
                     </div>
                     <div class="group-content">
                         <div class="menu-item sub-item" data-shot="shot5" data-title="[DEMO] POSM Inventory"><span>Demo_POSM Inventory</span></div>
-                        <div class="menu-item sub-item" data-shot="shot8" data-title="Phản hồi"><span>Góc phản hồi</span></div>
+                        <div class="menu-item sub-item" data-shot="shot8" data-title="Góc phản hồi"><span>Góc phản hồi</span></div>
                     </div>
                 </div>
             </nav>
@@ -86,19 +86,22 @@
         </aside>
 
         <main class="main-content">
-            <!-- 2. Trong thẻ <header class="main-header">, hãy thêm nút này vào đầu -->
+                <!-- Thêm lớp phủ mobile -->
+                <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
             <header class="main-header">
-                <div class="header-left d-flex align-items-center gap-2">
-                    <!-- NÚT MENU CHO MOBILE -->
-                    <button id="mobileMenuBtn" class="btn-mobile-menu" style="display: none;">
-                        <i class="fa-solid fa-bars"></i>
+                <div class="header-left">
+                    <button id="menuToggleBtn" class="btn-menu-global">
+                        <i class="fa-solid fa-bars-staggered"></i>
                     </button>
+                    <!-- Tên Shot nằm ngay cạnh nút Menu -->
                     <h5 id="dynamic-header-title">Báo cáo tiến độ</h5>
                 </div>
+                
                 <div class="header-actions">
-                    <div id="shot-actions-slot" class="d-flex gap-2"></div>
+                    <div id="shot-actions-slot"></div>
                     <button id="exportPdfBtn" class="btn-primary">
-                        <i class="fa-solid fa-file-pdf"></i> <span>Xuất PDF</span>
+                        <i class="fa-solid fa-file-arrow-down"></i> <span>Xuất PDF</span>
                     </button>
                 </div>
             </header>
