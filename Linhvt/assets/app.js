@@ -145,64 +145,82 @@ class UnimeApp {
         this.loadPage(shotId);
     }
 
-    // --- CƠ CHẾ LOADPAGE CHỐNG GIẬT (PHẢI NẠP XONG CSS MỚI SHOW) ---
     async loadPage(shotName) {
-        if (!shotName) return;
-        const content = this.contentArea;
-        const actionSlot = this.actionSlot;
+    if (!shotName) return;
+    const content = this.contentArea;
+    const actionSlot = this.actionSlot;
+    const loader = document.getElementById('page-loader');
 
-        // 1. Ẩn nội dung cũ ngay lập tức
-        content.style.transition = 'none';
-        content.style.opacity = '0';
-        if (actionSlot) actionSlot.innerHTML = ''; 
+    // 1. HIỆN LOADER VÀ ẨN NỘI DUNG CŨ
+    if (loader) loader.classList.remove('hidden');
+    content.style.opacity = '0';
+    if (actionSlot) actionSlot.innerHTML = ''; 
 
-        try {
-            const path = `shots/${shotName}/${shotName}`;
-            ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove());
+    try {
+        const path = `shots/${shotName}/${shotName}`;
+        
+        // Dọn dẹp CSS/JS cũ
+        ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove());
 
-            // 2. Tải HTML
-            const htmlRes = await fetch(`${path}.html?t=${Date.now()}`);
-            const htmlText = await htmlRes.text();
+        // 2. TẢI DỮ LIỆU (HTML + CSS)
+        const htmlRes = await fetch(`${path}.html?t=${Date.now()}`);
+        const htmlText = await htmlRes.text();
 
-            // 3. Nạp CSS và tạo Promise chờ CSS tải xong
-            const cssLoadPromise = new Promise(resolve => {
-                const link = document.createElement('link');
-                link.id = 'shot-css'; link.rel = 'stylesheet';
-                link.href = `${path}.css?t=${Date.now()}`;
-                link.onload = resolve; // Quan trọng: CSS nạp xong mới resolve
-                link.onerror = resolve; // Tránh treo nếu file CSS lỗi
-                document.head.appendChild(link);
-            });
+        const cssLoadPromise = new Promise(resolve => {
+            const link = document.createElement('link');
+            link.id = 'shot-css'; link.rel = 'stylesheet';
+            link.href = `${path}.css?t=${Date.now()}`;
+            link.onload = resolve; 
+            link.onerror = resolve; 
+            document.head.appendChild(link);
+        });
 
-            await cssLoadPromise; // DỪNG LẠI ĐỢI CSS
+        await cssLoadPromise; // Chờ CSS nạp xong
 
-            // 4. Khi CSS xong, đổ HTML vào
-            const doc = new DOMParser().parseFromString(htmlText, 'text/html');
-            const shotActions = doc.querySelector('.shot-actions');
-            const shotBody = doc.querySelector('.shot-body');
+        // 3. ĐỔ DỮ LIỆU VÀO GIAO DIỆN
+        const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+        const shotActions = doc.querySelector('.shot-actions');
+        const shotBody = doc.querySelector('.shot-body');
 
-            if (actionSlot) actionSlot.innerHTML = shotActions ? shotActions.innerHTML : '';
-            content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
+        // Logic co giãn Header (đã làm ở bước trước)
+        const mainHeader = document.querySelector('.main-header');
+        if (actionSlot && shotActions && shotActions.innerHTML.trim() !== "") {
+            actionSlot.innerHTML = shotActions.innerHTML;
+            if (mainHeader) mainHeader.classList.add('has-nav-actions');
+        } else {
+            if (mainHeader) mainHeader.classList.remove('has-nav-actions');
+        }
 
-            // 5. Nạp JS
+        content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
+
+        // 4. NẠP JS VÀ ĐỢI INIT XONG
+        await new Promise((resolve) => {
             const script = document.createElement('script');
-            script.id = 'shot-js'; script.src = `${path}.js?t=${Date.now()}`;
-            script.onload = () => {
-                if (typeof window[`${shotName}Init`] === 'function') window[`${shotName}Init`]();
-                // Chỉ hiện nội dung khi mọi thứ đã sẵn sàng
-                requestAnimationFrame(() => {
-                    content.style.transition = 'opacity 0.3s ease';
-                    content.style.opacity = '1';
-                });
+            script.id = 'shot-js';
+            script.src = `${path}.js?t=${Date.now()}`;
+            script.onload = async () => {
+                const initFuncName = `${shotName}Init`;
+                if (typeof window[initFuncName] === 'function') {
+                    await window[initFuncName](); // Đợi hàm init chạy xong (nếu là async)
+                }
+                resolve();
             };
             document.body.appendChild(script);
-            localStorage.setItem('currentShot', shotName);
+        });
 
-        } catch (err) { 
-            console.error("LoadPage Error:", err);
-            content.style.opacity = '1'; 
-        }
+        localStorage.setItem('currentShot', shotName);
+
+    } catch (err) { 
+        console.error("LoadPage Error:", err);
+    } finally {
+        // 5. ẨN LOADER VÀ HIỆN NỘI DUNG MƯỢT MÀ
+        setTimeout(() => {
+            if (loader) loader.classList.add('hidden');
+            content.style.transition = 'opacity 0.4s ease';
+            content.style.opacity = '1';
+        }, 300); // Thêm 300ms trễ để Loader không bị biến mất quá đột ngột
     }
+}
 
     restoreSidebarState() { if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === 'mini') this.sidebar.classList.add('collapsed'); }
     
