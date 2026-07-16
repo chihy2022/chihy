@@ -34,59 +34,49 @@ class UnimeApp {
         document.getElementById('togglePassword').addEventListener('click', () => this.togglePassword());
         document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
         document.getElementById('exportPdfBtn').addEventListener('click', (e) => handleExportPdf(e.currentTarget));
+
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', () => this.handleMenuClick(item));
         });
+
         document.querySelectorAll('.group-header').forEach(header => {
             header.addEventListener('click', () => header.parentElement.classList.toggle('active'));
         });
+
         document.addEventListener('click', (e) => this.handleGlobalClicks(e));
     }
 
-    // --- TỐI ƯU SIÊU TỐC: VÀO APP TRƯỚC, CHECK QUYỀN SAU ---
-    checkAuth() {
-        const uid = localStorage.getItem(CONFIG.STORAGE_KEY);
-        const cachedUser = localStorage.getItem(CONFIG.USER_DATA_KEY);
+    // --- HÀM CẬP NHẬT TRẠNG THÁI HEADER & SIDEBAR (TỐI ƯU GIAO DIỆN) ---
+    updateUIState(shotId) {
+        // 1. Ẩn/Hiện nút PDF
+        const exportBtn = document.getElementById('exportPdfBtn');
+        const hiddenPdfShots = ['shot7', 'welcome']; 
+        if (exportBtn) {
+            exportBtn.style.display = hiddenPdfShots.includes(shotId) ? 'none' : 'flex';
+        }
 
-        if (uid && cachedUser) {
-            const user = JSON.parse(cachedUser);
-            // 1. HIỆN GIAO DIỆN NGAY LẬP TỨC TỪ CACHE (MẤT 0.1s)
-            this.applyPermissions(user); 
-            this.loginOverlay.classList.add('hidden');
-            this.appContainer.classList.remove('hidden');
-
-            const lastShotId = localStorage.getItem('currentShot') || 'welcome';
-            this.loadPage(lastShotId);
-            
-            // 2. KIỂM TRA NGẦM (SILENT CHECK) - CẬP NHẬT LẠI SAU NẾU CÓ THAY ĐỔI
-            this.silentCheckAuth(uid);
+        // 2. Cập nhật Highlight Sidebar & Tiêu đề Header
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        const activeMenu = document.querySelector(`.menu-item[data-shot="${shotId}"]`);
+        
+        if (activeMenu) {
+            activeMenu.classList.add('active');
+            if (this.headerTitle) this.headerTitle.innerText = activeMenu.getAttribute('data-title');
+        } else if (shotId === 'welcome') {
+            if (this.headerTitle) this.headerTitle.innerText = "WELCOME";
         }
     }
 
-    async silentCheckAuth(uid) {
-        try {
-            const res = await fetch(`${CONFIG.GGS_URL}?action=getRole&uid=${uid}`);
-            const user = await res.json();
-            if (user && user.rights) {
-                localStorage.setItem(CONFIG.USER_DATA_KEY, JSON.stringify(user));
-                this.applyPermissions(user); // Cập nhật lại menu nếu sếp vừa đổi quyền
-            } else {
-                this.forceLogout();
-            }
-        } catch(e) { console.log("Offline mode - using cache"); }
-    }
-
+    // --- LOGIC PHÂN QUYỀN (SỬA LỖI USER 2) ---
     applyPermissions(user) {
         if (!user) return;
         const rights = user.rights || {};
         
-        // Hiện tên
         const name = String(user.name || "Thành viên").trim();
         const nameDisplay = name !== "" ? name : "Thành viên";
         if (document.getElementById('display-user-name')) document.getElementById('display-user-name').innerText = nameDisplay;
         if (document.getElementById('user-welcome-name')) document.getElementById('user-welcome-name').innerText = nameDisplay;
 
-        // ÉP ẨN/HIỆN TỨC THÌ BẰNG STYLE (NHANH HƠN CLASS)
         document.querySelectorAll('.menu-item[data-shot]').forEach(item => {
             const shotId = item.getAttribute('data-shot');
             const perm = (rights[shotId] || "").toString().toLowerCase().trim();
@@ -94,12 +84,35 @@ class UnimeApp {
             item.style.setProperty('display', isAllowed ? 'flex' : 'none', 'important');
         });
 
-        // Hiện Group nếu có con hiện
         document.querySelectorAll('.menu-group').forEach(group => {
             const hasVisible = Array.from(group.querySelectorAll('.menu-item[data-shot]'))
                                    .some(child => child.style.display !== 'none');
             group.style.setProperty('display', hasVisible ? 'block' : 'none', 'important');
         });
+    }
+
+    checkAuth() {
+        const uid = localStorage.getItem(CONFIG.STORAGE_KEY);
+        const cachedUser = localStorage.getItem(CONFIG.USER_DATA_KEY);
+
+        if (uid && cachedUser) {
+            const user = JSON.parse(cachedUser);
+            this.applyPermissions(user); 
+            this.loginOverlay.classList.add('hidden');
+            this.appContainer.classList.remove('hidden');
+
+            let lastShotId = localStorage.getItem('currentShot') || 'welcome';
+            
+            // Kiểm tra quyền của user hiện tại với shot cũ
+            const userPerm = (user.rights[lastShotId] || "").toString().toLowerCase().trim();
+            if (!(userPerm === "root" || userPerm === "view") && lastShotId !== 'welcome') {
+                lastShotId = 'welcome';
+            }
+
+            this.updateUIState(lastShotId);
+            this.loadPage(lastShotId);
+            this.silentCheckAuth(uid);
+        }
     }
 
     async performLogin(forcedUid = null) {
@@ -117,9 +130,12 @@ class UnimeApp {
             if (user && user.rights) {
                 localStorage.setItem(CONFIG.STORAGE_KEY, uid);
                 localStorage.setItem(CONFIG.USER_DATA_KEY, JSON.stringify(user));
+                
                 this.applyPermissions(user);
                 this.loginOverlay.classList.add('hidden');
                 this.appContainer.classList.remove('hidden');
+                
+                this.updateUIState('welcome'); // Cập nhật Header/PDF cho welcome
                 this.loadPage('welcome');
             } else { 
                 alert("Mã CODE không tồn tại!");
@@ -128,40 +144,54 @@ class UnimeApp {
         finally { btn.disabled = false; btn.innerText = "ĐĂNG NHẬP"; }
     }
 
+    handleMenuClick(item) {
+        const shotId = item.getAttribute('data-shot');
+        if (!shotId) return;
+
+        this.updateUIState(shotId); // Cập nhật Header/PDF và Active Menu
+
+        if (window.innerWidth <= 992) this.handleMainToggle();
+        this.loadPage(shotId);
+    }
+
+    // Các hàm loadPage, handleMainToggle, GlobalClicks giữ nguyên...
     async loadPage(shotName) {
         if (!shotName) return;
         const loader = document.getElementById('page-loader');
         if (loader) loader.classList.remove('hidden');
         this.contentArea.style.opacity = '0';
+        if (this.actionSlot) this.actionSlot.innerHTML = ''; 
 
         try {
             const path = `shots/${shotName}/${shotName}`;
             ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove());
-
-            const [htmlRes] = await Promise.all([
-                fetch(`${path}.html?t=${Date.now()}`),
-                new Promise(res => {
-                    const link = document.createElement('link');
-                    link.id = 'shot-css'; link.rel = 'stylesheet';
-                    link.href = `${path}.css?t=${Date.now()}`;
-                    link.onload = res; link.onerror = res;
-                    document.head.appendChild(link);
-                })
-            ]);
-
+            const htmlRes = await fetch(`${path}.html?t=${Date.now()}`);
             const htmlText = await htmlRes.text();
+            const cssLoad = new Promise(res => {
+                const link = document.createElement('link');
+                link.id = 'shot-css'; link.rel = 'stylesheet';
+                link.href = `${path}.css?t=${Date.now()}`;
+                link.onload = res; link.onerror = res;
+                document.head.appendChild(link);
+            });
+            await cssLoad;
             const doc = new DOMParser().parseFromString(htmlText, 'text/html');
             const shotActions = doc.querySelector('.shot-actions');
             const shotBody = doc.querySelector('.shot-body');
-
-            if (this.actionSlot) this.actionSlot.innerHTML = shotActions ? shotActions.innerHTML : '';
+            const mainHeader = document.querySelector('.main-header');
+            if (this.actionSlot && shotActions && shotActions.innerHTML.trim() !== "") {
+                this.actionSlot.innerHTML = shotActions.innerHTML;
+                mainHeader?.classList.add('has-nav-actions');
+            } else {
+                mainHeader?.classList.remove('has-nav-actions');
+            }
             this.contentArea.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
-
             const script = document.createElement('script');
             script.id = 'shot-js'; script.src = `${path}.js?t=${Date.now()}`;
             script.onload = async () => {
                 if (typeof window[`${shotName}Init`] === 'function') await window[`${shotName}Init`]();
                 if (loader) loader.classList.add('hidden');
+                this.contentArea.style.transition = 'opacity 0.3s ease';
                 this.contentArea.style.opacity = '1';
             };
             document.body.appendChild(script);
@@ -171,24 +201,14 @@ class UnimeApp {
 
     handleMainToggle() {
         const isMobile = window.innerWidth <= 992;
+        const overlay = document.getElementById('sidebar-overlay');
         if (isMobile) {
             const isOpen = this.sidebar.classList.toggle('mobile-active');
-            this.sidebarOverlay?.classList.toggle('active', isOpen);
+            overlay?.classList.toggle('active', isOpen);
         } else {
             this.sidebar.classList.toggle('collapsed');
             localStorage.setItem(CONFIG.SIDEBAR_KEY, this.sidebar.classList.contains('collapsed') ? 'mini' : 'full');
         }
-    }
-
-    handleMenuClick(item) {
-        const shotId = item.getAttribute('data-shot');
-        const title = item.getAttribute('data-title');
-        if (!shotId) return;
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        item.classList.add('active');
-        if (this.headerTitle) this.headerTitle.innerText = title;
-        if (window.innerWidth <= 992) this.handleMainToggle();
-        this.loadPage(shotId);
     }
 
     restoreSidebarState() { if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === 'mini') this.sidebar.classList.add('collapsed'); }
@@ -208,6 +228,16 @@ class UnimeApp {
             document.getElementById('imageModal')?.classList.remove('active');
             document.body.style.overflow = '';
         }
+    }
+    async silentCheckAuth(uid) {
+        try {
+            const res = await fetch(`${CONFIG.GGS_URL}?action=getRole&uid=${uid}`);
+            const user = await res.json();
+            if (user && user.rights) {
+                localStorage.setItem(CONFIG.USER_DATA_KEY, JSON.stringify(user));
+                this.applyPermissions(user);
+            } else { this.forceLogout(); }
+        } catch(e) {}
     }
     logout() { if (confirm("Đăng xuất?")) this.forceLogout(); }
     forceLogout() { localStorage.clear(); location.reload(); }
