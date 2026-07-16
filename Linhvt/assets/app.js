@@ -28,52 +28,37 @@ class UnimeApp {
     }
 
     setupEventListeners() {
-        // Nút Menu dùng chung cho cả Web & Mobile
         document.getElementById('menuToggleBtn').addEventListener('click', () => this.handleMainToggle());
         this.sidebarOverlay?.addEventListener('click', () => this.handleMainToggle());
-
         document.getElementById('btnLogin').addEventListener('click', () => this.performLogin());
         document.getElementById('togglePassword').addEventListener('click', () => this.togglePassword());
         document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
         document.getElementById('exportPdfBtn').addEventListener('click', (e) => handleExportPdf(e.currentTarget));
-
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', () => this.handleMenuClick(item));
         });
-
         document.querySelectorAll('.group-header').forEach(header => {
             header.addEventListener('click', () => header.parentElement.classList.toggle('active'));
         });
-
         document.addEventListener('click', (e) => this.handleGlobalClicks(e));
     }
 
-    handleMainToggle() {
-        const isMobile = window.innerWidth <= 992;
-        const overlay = document.getElementById('sidebar-overlay');
-        const sidebar = this.sidebar;
-
-        if (isMobile) {
-            const isOpen = sidebar.classList.toggle('mobile-active');
-            if (isOpen) {
-                overlay.classList.add('active');
-            } else {
-                overlay.classList.remove('active');
-            }
-        } else {
-            sidebar.classList.toggle('collapsed');
-            localStorage.setItem(CONFIG.SIDEBAR_KEY, sidebar.classList.contains('collapsed') ? 'mini' : 'full');
-        }
-    }
-
+    // --- TỐI ƯU SIÊU TỐC: VÀO APP TRƯỚC, CHECK QUYỀN SAU ---
     checkAuth() {
         const uid = localStorage.getItem(CONFIG.STORAGE_KEY);
         const cachedUser = localStorage.getItem(CONFIG.USER_DATA_KEY);
+
         if (uid && cachedUser) {
-            this.applyPermissions(JSON.parse(cachedUser));
+            const user = JSON.parse(cachedUser);
+            // 1. HIỆN GIAO DIỆN NGAY LẬP TỨC TỪ CACHE (MẤT 0.1s)
+            this.applyPermissions(user); 
             this.loginOverlay.classList.add('hidden');
             this.appContainer.classList.remove('hidden');
-            this.loadPage(localStorage.getItem('currentShot') || 'shot1');
+
+            const lastShotId = localStorage.getItem('currentShot') || 'welcome';
+            this.loadPage(lastShotId);
+            
+            // 2. KIỂM TRA NGẦM (SILENT CHECK) - CẬP NHẬT LẠI SAU NẾU CÓ THAY ĐỔI
             this.silentCheckAuth(uid);
         }
     }
@@ -84,9 +69,37 @@ class UnimeApp {
             const user = await res.json();
             if (user && user.rights) {
                 localStorage.setItem(CONFIG.USER_DATA_KEY, JSON.stringify(user));
-                this.applyPermissions(user);
-            } else { this.forceLogout(); }
-        } catch(e) {}
+                this.applyPermissions(user); // Cập nhật lại menu nếu sếp vừa đổi quyền
+            } else {
+                this.forceLogout();
+            }
+        } catch(e) { console.log("Offline mode - using cache"); }
+    }
+
+    applyPermissions(user) {
+        if (!user) return;
+        const rights = user.rights || {};
+        
+        // Hiện tên
+        const name = String(user.name || "Thành viên").trim();
+        const nameDisplay = name !== "" ? name : "Thành viên";
+        if (document.getElementById('display-user-name')) document.getElementById('display-user-name').innerText = nameDisplay;
+        if (document.getElementById('user-welcome-name')) document.getElementById('user-welcome-name').innerText = nameDisplay;
+
+        // ÉP ẨN/HIỆN TỨC THÌ BẰNG STYLE (NHANH HƠN CLASS)
+        document.querySelectorAll('.menu-item[data-shot]').forEach(item => {
+            const shotId = item.getAttribute('data-shot');
+            const perm = (rights[shotId] || "").toString().toLowerCase().trim();
+            const isAllowed = (perm === "root" || perm === "view");
+            item.style.setProperty('display', isAllowed ? 'flex' : 'none', 'important');
+        });
+
+        // Hiện Group nếu có con hiện
+        document.querySelectorAll('.menu-group').forEach(group => {
+            const hasVisible = Array.from(group.querySelectorAll('.menu-item[data-shot]'))
+                                   .some(child => child.style.display !== 'none');
+            group.style.setProperty('display', hasVisible ? 'block' : 'none', 'important');
+        });
     }
 
     async performLogin(forcedUid = null) {
@@ -94,10 +107,9 @@ class UnimeApp {
         const btn = document.getElementById('btnLogin');
         const uid = forcedUid || uidInput.value.trim().toUpperCase();
         if (!uid) return;
-        if (!forcedUid) localStorage.removeItem(CONFIG.USER_DATA_KEY);
 
         btn.disabled = true; 
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ĐANG XÁC THỰC...';
+        btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> XÁC THỰC...';
         
         try {
             const res = await fetch(`${CONFIG.GGS_URL}?action=getRole&uid=${uid}`);
@@ -108,145 +120,99 @@ class UnimeApp {
                 this.applyPermissions(user);
                 this.loginOverlay.classList.add('hidden');
                 this.appContainer.classList.remove('hidden');
-                this.loadPage(localStorage.getItem('currentShot') || 'shot1');
+                this.loadPage('welcome');
             } else { 
-                document.getElementById('login-msg').innerText = "Mã CODE không đúng!"; 
-                localStorage.clear();
+                alert("Mã CODE không tồn tại!");
             }
-        } catch(e) { document.getElementById('login-msg').innerText = "Lỗi kết nối!"; }
+        } catch(e) { alert("Lỗi kết nối!"); }
         finally { btn.disabled = false; btn.innerText = "ĐĂNG NHẬP"; }
     }
 
-    applyPermissions(user) {
-        document.getElementById('display-user-name').innerText = user.name;
-        document.querySelectorAll('.menu-item[data-shot]').forEach(item => {
-            const shot = item.getAttribute('data-shot');
-            const perm = (user.rights[shot] || "").toLowerCase();
-            item.classList.toggle('hidden', !(perm === "root" || perm === "view"));
-        });
+    async loadPage(shotName) {
+        if (!shotName) return;
+        const loader = document.getElementById('page-loader');
+        if (loader) loader.classList.remove('hidden');
+        this.contentArea.style.opacity = '0';
+
+        try {
+            const path = `shots/${shotName}/${shotName}`;
+            ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove());
+
+            const [htmlRes] = await Promise.all([
+                fetch(`${path}.html?t=${Date.now()}`),
+                new Promise(res => {
+                    const link = document.createElement('link');
+                    link.id = 'shot-css'; link.rel = 'stylesheet';
+                    link.href = `${path}.css?t=${Date.now()}`;
+                    link.onload = res; link.onerror = res;
+                    document.head.appendChild(link);
+                })
+            ]);
+
+            const htmlText = await htmlRes.text();
+            const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+            const shotActions = doc.querySelector('.shot-actions');
+            const shotBody = doc.querySelector('.shot-body');
+
+            if (this.actionSlot) this.actionSlot.innerHTML = shotActions ? shotActions.innerHTML : '';
+            this.contentArea.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
+
+            const script = document.createElement('script');
+            script.id = 'shot-js'; script.src = `${path}.js?t=${Date.now()}`;
+            script.onload = async () => {
+                if (typeof window[`${shotName}Init`] === 'function') await window[`${shotName}Init`]();
+                if (loader) loader.classList.add('hidden');
+                this.contentArea.style.opacity = '1';
+            };
+            document.body.appendChild(script);
+            localStorage.setItem('currentShot', shotName);
+        } catch (e) { if (loader) loader.classList.add('hidden'); this.contentArea.style.opacity = '1'; }
+    }
+
+    handleMainToggle() {
+        const isMobile = window.innerWidth <= 992;
+        if (isMobile) {
+            const isOpen = this.sidebar.classList.toggle('mobile-active');
+            this.sidebarOverlay?.classList.toggle('active', isOpen);
+        } else {
+            this.sidebar.classList.toggle('collapsed');
+            localStorage.setItem(CONFIG.SIDEBAR_KEY, this.sidebar.classList.contains('collapsed') ? 'mini' : 'full');
+        }
     }
 
     handleMenuClick(item) {
         const shotId = item.getAttribute('data-shot');
         const title = item.getAttribute('data-title');
         if (!shotId) return;
-
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
         item.classList.add('active');
         if (this.headerTitle) this.headerTitle.innerText = title;
-
-        const exportBtn = document.getElementById('exportPdfBtn');
-        if (exportBtn) exportBtn.style.display = (shotId === 'shot7') ? 'none' : 'flex';
-
-        if (window.innerWidth <= 992) {
-            this.sidebar.classList.remove('mobile-active');
-            this.sidebarOverlay.classList.remove('active');
-        }
+        if (window.innerWidth <= 992) this.handleMainToggle();
         this.loadPage(shotId);
     }
 
-    async loadPage(shotName) {
-    if (!shotName) return;
-    const content = this.contentArea;
-    const actionSlot = this.actionSlot;
-    const loader = document.getElementById('page-loader');
-
-    // 1. HIỆN LOADER VÀ ẨN NỘI DUNG CŨ
-    if (loader) loader.classList.remove('hidden');
-    content.style.opacity = '0';
-    if (actionSlot) actionSlot.innerHTML = ''; 
-
-    try {
-        const path = `shots/${shotName}/${shotName}`;
-        
-        // Dọn dẹp CSS/JS cũ
-        ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove());
-
-        // 2. TẢI DỮ LIỆU (HTML + CSS)
-        const htmlRes = await fetch(`${path}.html?t=${Date.now()}`);
-        const htmlText = await htmlRes.text();
-
-        const cssLoadPromise = new Promise(resolve => {
-            const link = document.createElement('link');
-            link.id = 'shot-css'; link.rel = 'stylesheet';
-            link.href = `${path}.css?t=${Date.now()}`;
-            link.onload = resolve; 
-            link.onerror = resolve; 
-            document.head.appendChild(link);
-        });
-
-        await cssLoadPromise; // Chờ CSS nạp xong
-
-        // 3. ĐỔ DỮ LIỆU VÀO GIAO DIỆN
-        const doc = new DOMParser().parseFromString(htmlText, 'text/html');
-        const shotActions = doc.querySelector('.shot-actions');
-        const shotBody = doc.querySelector('.shot-body');
-
-        // Logic co giãn Header (đã làm ở bước trước)
-        const mainHeader = document.querySelector('.main-header');
-        if (actionSlot && shotActions && shotActions.innerHTML.trim() !== "") {
-            actionSlot.innerHTML = shotActions.innerHTML;
-            if (mainHeader) mainHeader.classList.add('has-nav-actions');
-        } else {
-            if (mainHeader) mainHeader.classList.remove('has-nav-actions');
-        }
-
-        content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
-
-        // 4. NẠP JS VÀ ĐỢI INIT XONG
-        await new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.id = 'shot-js';
-            script.src = `${path}.js?t=${Date.now()}`;
-            script.onload = async () => {
-                const initFuncName = `${shotName}Init`;
-                if (typeof window[initFuncName] === 'function') {
-                    await window[initFuncName](); // Đợi hàm init chạy xong (nếu là async)
-                }
-                resolve();
-            };
-            document.body.appendChild(script);
-        });
-
-        localStorage.setItem('currentShot', shotName);
-
-    } catch (err) { 
-        console.error("LoadPage Error:", err);
-    } finally {
-        // 5. ẨN LOADER VÀ HIỆN NỘI DUNG MƯỢT MÀ
-        setTimeout(() => {
-            if (loader) loader.classList.add('hidden');
-            content.style.transition = 'opacity 0.4s ease';
-            content.style.opacity = '1';
-        }, 300); // Thêm 300ms trễ để Loader không bị biến mất quá đột ngột
-    }
-}
-
     restoreSidebarState() { if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === 'mini') this.sidebar.classList.add('collapsed'); }
-    
     togglePassword() {
         const input = document.getElementById('login-uid');
         input.type = input.type === 'password' ? 'text' : 'password';
         document.getElementById('togglePassword').classList.toggle('fa-eye');
     }
-
     handleGlobalClicks(e) {
         if (e.target.tagName === 'IMG' && e.target.classList.contains('img-previewable')) {
             const modal = document.getElementById('imageModal');
             document.getElementById('imgFull').src = e.target.src;
-            modal.classList.add('active');
+            modal?.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
         if (e.target.classList.contains('close-modal') || e.target.id === 'imageModal') {
-            const modal = document.getElementById('imageModal');
-            if(modal) modal.classList.remove('active');
+            document.getElementById('imageModal')?.classList.remove('active');
             document.body.style.overflow = '';
         }
     }
-
-    logout() { if (confirm("Bạn có muốn đăng xuất?")) this.forceLogout(); }
+    logout() { if (confirm("Đăng xuất?")) this.forceLogout(); }
     forceLogout() { localStorage.clear(); location.reload(); }
 }
+
 
 // --- HÀM XUẤT PDF CHUẨN MIRROR (ĐÃ FIX RỚT CHỮ) ---
 async function handleExportPdf(btn) {
