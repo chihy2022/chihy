@@ -1,7 +1,7 @@
 const CONFIG = {
     GGS_URL: "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec",
     STORAGE_KEY: "Unime_UID",
-    USER_DATA_KEY: "Unime_UserData", // Lưu cache thông tin user
+    USER_DATA_KEY: "Unime_UserData",
     SIDEBAR_KEY: "sidebar-state"
 };
 
@@ -18,6 +18,7 @@ class UnimeApp {
         this.sidebar = document.getElementById('sidebar');
         this.loginOverlay = document.getElementById('login-overlay');
         this.appContainer = document.querySelector('.app-container');
+        this.sidebarOverlay = document.getElementById('sidebar-overlay');
     }
 
     init() {
@@ -27,12 +28,18 @@ class UnimeApp {
     }
 
     setupEventListeners() {
+        // Desktop Events
         document.getElementById('toggleBtn').addEventListener('click', () => this.toggleSidebar());
         document.getElementById('btnLogin').addEventListener('click', () => this.performLogin());
         document.getElementById('togglePassword').addEventListener('click', () => this.togglePassword());
         document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
         document.getElementById('exportPdfBtn').addEventListener('click', (e) => handleExportPdf(e.currentTarget));
 
+        // Mobile Events
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => this.toggleMobileSidebar(true));
+        this.sidebarOverlay?.addEventListener('click', () => this.toggleMobileSidebar(false));
+
+        // Menu & Sidebar
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', () => this.handleMenuClick(item));
         });
@@ -44,7 +51,7 @@ class UnimeApp {
         document.addEventListener('click', (e) => this.handleGlobalClicks(e));
     }
 
-    // --- TỐI ƯU LOGIN: CHẠY NGAY LẬP TỨC NẾU CÓ CACHE ---
+    // --- TỐI ƯU LOGIN (CACHE-FIRST) ---
     checkAuth() {
         const uid = localStorage.getItem(CONFIG.STORAGE_KEY);
         const cachedUser = localStorage.getItem(CONFIG.USER_DATA_KEY);
@@ -52,17 +59,12 @@ class UnimeApp {
         if (uid && cachedUser) {
             try {
                 const user = JSON.parse(cachedUser);
-                // Hiển thị ngay lập tức từ Cache
                 this.applyPermissions(user);
                 this.loginOverlay.classList.add('hidden');
                 this.appContainer.classList.remove('hidden');
                 this.loadPage(localStorage.getItem('currentShot') || 'shot1');
-                
-                // Kiểm tra ngầm để cập nhật quyền mới nhất (không bắt người dùng chờ)
                 this.silentCheckAuth(uid);
-            } catch (e) {
-                this.performLogin(uid); // Nếu cache lỗi thì login lại
-            }
+            } catch (e) { this.performLogin(uid); }
         }
     }
 
@@ -73,24 +75,17 @@ class UnimeApp {
             if (user && user.rights) {
                 localStorage.setItem(CONFIG.USER_DATA_KEY, JSON.stringify(user));
                 this.applyPermissions(user);
-            } else {
-                this.forceLogout(); // Nếu mã bị xóa trên GGS thì đẩy ra ngoài
-            }
-        } catch(e) { console.warn("Background auth check failed (Offline?)"); }
+            } else { this.forceLogout(); }
+        } catch(e) { console.warn("Background check offline."); }
     }
 
     async performLogin(forcedUid = null) {
         const uidInput = document.getElementById('login-uid');
         const btn = document.getElementById('btnLogin');
         const uid = forcedUid || uidInput.value.trim().toUpperCase();
-
         if (!uid) return;
 
-        // XÓA SẠCH DỮ LIỆU CŨ KHI ĐĂNG NHẬP MỚI
-        if (!forcedUid) {
-            localStorage.removeItem(CONFIG.USER_DATA_KEY);
-            document.getElementById('login-msg').innerText = "";
-        }
+        if (!forcedUid) localStorage.removeItem(CONFIG.USER_DATA_KEY);
 
         btn.disabled = true; 
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ĐANG KIỂM TRA...';
@@ -100,24 +95,17 @@ class UnimeApp {
             const user = await res.json();
             if (user && user.rights) {
                 localStorage.setItem(CONFIG.STORAGE_KEY, uid);
-                localStorage.setItem(CONFIG.USER_DATA_KEY, JSON.stringify(user)); // Lưu cache mới
-                
+                localStorage.setItem(CONFIG.USER_DATA_KEY, JSON.stringify(user));
                 this.applyPermissions(user);
                 this.loginOverlay.classList.add('hidden');
                 this.appContainer.classList.remove('hidden');
-                
-                const savedShot = localStorage.getItem('currentShot') || 'shot1';
-                this.loadPage(savedShot);
+                this.loadPage(localStorage.getItem('currentShot') || 'shot1');
             } else { 
-                document.getElementById('login-msg').innerText = "Sai User CODE hoặc quyền truy cập bị từ chối!"; 
+                document.getElementById('login-msg').innerText = "Sai User CODE!"; 
                 localStorage.clear();
             }
-        } catch(e) {
-            document.getElementById('login-msg').innerText = "Lỗi kết nối Server!";
-        } finally { 
-            btn.disabled = false; 
-            btn.innerText = "ĐĂNG NHẬP"; 
-        }
+        } catch(e) { document.getElementById('login-msg').innerText = "Lỗi kết nối!"; }
+        finally { btn.disabled = false; btn.innerText = "ĐĂNG NHẬP"; }
     }
 
     applyPermissions(user) {
@@ -140,13 +128,13 @@ class UnimeApp {
 
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
         item.classList.add('active');
-
         if (this.headerTitle) this.headerTitle.innerText = title;
 
         const exportBtn = document.getElementById('exportPdfBtn');
-        if (exportBtn) {
-            exportBtn.style.display = (shotId === 'shot7') ? 'none' : 'flex';
-        }
+        if (exportBtn) exportBtn.style.display = (shotId === 'shot7') ? 'none' : 'flex';
+
+        // Đóng menu nếu đang ở Mobile
+        if (window.innerWidth <= 992) this.toggleMobileSidebar(false);
 
         this.loadPage(shotId);
     }
@@ -155,7 +143,6 @@ class UnimeApp {
         if (!shotName) return;
         const content = this.contentArea;
         const actionSlot = this.actionSlot;
-        
         content.style.opacity = '0';
         if (actionSlot) actionSlot.innerHTML = ''; 
 
@@ -163,24 +150,19 @@ class UnimeApp {
             const path = `shots/${shotName}/${shotName}`;
             this.cleanupShotAssets();
 
-            // Tải HTML
             const htmlRes = await fetch(`${path}.html?t=${Date.now()}`);
-            if (!htmlRes.ok) throw new Error("File không tồn tại");
+            if (!htmlRes.ok) throw new Error("File 404");
             const htmlText = await htmlRes.text();
 
-            // Nạp CSS và ĐỢI CSS nạp xong (Chống giật layout)
             const cssLoadPromise = new Promise((resolve) => {
                 const link = document.createElement('link');
-                link.id = 'shot-css';
-                link.rel = 'stylesheet';
+                link.id = 'shot-css'; link.rel = 'stylesheet';
                 link.href = `${path}.css?t=${Date.now()}`;
-                link.onload = resolve;
-                link.onerror = resolve;
+                link.onload = resolve; link.onerror = resolve;
                 document.head.appendChild(link);
             });
             await cssLoadPromise;
 
-            // Đổ dữ liệu HTML
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
             const shotActions = doc.querySelector('.shot-actions');
@@ -189,41 +171,39 @@ class UnimeApp {
             if (shotActions && actionSlot) actionSlot.innerHTML = shotActions.innerHTML;
             content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
 
-            // Nạp JS
             const script = document.createElement('script');
-            script.id = 'shot-js';
-            script.src = `${path}.js?t=${Date.now()}`;
+            script.id = 'shot-js'; script.src = `${path}.js?t=${Date.now()}`;
             script.onload = () => {
                 const initFuncName = `${shotName}Init`;
-                if (typeof window[initFuncName] === 'function') {
-                    window[initFuncName]();
-                }
-                // Chỉ hiện nội dung sau khi mọi thứ (CSS/JS) đã sẵn sàng
+                if (typeof window[initFuncName] === 'function') window[initFuncName]();
                 requestAnimationFrame(() => content.style.opacity = '1');
             };
             document.body.appendChild(script);
-
             localStorage.setItem('currentShot', shotName);
-
         } catch (err) { 
-            console.error("Lỗi:", err);
-            content.innerHTML = `<div class="p-5 text-center text-muted">Dữ liệu đang được cập nhật...</div>`;
+            content.innerHTML = `<div class="p-5 text-center text-muted">Dữ liệu ${shotName} đang cập nhật...</div>`;
             content.style.opacity = '1';
         }
     }
 
-    cleanupShotAssets() { 
-        ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove()); 
-    }
+    cleanupShotAssets() { ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove()); }
 
     toggleSidebar() {
         this.sidebar.classList.toggle('collapsed');
         localStorage.setItem(CONFIG.SIDEBAR_KEY, this.sidebar.classList.contains('collapsed') ? 'mini' : 'full');
     }
 
-    restoreSidebarState() { 
-        if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === 'mini') this.sidebar.classList.add('collapsed'); 
+    toggleMobileSidebar(open) {
+        if (open) {
+            this.sidebar.classList.add('mobile-active');
+            this.sidebarOverlay.classList.add('active');
+        } else {
+            this.sidebar.classList.remove('mobile-active');
+            this.sidebarOverlay.classList.remove('active');
+        }
     }
+
+    restoreSidebarState() { if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === 'mini') this.sidebar.classList.add('collapsed'); }
 
     togglePassword() {
         const input = document.getElementById('login-uid');
@@ -244,39 +224,26 @@ class UnimeApp {
         }
     }
 
-    logout() { 
-        if (confirm("Đăng xuất khỏi hệ thống?")) {
-            this.forceLogout();
-        }
-    }
-
-    forceLogout() {
-        localStorage.removeItem(CONFIG.STORAGE_KEY);
-        localStorage.removeItem(CONFIG.USER_DATA_KEY);
-        localStorage.removeItem('currentShot');
-        location.reload();
-    }
+    logout() { if (confirm("Đăng xuất?")) this.forceLogout(); }
+    forceLogout() { localStorage.clear(); location.reload(); }
 }
 
-// ==========================================
-// HÀM XUẤT PDF CHUẨN (MIRROR STYLE)
-// ==========================================
+// --- HÀM XUẤT PDF CHUẨN MIRROR (FIX RỚT CHỮ UNILEVER) ---
 async function handleExportPdf(btn) {
     const source = document.getElementById('content-area');
     if (!source || typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') return;
 
     const originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Trích xuất...';
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Trích xuất...';
 
     let sandbox = null;
-
     try {
         await document.fonts.ready;
         sandbox = document.createElement('div');
         Object.assign(sandbox.style, {
             position: 'absolute', left: '-9999px', top: '0',
-            width: source.clientWidth + 'px', background: 'white'
+            width: source.clientWidth + 'px', background: 'white', padding: '0'
         });
 
         const clone = source.cloneNode(true);
@@ -305,7 +272,7 @@ async function handleExportPdf(btn) {
                         cCell.style.fontWeight = style.fontWeight;
                         cCell.style.fontSize = style.fontSize;
                         cCell.style.verticalAlign = 'middle';
-                        if (c === 1) {
+                        if (c === 1) { // Cột Unilever
                             cCell.style.whiteSpace = 'nowrap';
                             cCell.style.width = (oCell.offsetWidth + 2) + 'px';
                         }
@@ -315,11 +282,9 @@ async function handleExportPdf(btn) {
         }
 
         clone.querySelectorAll('button, .actions, .sidebar-toggle, .btn-trash, .fa-trash-can').forEach(el => el.remove());
-        clone.style.minHeight = '0';
-        clone.style.height = 'auto';
+        clone.style.minHeight = '0'; clone.style.height = 'auto';
 
         await new Promise(r => setTimeout(r, 400));
-
         const canvas = await html2canvas(sandbox, { scale: 2, useCORS: true, logging: false });
         const imgData = canvas.toDataURL('image/png', 1.0);
         const { jsPDF } = window.jspdf;
@@ -329,10 +294,8 @@ async function handleExportPdf(btn) {
         const pdf = new jsPDF({ orientation: imgW > imgH ? 'l' : 'p', unit: 'px', format: [imgW, imgH] });
         pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
         pdf.save(`Unime_Report_${new Date().getTime()}.pdf`);
-
-    } catch (e) {
-        console.error("Lỗi PDF:", e);
-    } finally {
+    } catch (e) { console.error(e); }
+    finally {
         if (sandbox && sandbox.parentNode) sandbox.parentNode.removeChild(sandbox);
         btn.disabled = false; btn.innerHTML = originalText;
     }
