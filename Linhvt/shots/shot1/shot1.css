@@ -2,14 +2,13 @@
 .shot-title {
     font-weight: 800; 
     color: var(--primary); 
-    margin: 0;
-    font-size: 1.25rem;
+    margin: 5;
 }
 
 .sub-text {
     font-size: 0.9rem;
     color: #666;
-    margin-bottom: 15px;
+    margin: 10px 10px 10px 0px;
 }
 
 .btn-action {
@@ -20,7 +19,11 @@
     font-weight: 600;
     transition: all 0.2s;
 }
-
+.d-flex {
+    display: flex !important;
+    align-content: center;
+    flex-wrap: wrap;
+}
 .btn-add { background: #28a745; }
 .btn-sync {background: var(--primary-gradient);box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3); transition: 0.3s; }
 .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
