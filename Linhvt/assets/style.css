@@ -26,6 +26,47 @@ img { max-width: 100%; height: auto; display: block; }
 #togglePassword { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-gray); }
 .btn-login { width: 100%; background: var(--primary-gradient); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; }
 
+/* --- PREMIUM PAGE LOADER --- */
+.page-loader {
+    position: absolute;
+    inset: 0;
+    background: rgba(248, 249, 250, 0.8); /* Nền xám nhạt mờ */
+    backdrop-filter: blur(4px); /* Hiệu ứng mờ nền cực xịn */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    transition: opacity 0.3s ease;
+}
+
+.loader-content { text-align: center; }
+
+.spinner-unime {
+    width: 45px;
+    height: 45px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid var(--primary); /* Màu xanh chính của bạn */
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    animation: spin 0.8s linear infinite;
+}
+
+.loader-content p {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+.page-loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+}
+
 /* LAYOUT CHÍNH */
 .app-container { display: flex; width: 100vw; height: 100vh; }
 
@@ -42,7 +83,7 @@ img { max-width: 100%; height: auto; display: block; }
 .avatar { width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;}
 .avatar img { width: 100%; height: auto; object-fit: contain; }
 .app-name { display: block; font-weight: 800; font-size: 22px; color: var(--primary); white-space: nowrap; line-height: 1.1;margin-bottom: 2px; }
-.app-sub { display: block; font-size: 14px; color: var(--text-gray); white-space: nowrap;line-height: 1; }
+.app-sub { padding-top: 3px; display: block; font-size: 14px; color: var(--text-gray); white-space: nowrap;line-height: 1; }
 
 .sidebar-menu { flex: 1; padding: 10px 12px; overflow-y: auto; overflow-x: hidden; }
 .menu-item:hover { background: #f3f4f6; }
@@ -335,81 +376,112 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* ================================================================
-   RESPONSIVE HEADER 2 TẦNG CHO MOBILE & IPAD
+   RESPONSIVE HEADER ENGINE - MOBILE & IPAD (MAX-WIDTH: 992PX)
    ================================================================ */
-@media (max-width: 992px) {
-    .main-header {
-        height: auto !important; /* Mở rộng chiều cao */
-        min-height: 65px;
-        flex-wrap: wrap !important; /* Cho phép xuống dòng */
-        padding: 10px 15px !important;
-        gap: 10px 0;
-    }
 
-    /* TẦNG 1: MENU + TITLE (Bên trái) */
-    .header-left {
-        flex: 1;
+@media (max-width: 992px) {
+    /* 1. CẤU HÌNH HEADER MẶC ĐỊNH (1 HÀNG - Cho Shot 1, 5, 8...) */
+    .main-header {
         display: flex !important;
         flex-direction: row !important;
-        gap: 10px;
         align-items: center !important;
-        height: 44px !important;
+        justify-content: space-between !important;
+        height: 65px !important;
+        min-height: 65px !important;
+        padding: 0 15px !important;
+        gap: 10px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    #dynamic-header-title {
-        margin: 0 !important;
-        line-height: 1 !important;
-        align-items: center;
-        font-size: 15px;
-        font-weight: 500;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    /* 2. CẤU HÌNH HEADER KHI CÓ NÚT ĐIỀU HƯỚNG (2 HÀNG - Cho Shot 6) */
+    .main-header.has-nav-actions {
+        display: grid !important;
+        grid-template-areas: 
+            "left-side pdf-btn"
+            "nav-slot nav-slot";
+        grid-template-columns: 1fr auto; /* Cột trái giãn hết cỡ, cột phải chứa nút PDF */
+        height: auto !important;
+        min-height: 110px !important;
+        gap: 12px 0;
+        padding: 10px 15px !important;
     }
 
-    /* TẦNG 1: NÚT PDF (Ép nằm bên phải) */
-    .header-actions {
-        order: 1; 
-        margin-left: auto;
+    /* ĐỊNH VỊ CÁC THÀNH PHẦN TRONG GRID */
+    .header-left { 
+        grid-area: left-side; 
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px;
+        min-width: 0;
     }
 
-    .btn-primary {
-        width: 44px !important; /* Fix cứng hình vuông trên mobile */
+    /* Nút PDF: Luôn sát mép phải hàng 1 */
+    #exportPdfBtn { 
+        grid-area: pdf-btn; 
+        justify-self: end; /* Đẩy sát lề phải */
+        width: 40px !important;
+        height: 40px !important;
         padding: 0 !important;
+        display: flex !important;
         justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        flex-shrink: 0;
     }
-    .btn-primary span { display: none; } /* Ẩn chữ PDF */
+    #exportPdfBtn span { display: none; } /* Ẩn chữ trên mobile */
 
-    /* TẦNG 2: HIỆN SHOT-ACTIONS (Roadmap, Sync, Thêm dòng...) */
+    /* Slot chứa Roadmap/Usecases: Nằm trọn hàng 2 */
+    .header-actions { display: contents !important; } /* Giải phóng slot con */
+    
     #shot-actions-slot {
-        width: 100% !important; /* Chiếm trọn hàng 2 */
-        order: 2; /* Nhảy xuống hàng dưới */
-        display: flex !important; /* Bắt buộc hiển thị */
+        grid-area: nav-slot;
+        width: 100% !important;
+        display: flex !important;
         gap: 8px;
-        overflow-x: auto; /* Cho phép vuốt ngang nếu nhiều nút */
-        padding: 5px 0;
-        /* Ẩn thanh cuộn xấu xí */
+        overflow-x: auto; /* Cho phép vuốt ngang hàng 2 */
+        padding: 2px 0 8px 0;
+        flex-wrap: nowrap;
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
-    
     #shot-actions-slot::-webkit-scrollbar { display: none; }
 
-    /* Nút ở tầng 2 nhỏ gọn để dễ nhìn */
-    #shot-actions-slot .btn-action, 
-    #shot-actions-slot .btn-nav-scroll {
-        height: 36px !important;
+    /* Ẩn slot hoàn toàn nếu shot không có nút điều hướng */
+    .main-header:not(.has-nav-actions) #shot-actions-slot {
+        display: none !important;
+    }
+
+    /* TỐI ƯU CHỮ TIÊU ĐỀ */
+    #dynamic-header-title {
+        font-size: 15px;
+        font-weight: 800;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px; /* Tăng độ rộng tiêu đề */
+    }
+
+    /* STYLE NÚT ĐIỀU HƯỚNG TẦNG 2 */
+    .btn-nav-scroll {
+        height: 34px !important;
         padding: 0 12px !important;
         font-size: 11px !important;
-        border-radius: 10px;
-        flex-shrink: 0; /* Không bị bóp méo nút */
-        display: flex !important;
-        align-items: center;
-        gap: 6px;
+        border-radius: 8px;
+        flex-shrink: 0;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
     }
 }
 
-/* FIX CHO IPHONE MÀN HÌNH NHỎ */
-@media (max-width: 400px) {
-    #dynamic-header-title { max-width: 450px; font-size: 20px; }
-    .btn-menu-global, .btn-primary { width: 40px; height: 40px; }
+/* ================================================================
+   XỬ LÝ CUỘN (SCROLL MARGIN) TƯƠNG ỨNG VỚI CHIỀU CAO HEADER
+   ================================================================ */
+#content-area { scroll-behavior: smooth; }
+
+/* Mặc định cho các Shot 1 hàng (65px + 15px lề) */
+.content-section { scroll-margin-top: 80px; }
+
+/* Dành riêng cho Shot có 2 hàng nút (110px + 20px lề) */
+.has-nav-actions ~ .content-body .content-section {
+    scroll-margin-top: 135px !important;
 }
