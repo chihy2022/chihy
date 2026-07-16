@@ -36,32 +36,112 @@ img { max-width: 100%; height: auto; display: block; }
 .sidebar-toggle:hover { background: var(--primary-gradient); color: white; transform: translateY(-50%) scale(1.1); }
 .sidebar.collapsed .sidebar-toggle i { transform: rotate(180deg); }
 
-.sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); }
+.sidebar-header { padding: 15px; height: 70px; }
 .user-profile { display: flex; align-items: center; gap: 12px; }
 .user-info { display: flex; flex-direction: column; justify-content: center; }
 .avatar { width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;}
 .avatar img { width: 100%; height: auto; object-fit: contain; }
-.app-name { display: block; font-weight: 800; font-size: 18px; color: var(--primary); white-space: nowrap; line-height: 1.1;margin-bottom: 2px; }
-.app-sub { display: block; font-size: 11px; color: var(--text-gray); white-space: nowrap;line-height: 1; }
+.app-name { display: block; font-weight: 800; font-size: 22px; color: var(--primary); white-space: nowrap; line-height: 1.1;margin-bottom: 2px; }
+.app-sub { display: block; font-size: 14px; color: var(--text-gray); white-space: nowrap;line-height: 1; }
 
 .sidebar-menu { flex: 1; padding: 10px 12px; overflow-y: auto; overflow-x: hidden; }
-.menu-item { font-weight: 600; display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 12px; cursor: pointer; font-size: 14px; margin-bottom: 4px; color: var(--text-dark); transition: 0.2s; }
-.menu-item i { width: 20px; font-size: 18px; color: var(--text-gray); flex-shrink: 0; }
 .menu-item:hover { background: #f3f4f6; }
 .menu-item.active { background: var(--primary-light); color: var(--primary); }
-
-.group-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; cursor: pointer; }
-.header-main { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 14px; }
+/* FIX QUAN TRỌNG: Ép icon vào khung cố định để chữ luôn thẳng hàng */
+.menu-item, 
+.group-header {
+    display: flex !important;
+    flex-direction: row !important; /* Đảm bảo luôn nằm ngang */
+    align-items: center !important;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: 600;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 12px;
+    margin-bottom: 4px;
+    min-height: 44px;
+    position: relative;
+    text-decoration: none;
+    color: var(--text-dark);
+}
+.menu-item i, 
+.header-main i {
+    width: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: var(--text-gray);
+    flex-shrink: 0;
+}
+.header-main { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 16px; flex: 1; }
 .group-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; margin-left: 26px; border-left: 1px solid #e5e7eb; }
 .menu-group.active .group-content { max-height: 400px; padding: 4px 0; }
 .menu-group.active .chevron { transform: rotate(180deg); }
 
-.sub-item { padding: 10px 20px; font-size: 13.5px; font-weight: 500; color: var(--text-gray); position: relative; }
-.sub-item::before { content: ""; position: absolute; left: 0; top: 50%; width: 12px; height: 1px; background: #e5e7eb; }
-.sub-item:hover { color: var(--primary); }
-.sub-item.active { color: var(--primary); font-weight: 700; }
-.sub-item.active::before { background: var(--primary); width: 16px; height: 2px; }
+.sub-item {
+    padding-left: 25px !important;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-gray);
+    position: relative;
+    background: transparent;
+    border-radius: 0 10px 10px 0; 
+}
 
+/* Đường kẻ line xám mặc định cho menu con */
+.sub-item::before {
+    content: "";
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    width: 12px;
+    height: 1.5px;
+    background: #e5e7eb;
+    transform: translateY(-50%);
+    transition: all 0.2s;
+}
+.sub-item:hover { color: var(--primary); }/* Active cho Menu chính (Báo cáo tiến độ) */
+.menu-item.active:not(.sub-item) {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+}
+.menu-item.active:not(.sub-item) i { color: var(--primary); }
+
+/* Active cho Menu con (Mobile Dashboard) - Dạng Card tròn mờ */
+.sub-item.active {
+    background: var(--primary-light) !important; /* Nền xanh nhạt */
+    color: var(--primary) !important;
+    font-weight: 700;
+}
+
+/* Đường kẻ line hóa xanh và đậm hơn khi active */
+.sub-item.active::before {
+    background: var(--primary);
+    width: 17px; /* Dài hơn chút cho đẹp */
+    height: 2px;
+}
+/* --- 4. FIX KHI SIDEBAR THU GỌN (COLLAPSED) --- */
+.sidebar.collapsed .sub-item {
+    margin-left: 0;
+    padding-left: 15px !important;
+}
+.sidebar.collapsed .sub-item::before { display: none; }
+.sidebar.collapsed .menu-item span, 
+.sidebar.collapsed .header-main span, 
+.sidebar.collapsed .chevron {
+    display: none;
+}
+
+/* Khi sidebar thu gọn (Collapsed) */
+.sidebar.collapsed .menu-item,
+.sidebar.collapsed .group-header {
+    justify-content: center;
+    padding: 12px 0;
+}
 .sidebar-footer { padding: 15px; border-top: 1px solid var(--border); }
 .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f9fafb; border-radius: 12px; cursor: pointer; overflow: hidden; }
 .user-avatar-sm { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
@@ -76,13 +156,74 @@ img { max-width: 100%; height: auto; display: block; }
 /* CÁC NÚT BẤM DÀNH CHO SHOT */
 /* ÉP Header Actions nằm hàng ngang */
 .header-actions { display: flex; align-items: center; gap: 12px; }
+.header-left {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 15px;
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+}
+#dynamic-header-title {
+    margin: 0 !important;
+        padding: 0 !important;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 1 !important;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        color: #1e293b;
+    }
 #shot-actions-slot { display: flex; align-items: center; gap: 8px;}
 /* CÁC NÚT BẤM DÀNH CHO SHOT */
 #shot-actions-slot .btn-action { height: 38px; padding: 0 16px; border-radius: 10px; border: none; font-weight: 600; font-size: 13px; color: white; display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .btn-add { background: #28a745; }
 .btn-sync { background: var(--primary-gradient); }
 
-.btn-primary { background: var(--primary-gradient); color: white; border: none; padding: 8px 18px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(0, 122, 255, 0.2); }
+/* Nút Menu Global */
+.btn-menu-global {
+    background: #f1f5f9;
+    color: var(--primary);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0; /* Chống bị bóp méo nút */
+}
+
+.btn-menu-global:hover { background: #e2e8f0; }
+
+/* --- NÚT XUẤT PDF (FIX CỨNG HÌNH VUÔNG) --- */
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    height: 44px;
+    padding: 0 15px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+    flex-shrink: 0;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
 
 .content-body { flex: 1; padding: 25px; overflow-y: auto; transition: opacity 0.3s; }
 
@@ -119,101 +260,156 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* ================================================================
-   RESPONSIVE ENGINE - MOBILE & IPAD (MAX-WIDTH: 992PX)
+   6. RESPONSIVE ENGINE - MOBILE & IPAD (MAX-WIDTH: 992PX)
    ================================================================ */
-
 @media (max-width: 992px) {
-    /* 1. Reset Body & Container */
     body { overflow-x: hidden; }
     .app-container { width: 100vw; position: relative; }
 
-    /* 2. SIDEBAR BIẾN THÀNH OVERLAY (TRƯỢT) */
+    /* SIDEBAR BIẾN THÀNH OVERLAY */
     .sidebar {
         position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        transform: translateX(-100%); /* Ẩn sidebar bên trái */
+        left: 0; top: 0; bottom: 0;
+        transform: translateX(-100%);
         z-index: 10000;
         width: var(--sidebar-w) !important;
         box-shadow: 15px 0 30px rgba(0,0,0,0.1);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Khi Sidebar được mở trên Mobile */
-    .sidebar.mobile-active {
-        transform: translateX(0);
-    }
-
-    /* Ẩn nút mũi tên cũ trên Mobile vì đã có nút Hamburger */
+    .sidebar.mobile-active { transform: translateX(0); }
     .sidebar-toggle { display: none !important; }
 
-    /* 3. MAIN CONTENT TRÀN MÀN HÌNH */
-    .main-content {
-        width: 100vw;
-        height: 100vh;
-    }
-
-    /* 4. TỐI ƯU HEADER CHO DI ĐỘNG */
+    /* HEADER TỐI ƯU */
     .main-header {
-        padding: 0 15px;
+        padding: 0 12px;
         height: 60px;
     }
 
-    /* Hiện nút Menu (Hamburger) - Bạn cần thêm nút này vào HTML */
-    .btn-mobile-menu {
-        display: flex !important;
-        width: 40px; height: 40px;
-        align-items: center; justify-content: center;
-        font-size: 20px; color: var(--primary);
-        cursor: pointer;
-        background: var(--primary-light);
-        border-radius: 10px;
-        border: none;
+    .header-left {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 15px;
+    flex: 1;
+    min-width: 0;
+    height: 44px;
     }
-
-    /* 5. NÚT XUẤT PDF TRÊN MOBILE (Ẩn chữ cho gọn) */
+    #dynamic-header-title {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 1 !important;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        color: #1e293b;
+    }
+    /* NÚT PDF BIẾN THÀNH ICON TRÒN */
+    .btn-primary {
+        width: 38px; height: 38px; padding: 0;
+        justify-content: center; border-radius: 10px;
+    }
     .btn-primary span { display: none; }
-    .btn-primary { width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: 50%; }
+    .btn-primary i { margin: 0; font-size: 16px; }
 
-    /* 6. NỘI DUNG (SHOTS) */
-    .content-body { padding: 15px; }
-    
-    /* Login Box */
-    .login-box { width: 90% !important; padding: 30px 20px !important; }
+    /* LOGIN BOX */
+    .login-box { width: 92% !important; padding: 30px 20px !important; }
 }
 
-/* 7. LỚP PHỦ MỜ KHI MỞ MENU */
+/* LỚP PHỦ MỜ KHI MỞ MENU */
 .sidebar-overlay {
-    display: none;
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(2px);
-    z-index: 9999;
+    z-index: 9998; /* Nằm dưới Sidebar (9999) nhưng trên nội dung */
+    display: none; /* Mặc định ẩn hoàn toàn */
+    pointer-events: none; /* Chắc chắn không chặn click */
 }
-.sidebar-overlay.active { display: block; }
 
-/* 8. TỐI ƯU BẢNG (TABLE) TRÊN ĐIỆN THOẠI */
-@media (max-width: 768px) {
-    .table-scroll {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch; /* Cuộn cực mượt trên iPhone */
+.sidebar-overlay.active {
+    display: block !important;
+    pointer-events: auto !important; /* Chỉ nhận click khi đang hiện */
+}
+
+/* ================================================================
+   RESPONSIVE HEADER 2 TẦNG CHO MOBILE & IPAD
+   ================================================================ */
+@media (max-width: 992px) {
+    .main-header {
+        height: auto !important; /* Mở rộng chiều cao */
+        min-height: 65px;
+        flex-wrap: wrap !important; /* Cho phép xuống dòng */
+        padding: 10px 15px !important;
+        gap: 10px 0;
     }
-    .modern-table { min-width: 800px; } /* Đảm bảo bảng không bị bóp méo */
-    
-    /* Roadmap ở Shot 6 chuyển thành hàng dọc */
-    .s6-roadmap-container {
+
+    /* TẦNG 1: MENU + TITLE (Bên trái) */
+    .header-left {
+        flex: 1;
         display: flex !important;
-        flex-direction: column !important;
-        gap: 30px;
-    }
-    .s6-roadmap-line { display: none; }
-    
-    /* Usecase List ở Shot 6 */
-    .uc-row-item {
-        grid-template-columns: 1fr !important;
+        flex-direction: row !important;
         gap: 10px;
+        align-items: center !important;
+        height: 44px !important;
     }
-    .uc-col { border-left: none !important; border-top: 1px solid #eee; padding: 10px 0 !important; }
+
+    #dynamic-header-title {
+        margin: 0 !important;
+        line-height: 1 !important;
+        align-items: center;
+        font-size: 15px;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* TẦNG 1: NÚT PDF (Ép nằm bên phải) */
+    .header-actions {
+        order: 1; 
+        margin-left: auto;
+    }
+
+    .btn-primary {
+        width: 44px !important; /* Fix cứng hình vuông trên mobile */
+        padding: 0 !important;
+        justify-content: center;
+    }
+    .btn-primary span { display: none; } /* Ẩn chữ PDF */
+
+    /* TẦNG 2: HIỆN SHOT-ACTIONS (Roadmap, Sync, Thêm dòng...) */
+    #shot-actions-slot {
+        width: 100% !important; /* Chiếm trọn hàng 2 */
+        order: 2; /* Nhảy xuống hàng dưới */
+        display: flex !important; /* Bắt buộc hiển thị */
+        gap: 8px;
+        overflow-x: auto; /* Cho phép vuốt ngang nếu nhiều nút */
+        padding: 5px 0;
+        /* Ẩn thanh cuộn xấu xí */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    #shot-actions-slot::-webkit-scrollbar { display: none; }
+
+    /* Nút ở tầng 2 nhỏ gọn để dễ nhìn */
+    #shot-actions-slot .btn-action, 
+    #shot-actions-slot .btn-nav-scroll {
+        height: 36px !important;
+        padding: 0 12px !important;
+        font-size: 11px !important;
+        border-radius: 10px;
+        flex-shrink: 0; /* Không bị bóp méo nút */
+        display: flex !important;
+        align-items: center;
+        gap: 6px;
+    }
+}
+
+/* FIX CHO IPHONE MÀN HÌNH NHỎ */
+@media (max-width: 400px) {
+    #dynamic-header-title { max-width: 450px; font-size: 20px; }
+    .btn-menu-global, .btn-primary { width: 40px; height: 40px; }
 }
