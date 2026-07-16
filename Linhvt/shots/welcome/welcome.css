@@ -1,0 +1,102 @@
+/* --- CONTAINER CHÍNH CỦA SHOT WELCOME --- */
+.welcome-body {
+    display: flex !important;
+    align-items: center !important;     /* Căn giữa theo chiều dọc */
+    justify-content: center !important;  /* Căn giữa theo chiều ngang */
+    /* QUAN TRỌNG: Chiều cao tối thiểu bằng màn hình trừ đi Header */
+    min-height: calc(100vh - 120px); 
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- CARD POPUP --- */
+.welcome-card-premium {
+    background: white;
+    width: 95%;
+    max-width: 650px; /* Độ rộng tối đa của Card */
+    border-radius: 35px;
+    padding: 50px 40px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 89, 154, 0.1);
+    border: 1px solid rgba(0, 89, 154, 0.05);
+    
+    /* Đảm bảo Card không bị dính sát mép khi thu nhỏ màn hình */
+    margin: auto; 
+    
+    animation: welcomePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes welcomePop {
+    0% { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+.wc-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+}
+
+/* --- AVATAR FIX --- */
+.wc-illustration {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.avatar-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    position: relative;
+    border: 4px solid #fff;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.main-avt { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+.logo-badge {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 35px;
+    height: 35px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.logo-badge img { width: 70%; }
+
+/* --- TEXT & COLORS --- */
+.welcome-msg {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 15px;
+}
+
+.gradient-name {
+    background: linear-gradient(135deg, #ff4081, #007AFF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.welcome-sub {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 35px;
+}
+
+
+/* Mobile */
+@media (max-width: 600px) {
+    .wc-actions { flex-direction: column; }
+}
