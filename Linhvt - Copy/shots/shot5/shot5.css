@@ -1,0 +1,84 @@
+.shot5-container {
+    padding: 10px;
+    animation: shot5FadeIn 0.5s ease-out;
+}
+
+@keyframes shot5FadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.content-section {
+    margin-bottom: 30px;
+}
+
+/* Header styling */
+.pro-title {
+    border-left: 5px solid #1a4e8a;
+    padding-left: 15px;
+    margin-bottom: 25px;
+}
+
+.shot-title {
+    font-weight: 800;
+    color: var(--primary);
+    font-size: 24px;
+    text-transform: uppercase;
+}
+
+.text-muted.font-16 {
+    color: #64748b !important;
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+/* Grid ảnh Demo */
+.demo-image-grid {
+    display: flex;
+    flex-direction: column;   
+    gap: 40px; /* Tăng khoảng cách giữa các bước cho thoáng */
+}
+
+.demo-item {
+    width: 100%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f1f5f9;
+}
+
+.demo-item label {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* Ảnh demo chuyên nghiệp */
+.img-in-card {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    cursor: zoom-in;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
+    background: #f8fafc; /* Nền xám nhẹ trong khi chờ ảnh load */
+}
+
+.img-in-card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 15px 35px rgba(0, 89, 154, 0.1);
+}
+
+/* Responsive cho màn hình lớn nếu muốn chia 2 cột */
+@media (min-width: 1200px) {
+    /* Nếu bạn muốn chia 2 cột thì uncomment đoạn dưới */
+    /* .demo-image-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    } */
+}
