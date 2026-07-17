@@ -77,7 +77,7 @@ img { max-width: 100%; height: auto; display: block; }
 .sidebar-toggle:hover { background: var(--primary-gradient); color: white; transform: translateY(-50%) scale(1.1); }
 .sidebar.collapsed .sidebar-toggle i { transform: rotate(180deg); }
 
-.sidebar-header { padding: 15px; height: 70px; }
+.sidebar-header { padding: 15px; height: 70px; margin-bottom: 35px; }
 .user-profile { display: flex; align-items: center; gap: 12px; }
 .user-info { display: flex; flex-direction: column; justify-content: center; }
 .avatar { width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;}
@@ -101,7 +101,7 @@ img { max-width: 100%; height: auto; display: block; }
     cursor: pointer;
     transition: all 0.2s ease;
     border-radius: 12px;
-    margin-bottom: 4px;
+    margin-bottom: 15px;
     min-height: 44px;
     position: relative;
     text-decoration: none;
