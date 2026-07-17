@@ -134,3 +134,24 @@ input:checked + .fb-slider-premium:before { transform: translateX(18px); }
     .shot-title { font-size: 20px; }
     .text-muted.font-16 { font-size: 14px; }
 }
+
+/* CSS hỗ trợ xuất PDF - không ảnh hưởng giao diện web */
+.exporting-pdf .fb-card-premium {
+    box-shadow: none !important; /* Bỏ shadow khi chụp để tránh mờ viền */
+    border: 1px solid #e2e8f0 !important;
+}
+
+.exporting-pdf .fb-wrapper-premium {
+    animation: none !important; /* Tắt animation để không bị lệch tọa độ */
+    transform: none !important;
+}
+
+.exporting-pdf .fb-cat-item {
+    transition: none !important; /* Tắt hiệu ứng hover/transition */
+}
+
+/* Ép FontAwesome nằm giữa */
+.exporting-pdf .fb-cat-icon i {
+    display: block !important;
+    line-height: 45px !important; 
+}
