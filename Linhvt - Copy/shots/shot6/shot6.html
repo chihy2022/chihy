@@ -1,0 +1,164 @@
+<div class="shot-actions">
+    <button class="btn-nav-scroll" data-target="s6-roadmap">
+        <i class="fa-solid fa-route"></i> Roadmap
+    </button>
+    <button class="btn-nav-scroll" data-target="s6-usecase">
+        <i class="fa-solid fa-diagram-project"></i> Usecases
+    </button>
+    <button class="btn-nav-scroll" data-target="s6-raci">
+        <i class="fa-solid fa-table"></i> RACI Matrix
+    </button>
+</div>
+
+<div class="shot-body">
+    <!-- SECTION 01: ROADMAP -->
+    <section id="s6-roadmap" class="content-section">
+        <div class="section-card">
+            <div class="section-header-top">
+                <div class="pro-title"><span class="step-num">01</span><h1>Execution Roadmap</h1></div>
+                <p class="section-desc">Quy trình WEB TỒN KHO – LOGIC mô tả luồng xử lý dữ liệu POSM từ khi lập kế hoạch đến khi tổng hợp báo cáo tồn kho phục vụ đối soát và quản lý.</p>
+            </div>
+
+            <div class="s6-roadmap-container">
+                <div class="s6-roadmap-line"></div>
+                <div class="s6-step-box color-1">
+                    <div class="s6-icon-outer"><div class="s6-icon-inner"><i class="fa-solid fa-user-gear"></i></div></div>
+                    <div class="s6-step-badge">STEP 01</div>
+                    <h3>CDA - Import Planout</h3>
+                    <p>CDA import dữ liệu kế hoạch phân bổ POSM lên hệ thống.</p>
+                    <div class="s6-io-group">
+                        <div class="io-row"><strong>ĐẦU VÀO</strong><p>File kế hoạch POSM (Planout)</p></div>
+                        <div class="io-row"><strong>ĐẦU RA</strong><p>Kế hoạch POSM được duyệt</p></div>
+                    </div>
+                </div>
+                <div class="s6-step-box color-2">
+                    <div class="s6-icon-outer"><div class="s6-icon-inner"><i class="fa-solid fa-box-archive"></i></div></div>
+                    <div class="s6-step-badge">STEP 02</div>
+                    <h3>NPP nhận POSM</h3>
+                    <p>Nhà phân phối tiếp nhận POSM và xác nhận số lượng thực nhận.</p>
+                    <div class="s6-io-group">
+                        <div class="io-row"><strong>ĐẦU VÀO</strong><p>Phiếu giao hàng, Kế hoạch</p></div>
+                        <div class="io-row"><strong>ĐẦU RA</strong><p>Số lượng POSM đã nhận</p></div>
+                    </div>
+                </div>
+                <div class="s6-step-box color-3">
+                    <div class="s6-icon-outer"><div class="s6-icon-inner"><i class="fa-solid fa-warehouse"></i></div></div>
+                    <div class="s6-step-badge">STEP 03</div>
+                    <h3>GSTB kiểm kho</h3>
+                    <p>GSTB đối chiếu thực tế và cập nhật số lượng vào hệ thống.</p>
+                    <div class="s6-io-group">
+                        <div class="io-row"><strong>ĐẦU VÀO</strong><p>Kiểm kê thực tế tại NPP</p></div>
+                        <div class="io-row"><strong>ĐẦU RA</strong><p>Số lượng tồn thực tế</p></div>
+                    </div>
+                </div>
+                <div class="s6-step-box color-4">
+                    <div class="s6-icon-outer"><div class="s6-icon-inner"><i class="fa-solid fa-display"></i></div></div>
+                    <div class="s6-step-badge">STEP 04</div>
+                    <h3>System update GAP</h3>
+                    <p>Hệ thống tự động cập nhật tồn và tính toán chênh lệch (GAP).</p>
+                    <div class="s6-io-group">
+                        <div class="io-row"><strong>ĐẦU VÀO</strong><p>SL thực tế vs Dữ liệu</p></div>
+                        <div class="io-row"><strong>ĐẦU RA</strong><p>GAP tồn kho & Cảnh báo</p></div>
+                    </div>
+                </div>
+                <div class="s6-step-box color-5">
+                    <div class="s6-icon-outer"><div class="s6-icon-inner"><i class="fa-solid fa-chart-pie"></i></div></div>
+                    <div class="s6-step-badge">STEP 05</div>
+                    <h3>POSM Dashboard</h3>
+                    <p>Tổng hợp và hiển thị báo cáo tồn kho phục vụ theo dõi.</p>
+                    <div class="s6-io-group">
+                        <div class="io-row"><strong>ĐẦU VÀO</strong><p>Dữ liệu GAP tổng hợp</p></div>
+                        <div class="io-row"><strong>ĐẦU RA</strong><p>Báo cáo POSM Performance</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 02: USECASE POWERHOUSE -->
+    <section id="s6-usecase" class="content-section">
+        <div class="section-card">
+            <div class="pro-title"><span class="step-num">02</span><h1>Usecase Powerhouse</h1></div>
+            <p class="section-desc">Các use case chính trong hệ thống WEB TỒN KHO – LOGIC POSM.</p>
+            <div class="s6-usecase-main">
+                <aside class="s6-uc-sidebar">
+                    <div class="s6-sb-title">VAI TRÒ (ACTORS)</div>
+                    <div class="s6-sb-actor"><div class="sb-avatar bg-cda">CD</div><div class="sb-info"><strong>CDA</strong><p>Central Data Admin</p></div></div>
+                    <div class="s6-sb-actor"><div class="sb-avatar bg-npp">NP</div><div class="sb-info"><strong>NPP</strong><p>Nhà phân phối</p></div></div>
+                    <div class="s6-sb-actor"><div class="sb-avatar bg-gstb">GS</div><div class="sb-info"><strong>GSTB</strong><p>Giám sát trưng bày</p></div></div>
+                    <div class="s6-sb-actor"><div class="sb-avatar bg-manager">MG</div><div class="sb-info"><strong>Manager</strong><p>Quản lý/Sếp</p></div></div>
+                </aside>
+
+                <div class="s6-uc-list">
+                    <div class="uc-row-item border-cda">
+                        <div class="uc-id text-cda">UC01</div>
+                        <div class="uc-main"><strong>Upload Planout</strong><p>Import kế hoạch POSM lên hệ thống.</p></div>
+                        <div class="uc-col"><strong>MỤC TIÊU</strong><p>Đồng bộ dữ liệu kế hoạch</p></div>
+                        <div class="uc-user"><i class="fa-solid fa-circle-user"></i> CDA</div>
+                    </div>
+                    <div class="uc-row-item border-npp">
+                        <div class="uc-id text-npp">UC02</div>
+                        <div class="uc-main"><strong>Receive POSM</strong><p>Xác nhận số lượng thực nhận.</p></div>
+                        <div class="uc-col"><strong>MỤC TIÊU</strong><p>Ghi nhận SL nhập kho</p></div>
+                        <div class="uc-user"><i class="fa-solid fa-circle-user"></i> NPP</div>
+                    </div>
+                    <div class="uc-row-item border-gstb">
+                        <div class="uc-id text-gstb">UC03</div>
+                        <div class="uc-main"><strong>Inventory Check</strong><p>Kiểm kê tồn kho thực tế.</p></div>
+                        <div class="uc-col"><strong>MỤC TIÊU</strong><p>Đối soát SL tồn thật</p></div>
+                        <div class="uc-user"><i class="fa-solid fa-circle-user"></i> GSTB</div>
+                    </div>
+                    <div class="uc-row-item border-orange">
+                        <div class="uc-id text-orange">UC04</div>
+                        <div class="uc-main"><strong>Calculate GAP</strong><p>Tính chênh lệch (GAP) tự động.</p></div>
+                        <div class="uc-col"><strong>MỤC TIÊU</strong><p>Cảnh báo sai lệch tồn</p></div>
+                        <div class="uc-user"><i class="fa-solid fa-gear"></i> System</div>
+                    </div>
+                    <div class="uc-row-item border-manager">
+                        <div class="uc-id text-manager">UC05</div>
+                        <div class="uc-main"><strong>Dashboard View</strong><p>Theo dõi báo cáo quản trị.</p></div>
+                        <div class="uc-col"><strong>MỤC TIÊU</strong><p>Tối ưu quản lý POSM</p></div>
+                        <div class="uc-user"><i class="fa-solid fa-circle-user"></i> Manager</div>
+                    </div>
+                </div>
+            </div>
+            <div class="s6-note-footer">
+                <i class="fa-solid fa-circle-info"></i>
+                <p><strong>Ghi chú:</strong> Quy trình đảm bảo dữ liệu POSM được quản lý minh bạch từ kế hoạch đến thực tế.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 03: RACI -->
+    <section id="s6-raci" class="content-section">
+        <div class="section-card">
+            <div class="pro-title"><span class="step-num">03</span><h1>RACI Matrix</h1></div>
+            <p class="section-desc">Xác định trách nhiệm cho từng hoạt động chính trong quy trình.</p>
+            <div class="table-scroll">
+                <table class="boss-raci-table">
+                    <thead>
+                        <tr>
+                            <th class="col-activity">Hoạt động</th>
+                            <th>CDA</th><th>NPP</th><th>GSTB</th><th>IT</th><th>Manager</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="activity-cell"><i class="fa-solid fa-cloud-arrow-up"></i><div><strong>Import Planout</strong><small>Tải lên file kế hoạch</small></div></td><td><span class="r-badge ar">A/R</span></td><td><span class="r-badge i">I</span></td><td><span class="r-badge i">I</span></td><td><span class="r-badge c">C</span></td><td><span class="r-badge i">I</span></td></tr>
+                        <tr><td class="activity-cell"><i class="fa-solid fa-clipboard-check"></i><div><strong>Receive POSM</strong><small>Xác nhận nhận hàng</small></div></td><td><span class="r-badge i">I</span></td><td><span class="r-badge a">A</span></td><td><span class="r-badge r">R</span></td><td><span class="r-badge i">I</span></td><td><span class="r-badge i">I</span></td></tr>
+                        <tr><td class="activity-cell"><i class="fa-solid fa-box-open"></i><div><strong>Inventory Check</strong><small>Kiểm kê kho thực tế</small></div></td><td><span class="r-badge i">I</span></td><td><span class="r-badge c">C</span></td><td><span class="r-badge ar">A/R</span></td><td><span class="r-badge i">I</span></td><td><span class="r-badge i">I</span></td></tr>
+                        <tr><td class="activity-cell"><i class="fa-solid fa-arrows-rotate"></i><div><strong>Update Stock</strong><small>Cập nhật số liệu</small></div></td><td><span class="r-badge i">I</span></td><td><span class="r-badge i">I</span></td><td><span class="r-badge c">C</span></td><td><span class="r-badge ar">A/R</span></td><td><span class="r-badge i">I</span></td></tr>
+                        <tr><td class="activity-cell"><i class="fa-solid fa-chart-pie"></i><div><strong>Calculate GAP</strong><small>Tính toán chênh lệch</small></div></td><td><span class="r-badge i">I</span></td><td><span class="r-badge i">I</span></td><td><span class="r-badge ar">A/R</span></td><td><span class="r-badge c">C</span></td><td><span class="r-badge i">I</span></td></tr>
+                        <tr><td class="activity-cell"><i class="fa-solid fa-chart-simple"></i><div><strong>Dashboard & Report</strong><small>Theo dõi báo cáo</small></div></td><td><span class="r-badge i">I</span></td><td><span class="r-badge i">I</span></td><td><span class="r-badge c">C</span></td><td><span class="r-badge r">R</span></td><td><span class="r-badge a">A</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="raci-legend-grid mt-4">
+                <div class="legend-card"><span class="r-badge ar">A/R</span><div><strong>A & R</strong><p>Chịu trách nhiệm & Thực hiện</p></div></div>
+                <div class="legend-card"><span class="r-badge r">R</span><div><strong>Responsible</strong><p>Người thực hiện</p></div></div>
+                <div class="legend-card"><span class="r-badge c">C</span><div><strong>Consulted</strong><p>Người tham vấn</p></div></div>
+                <div class="legend-card"><span class="r-badge a">A</span><div><strong>Accountable</strong><p>Trách nhiệm chính</p></div></div>
+                <div class="legend-card"><span class="r-badge i">I</span><div><strong>Informed</strong><p>Người nhận thông tin</p></div></div>
+            </div>
+        </div>
+    </section>
+</div>
