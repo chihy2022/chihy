@@ -1,0 +1,118 @@
+
+.shot-title {
+    font-weight: 800; 
+    color: var(--primary); 
+    margin: 5;
+}
+
+.sub-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 10px 10px 10px 0px;
+}
+
+.btn-action {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.d-flex {
+    display: flex !important;
+    align-content: center;
+    flex-wrap: wrap;
+}
+.btn-add { background: #28a745; }
+.btn-sync {background: var(--primary-gradient);box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3); transition: 0.3s; }
+.btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.table-scroll {
+    overflow-x: auto; 
+    border-radius: 8px;
+    border: 1px solid #cbd5e1; /* Đậm hơn một chút */
+    background: white;
+}
+.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: white;
+    border: 1px solid #cbd5e1; 
+    border-spacing: 0;
+}
+
+.modern-table th {
+    background: #1a4e8a;
+    text-align: center;
+    color: white;
+    padding: 12px 8px;
+    text-transform: uppercase;
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+}
+.modern-table td {
+    padding: 10px 8px;
+    border: 1px solid #eee;
+    vertical-align: top;
+    line-height: 1.4;
+    white-space: pre-wrap; 
+    /* Tăng độ rõ của line bằng màu xám chuẩn (Gray-300) */
+    border: 1px solid #cbd5e1 !important; 
+    word-wrap: break-word; /* Đảm bảo chữ không bị tràn ra ngoài ô */
+    border-bottom: 1px solid #cbd5e1; /* Kẻ ngang rõ hơn (đổi từ #eee sang #cbd5e1) */
+    border-right: 1px solid #e2e8f0;  /* Thêm đường kẻ dọc mờ giữa các cột cho ngăn nắp */
+}
+
+[contenteditable="true"]:focus {
+    outline: 2px solid #1a4e8a;
+    background: #fdfdfd;
+}
+
+.btn-trash {
+    background: transparent;
+    border: none;
+    color: #e53e3e;
+    cursor: pointer;
+    font-size: 6px;
+}
+
+.btn-trash:hover {
+    color: #c53030;
+}
+
+/* Đảm bảo ô cuối cùng không bị thừa viền phải */
+.modern-table td:last-child {
+    border-right: none;
+}
+
+/* Hiệu ứng khi rê chuột vào từng dòng giúp dễ đọc dữ liệu hơn */
+.modern-table tbody tr:hover td {
+    filter: brightness(0.97); /* Giúp dòng hiện tại tối hơn nhẹ khi hover, không làm mất màu pastel */
+    transition: filter 0.15s ease;
+}
+.modern-table th, 
+.modern-table td {
+    border: 1px solid #94a3b8 !important; 
+    padding: 10px 8px;
+    /* 2. Canh giữa theo chiều ngang (Horizontal Center) mặc định cho tất cả */
+    text-align: center; 
+    
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* 3. GIỮ CANH TRÁI CHO CÁC CỘT NHIỀU CHỮ (Mô tả, Task, Khác, Ghi chú) */
+/* Cột 3 (Task), Cột 4 (Mô tả), Cột 6 (Khác), Cột 7 (Ghi chú) */
+.modern-table td:nth-child(1),
+.modern-table td:nth-child(3),
+.modern-table td:nth-child(4),
+.modern-table td:nth-child(6),
+.modern-table td:nth-child(7) {
+    text-align: left;
+    padding-left: 10px; /* Thêm chút khoảng trống bên trái cho dễ đọc */
+}
