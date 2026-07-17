@@ -9,6 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = new UnimeApp();
     app.init();
 });
+document.addEventListener("DOMContentLoaded", function() {
+    const isMobile = window.innerWidth <= 1024; // Hoặc dùng điều kiện thiết bị của bạn
+    
+    if (isMobile) {
+        const pdfBtn = document.getElementById('exportPdfBtn');
+        if (pdfBtn) {
+            pdfBtn.style.setProperty('display', 'none', 'important');
+        }
+    }
+});
 
 class UnimeApp {
     constructor() {
@@ -50,7 +60,7 @@ class UnimeApp {
     updateUIState(shotId) {
         // --- ĐOẠN SETUP ẨN/HIỆN NÚT PDF ---
         const exportBtn = document.getElementById('exportPdfBtn');
-        const hiddenPdfShots = ['shot7', 'welcome']; // Danh sách shot KHÔNG HIỆN nút PDF
+        const hiddenPdfShots = ['shot7','shot8','welcome']; // Danh sách shot KHÔNG HIỆN nút PDF
         
         if (exportBtn) {
             if (hiddenPdfShots.includes(shotId)) {
