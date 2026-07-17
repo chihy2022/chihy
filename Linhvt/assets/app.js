@@ -237,7 +237,7 @@ class UnimeApp {
             content.style.opacity = '1'; 
         }
     }
-    
+
     handleMainToggle() {
         const isMobile = window.innerWidth <= 992;
         const overlay = document.getElementById('sidebar-overlay');
@@ -287,51 +287,111 @@ class UnimeApp {
 async function handleExportPdf(btn) {
     const source = document.getElementById('content-area');
     if (!source || typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') return;
-    const originalText = btn.innerHTML;
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xuất...';
+
+    // 1. HIỆU ỨNG NÚT BẤM (MOBILE CHỈ HIỆN ICON XOAY)
+    const isMobile = window.innerWidth <= 992;
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    
+    if (isMobile) {
+        // Trên Mobile: Chỉ hiện icon xoay cho gọn
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+        btn.style.width = '42px'; // Giữ nguyên hình vuông
+    } else {
+        // Trên Web: Hiện text đang xử lý
+        btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang trích xuất...';
+    }
 
     let sandbox = null;
+
     try {
         await document.fonts.ready;
+
+        // 2. TẠO SANDBOX (QUAN TRỌNG: Ép khổ Desktop cho Mobile)
         sandbox = document.createElement('div');
-        Object.assign(sandbox.style, { position: 'absolute', left: '-9999px', top: '0', width: source.clientWidth + 'px', background: 'white' });
+        Object.assign(sandbox.style, {
+            position: 'absolute',
+            left: '-9999px',
+            top: '0',
+            // Nếu là Mobile, ép chiều rộng 1200px để bảng không bị co rớt chữ
+            width: isMobile ? '1200px' : (source.clientWidth + 'px'),
+            background: 'white',
+            padding: '20px'
+        });
+
         const clone = source.cloneNode(true);
         sandbox.appendChild(clone);
         document.body.appendChild(sandbox);
 
+        // 3. FIX LAYOUT CLONE (Mirror CSS)
         const oTable = source.querySelector('.modern-table');
         const cTable = clone.querySelector('.modern-table');
+        
         if (oTable && cTable) {
-            cTable.style.width = oTable.offsetWidth + 'px';
+            // Ép bảng trong sandbox theo kích thước chuẩn
+            cTable.style.width = isMobile ? '1160px' : (oTable.offsetWidth + 'px');
             cTable.style.tableLayout = 'fixed';
-            for (let r = 0; r < oTable.rows.length; r++) {
-                for (let c = 0; c < oTable.rows[r].cells.length; c++) {
-                    const oCell = oTable.rows[r].cells[c];
-                    const cCell = cTable.rows[r].cells[c];
+
+            const oRows = oTable.rows;
+            const cRows = cTable.rows;
+            
+            for (let r = 0; r < oRows.length; r++) {
+                for (let c = 0; c < oRows[r].cells.length; c++) {
+                    const oCell = oRows[r].cells[c];
+                    const cCell = cRows[r].cells[c];
                     if (cCell) {
                         const s = window.getComputedStyle(oCell);
-                        cCell.style.width = oCell.offsetWidth + 'px';
+                        cCell.style.width = isMobile ? 'auto' : (oCell.offsetWidth + 'px');
                         cCell.style.backgroundColor = s.backgroundColor;
                         cCell.style.textAlign = s.textAlign;
                         cCell.style.padding = s.padding;
-                        cCell.style.fontSize = s.fontSize;
                         cCell.style.verticalAlign = 'middle';
-                        if (c === 1) { cCell.style.whiteSpace = 'nowrap'; cCell.style.width = (oCell.offsetWidth + 2) + 'px'; }
+                        cCell.style.fontSize = isMobile ? '12px' : s.fontSize;
+                        if (c === 1) cCell.style.whiteSpace = 'nowrap';
                     }
                 }
             }
         }
-        clone.querySelectorAll('button, .actions, .sidebar-toggle, .btn-trash, .fa-trash-can').forEach(el => el.remove());
-        clone.style.minHeight = '0'; clone.style.height = 'auto';
-        await new Promise(r => setTimeout(r, 400));
 
-        const canvas = await html2canvas(sandbox, { scale: 2, useCORS: true, logging: false });
+        // Dọn rác UI trong bản clone
+        clone.querySelectorAll('button, .actions, .sidebar-toggle, .btn-trash, .fa-trash-can').forEach(el => el.remove());
+        clone.style.minHeight = '0';
+        clone.style.height = 'auto';
+        clone.style.opacity = '1';
+
+        await new Promise(r => setTimeout(r, 500));
+
+        // 4. CHỤP ẢNH (Dùng scale 2 cho nhẹ máy mobile)
+        const canvas = await html2canvas(sandbox, { 
+            scale: 2, 
+            useCORS: true, 
+            logging: false,
+            backgroundColor: "#ffffff"
+        });
+
+        // 5. TẠO PDF
         const imgData = canvas.toDataURL('image/png', 1.0);
         const { jsPDF } = window.jspdf;
-        const imgW = canvas.width / 2; const imgH = canvas.height / 2;
-        const pdf = new jsPDF({ orientation: imgW > imgH ? 'l' : 'p', unit: 'px', format: [imgW, imgH] });
+        const imgW = canvas.width / 2;
+        const imgH = canvas.height / 2;
+
+        const pdf = new jsPDF({ 
+            orientation: imgW > imgH ? 'l' : 'p', 
+            unit: 'px', 
+            format: [imgW, imgH] 
+        });
+
         pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
         pdf.save(`Unime_Report_${new Date().getTime()}.pdf`);
-    } catch (e) { console.error(e); }
-    finally { if (sandbox) sandbox.remove(); btn.disabled = false; btn.innerHTML = originalText; }
+
+    } catch (e) {
+        console.error("Lỗi PDF:", e);
+        alert("Thiết bị không đủ bộ nhớ để xuất PDF dài, hãy thử trên Laptop!");
+    } finally {
+        // TRẢ LẠI TRẠNG THÁI NÚT BẤM
+        if (sandbox && sandbox.parentNode) sandbox.parentNode.removeChild(sandbox);
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        if (isMobile) btn.style.width = ''; // Reset width mobile
+    }
 }
