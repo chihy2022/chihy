@@ -485,3 +485,10 @@ img { max-width: 100%; height: auto; display: block; }
 .has-nav-actions ~ .content-body .content-section {
     scroll-margin-top: 135px !important;
 }
+
+@media (max-width: 1024px) {
+    /* Thêm #exportPdfBtn vào để nó đè được style inline */
+    #exportPdfBtn {
+        display: none !important;
+    }
+}
