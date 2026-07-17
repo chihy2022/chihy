@@ -48,11 +48,16 @@ class UnimeApp {
 
     // --- HÀM CẬP NHẬT TRẠNG THÁI HEADER & SIDEBAR (TỐI ƯU GIAO DIỆN) ---
     updateUIState(shotId) {
-        // 1. Ẩn/Hiện nút PDF
+        // --- ĐOẠN SETUP ẨN/HIỆN NÚT PDF ---
         const exportBtn = document.getElementById('exportPdfBtn');
-        const hiddenPdfShots = ['shot7', 'welcome']; 
+        const hiddenPdfShots = ['shot7', 'welcome']; // Danh sách shot KHÔNG HIỆN nút PDF
+        
         if (exportBtn) {
-            exportBtn.style.display = hiddenPdfShots.includes(shotId) ? 'none' : 'flex';
+            if (hiddenPdfShots.includes(shotId)) {
+                exportBtn.style.setProperty('display', 'none', 'important');
+            } else {
+                exportBtn.style.setProperty('display', 'flex', 'important');
+            }
         }
 
         // 2. Cập nhật Highlight Sidebar & Tiêu đề Header
@@ -286,7 +291,7 @@ async function handleExportPdf(btn) {
         clone.style.minHeight = '0'; clone.style.height = 'auto';
         await new Promise(r => setTimeout(r, 400));
 
-        const canvas = await html2canvas(sandbox, { scale: 2, useCORS: true });
+        const canvas = await html2canvas(sandbox, { scale: 2, useCORS: true, logging: false });
         const imgData = canvas.toDataURL('image/png', 1.0);
         const { jsPDF } = window.jspdf;
         const imgW = canvas.width / 2; const imgH = canvas.height / 2;
