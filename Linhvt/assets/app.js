@@ -163,45 +163,68 @@ class UnimeApp {
     async loadPage(shotName) {
         if (!shotName) return;
         const loader = document.getElementById('page-loader');
+        const content = this.contentArea;
+
         if (loader) loader.classList.remove('hidden');
-        this.contentArea.style.opacity = '0';
+        content.style.opacity = '0';
         if (this.actionSlot) this.actionSlot.innerHTML = ''; 
 
         try {
             const path = `shots/${shotName}/${shotName}`;
             ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove());
-            const htmlRes = await fetch(`${path}.html?t=${Date.now()}`);
+
+            // 1. TẢI HTML VÀ CSS SONG SONG
+            const [htmlRes] = await Promise.all([
+                fetch(`${path}.html?t=${Date.now()}`),
+                new Promise(resolve => {
+                    const link = document.createElement('link');
+                    link.id = 'shot-css'; link.rel = 'stylesheet';
+                    link.href = `${path}.css?t=${Date.now()}`;
+                    link.onload = resolve; link.onerror = resolve;
+                    document.head.appendChild(link);
+                })
+            ]);
+
             const htmlText = await htmlRes.text();
-            const cssLoad = new Promise(res => {
-                const link = document.createElement('link');
-                link.id = 'shot-css'; link.rel = 'stylesheet';
-                link.href = `${path}.css?t=${Date.now()}`;
-                link.onload = res; link.onerror = res;
-                document.head.appendChild(link);
-            });
-            await cssLoad;
             const doc = new DOMParser().parseFromString(htmlText, 'text/html');
             const shotActions = doc.querySelector('.shot-actions');
             const shotBody = doc.querySelector('.shot-body');
             const mainHeader = document.querySelector('.main-header');
+
+            // Cập nhật Header
             if (this.actionSlot && shotActions && shotActions.innerHTML.trim() !== "") {
                 this.actionSlot.innerHTML = shotActions.innerHTML;
                 mainHeader?.classList.add('has-nav-actions');
             } else {
                 mainHeader?.classList.remove('has-nav-actions');
             }
-            this.contentArea.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
+
+            // Đổ Body vào
+            content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
+
+            // --- BƯỚC CẢI TIẾN: HIỆN TRANG LUÔN, KHÔNG ĐỢI JS/DATA ---
+            if (loader) loader.classList.add('hidden');
+            content.style.transition = 'opacity 0.2s ease';
+            content.style.opacity = '1';
+
+            // 2. NẠP JS VÀ CHẠY INIT TRONG CHẾ ĐỘ CHẠY NGẦM
             const script = document.createElement('script');
-            script.id = 'shot-js'; script.src = `${path}.js?t=${Date.now()}`;
-            script.onload = async () => {
-                if (typeof window[`${shotName}Init`] === 'function') await window[`${shotName}Init`]();
-                if (loader) loader.classList.add('hidden');
-                this.contentArea.style.transition = 'opacity 0.3s ease';
-                this.contentArea.style.opacity = '1';
+            script.id = 'shot-js';
+            script.src = `${path}.js?t=${Date.now()}`;
+            script.onload = () => {
+                if (typeof window[`${shotName}Init`] === 'function') {
+                    window[`${shotName}Init`](); // Fetch Google Sheets sẽ tự chạy ngầm bên trong shot
+                }
             };
             document.body.appendChild(script);
+
             localStorage.setItem('currentShot', shotName);
-        } catch (e) { if (loader) loader.classList.add('hidden'); this.contentArea.style.opacity = '1'; }
+
+        } catch (e) { 
+            console.error("LoadPage Error:", e);
+            if (loader) loader.classList.add('hidden');
+            content.style.opacity = '1'; 
+        }
     }
 
     handleMainToggle() {
