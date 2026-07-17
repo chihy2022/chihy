@@ -9,6 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = new UnimeApp();
     app.init();
 });
+document.addEventListener("DOMContentLoaded", function() {
+    const isMobile = window.innerWidth <= 1024; // Hoặc dùng điều kiện thiết bị của bạn
+    
+    if (isMobile) {
+        const pdfBtn = document.getElementById('exportPdfBtn');
+        if (pdfBtn) {
+            pdfBtn.style.setProperty('display', 'none', 'important');
+        }
+    }
+});
 
 class UnimeApp {
     constructor() {
@@ -50,7 +60,7 @@ class UnimeApp {
     updateUIState(shotId) {
         // --- ĐOẠN SETUP ẨN/HIỆN NÚT PDF ---
         const exportBtn = document.getElementById('exportPdfBtn');
-        const hiddenPdfShots = ['shot7', 'welcome']; // Danh sách shot KHÔNG HIỆN nút PDF
+        const hiddenPdfShots = ['shot7', 'welcome','shot8']; // Danh sách shot KHÔNG HIỆN nút PDF
         
         if (exportBtn) {
             if (hiddenPdfShots.includes(shotId)) {
@@ -285,113 +295,95 @@ class UnimeApp {
 
 // --- HÀM XUẤT PDF CHUẨN MIRROR (ĐÃ FIX RỚT CHỮ) ---
 async function handleExportPdf(btn) {
-    const source = document.getElementById('content-area');
-    if (!source || typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') return;
+    // Chọn vùng nội dung
+    const source = document.querySelector('.main-content') || document.getElementById('content-area');
+    if (!source) return;
 
-    // 1. HIỆU ỨNG NÚT BẤM (MOBILE CHỈ HIỆN ICON XOAY)
-    const isMobile = window.innerWidth <= 992;
-    const originalHTML = btn.innerHTML;
+    const originalText = btn.innerHTML;
     btn.disabled = true;
-    
-    if (isMobile) {
-        // Trên Mobile: Chỉ hiện icon xoay cho gọn
-        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
-        btn.style.width = '42px'; // Giữ nguyên hình vuông
-    } else {
-        // Trên Web: Hiện text đang xử lý
-        btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang trích xuất...';
-    }
-
-    let sandbox = null;
+    btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang tính toán nội dung...';
 
     try {
+        // 1. CHỜ ĐỢI: Đảm bảo font và tất cả ảnh đã tải xong
         await document.fonts.ready;
-
-        // 2. TẠO SANDBOX (QUAN TRỌNG: Ép khổ Desktop cho Mobile)
-        sandbox = document.createElement('div');
-        Object.assign(sandbox.style, {
-            position: 'absolute',
-            left: '-9999px',
-            top: '0',
-            // Nếu là Mobile, ép chiều rộng 1200px để bảng không bị co rớt chữ
-            width: isMobile ? '1200px' : (source.clientWidth + 'px'),
-            background: 'white',
-            padding: '20px'
-        });
-
-        const clone = source.cloneNode(true);
-        sandbox.appendChild(clone);
-        document.body.appendChild(sandbox);
-
-        // 3. FIX LAYOUT CLONE (Mirror CSS)
-        const oTable = source.querySelector('.modern-table');
-        const cTable = clone.querySelector('.modern-table');
         
-        if (oTable && cTable) {
-            // Ép bảng trong sandbox theo kích thước chuẩn
-            cTable.style.width = isMobile ? '1160px' : (oTable.offsetWidth + 'px');
-            cTable.style.tableLayout = 'fixed';
-
-            const oRows = oTable.rows;
-            const cRows = cTable.rows;
-            
-            for (let r = 0; r < oRows.length; r++) {
-                for (let c = 0; c < oRows[r].cells.length; c++) {
-                    const oCell = oRows[r].cells[c];
-                    const cCell = cRows[r].cells[c];
-                    if (cCell) {
-                        const s = window.getComputedStyle(oCell);
-                        cCell.style.width = isMobile ? 'auto' : (oCell.offsetWidth + 'px');
-                        cCell.style.backgroundColor = s.backgroundColor;
-                        cCell.style.textAlign = s.textAlign;
-                        cCell.style.padding = s.padding;
-                        cCell.style.verticalAlign = 'middle';
-                        cCell.style.fontSize = isMobile ? '12px' : s.fontSize;
-                        if (c === 1) cCell.style.whiteSpace = 'nowrap';
-                    }
-                }
-            }
+        // 2. MẸO QUAN TRỌNG: Ép toàn bộ các thẻ cha phải hiển thị hết nội dung (không cho phép cắt)
+        const originalStyles = [];
+        let current = source;
+        while (current && current !== document.body) {
+            originalStyles.push({ el: current, overflow: current.style.overflow, height: current.style.height });
+            current.style.overflow = 'visible';
+            current.style.height = 'auto';
+            current = current.parentElement;
         }
 
-        // Dọn rác UI trong bản clone
-        clone.querySelectorAll('button, .actions, .sidebar-toggle, .btn-trash, .fa-trash-can').forEach(el => el.remove());
-        clone.style.minHeight = '0';
-        clone.style.height = 'auto';
-        clone.style.opacity = '1';
+        // Đo chính xác kích thước thực tế sau khi đã ép hiển thị
+        const rect = source.getBoundingClientRect();
+        const fullW = source.scrollWidth || rect.width;
+        const fullH = source.scrollHeight || rect.height;
 
-        await new Promise(r => setTimeout(r, 500));
-
-        // 4. CHỤP ẢNH (Dùng scale 2 cho nhẹ máy mobile)
-        const canvas = await html2canvas(sandbox, { 
-            scale: 2, 
-            useCORS: true, 
+        // 3. CHỤP ẢNH VỚI NHỮNG CÀI ĐẶT ÉP KHUNG HÌNH
+        const canvas = await html2canvas(source, {
+            scale: 2,               // Độ nét tốt nhất cho in ấn và xem
+            useCORS: true,          // Cho phép lấy ảnh từ server khác (nếu có)
             logging: false,
-            backgroundColor: "#ffffff"
+            backgroundColor: "#ffffff",
+            width: fullW,
+            height: fullH,
+            windowWidth: fullW,
+            windowHeight: fullH,    // Ép trình duyệt ảo mở rộng đúng chiều cao thật
+            x: 0,
+            y: 0,
+            scrollX: 0,
+            scrollY: 0,             // Luôn bắt đầu chụp từ đỉnh nội dung
+            onclone: (clonedDoc) => {
+                // Xử lý trong bản clone để không ảnh hưởng giao diện thật
+                const clonedSource = clonedDoc.querySelector('.main-content') || clonedDoc.getElementById('content-area');
+                if (clonedSource) {
+                    clonedSource.style.overflow = 'visible';
+                    clonedSource.style.height = 'auto';
+                    clonedSource.style.maxHeight = 'none';
+                }
+                // Ẩn các nút bấm và thanh cuộn
+                const style = clonedDoc.createElement('style');
+                style.innerHTML = `
+                    * { animation: none !important; transition: none !important; box-shadow: none !important; }
+                    header, .sidebar, .no-export, .btn, button, .actions { display: none !important; }
+                    body { overflow: visible !important; height: auto !important; }
+                `;
+                clonedDoc.head.appendChild(style);
+            }
         });
 
-        // 5. TẠO PDF
-        const imgData = canvas.toDataURL('image/png', 1.0);
+        // 4. KHÔI PHỤC LẠI STYLE GỐC (Để giao diện web không bị vỡ)
+        originalStyles.forEach(item => {
+            item.el.style.overflow = item.overflow;
+            item.el.style.height = item.height;
+        });
+
+        // 5. XUẤT PDF MỘT TRANG DÀI
         const { jsPDF } = window.jspdf;
-        const imgW = canvas.width / 2;
-        const imgH = canvas.height / 2;
+        // Nén JPEG 0.7 để file cực nhẹ nhưng vẫn đủ thông tin
+        const imgData = canvas.toDataURL('image/jpeg', 0.7); 
+        
+        const pdfW = canvas.width / 2;
+        const pdfH = canvas.height / 2;
 
-        const pdf = new jsPDF({ 
-            orientation: imgW > imgH ? 'l' : 'p', 
-            unit: 'px', 
-            format: [imgW, imgH] 
+        const pdf = new jsPDF({
+            orientation: pdfW > pdfH ? 'l' : 'p',
+            unit: 'px',
+            format: [pdfW, pdfH], // Trang PDF sẽ dài đúng bằng nội dung bạn có
+            compress: true
         });
 
-        pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
-        pdf.save(`Unime_Report_${new Date().getTime()}.pdf`);
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH, undefined, 'FAST');
+        pdf.save(`Full_Report_${new Date().getTime()}.pdf`);
 
     } catch (e) {
-        console.error("Lỗi PDF:", e);
-        alert("Thiết bị không đủ bộ nhớ để xuất PDF dài, hãy thử trên Laptop!");
+        console.error("Lỗi:", e);
+        alert("Không thể xuất toàn bộ nội dung!");
     } finally {
-        // TRẢ LẠI TRẠNG THÁI NÚT BẤM
-        if (sandbox && sandbox.parentNode) sandbox.parentNode.removeChild(sandbox);
         btn.disabled = false;
-        btn.innerHTML = originalHTML;
-        if (isMobile) btn.style.width = ''; // Reset width mobile
+        btn.innerHTML = originalText;
     }
 }
