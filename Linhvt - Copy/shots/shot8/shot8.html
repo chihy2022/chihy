@@ -1,0 +1,87 @@
+<div class="shot-body">
+    <div class="fb-wrapper-premium">
+        <!-- HEADER MỚI ĐỒNG BỘ SHOT 5 -->
+        <div class="section-header mb-4">
+            <div class="pro-title">
+                <h2 class="shot-title">BẠN MUỐN GỬI PHẢN HỒI VỀ</h2>
+                <p class="text-muted font-16">Góp ý của bạn giúp hệ thống Unime ngày càng hoàn thiện hơn</p>
+            </div>
+        </div>
+
+        <div class="fb-card-premium">
+            <!-- Khối chọn phân loại -->
+            <div class="fb-category-grid">
+                <div class="fb-cat-item active" id="btnApp" data-cat="APP">
+                    <div class="fb-cat-icon icon-tech"><i class="fa-solid fa-laptop-code"></i></div>
+                    <div class="fb-cat-info">
+                        <strong class="font-16">Hệ thống & Công cụ</strong>
+                        <span class="font-12">Báo cáo lỗi kỹ thuật hoặc góp ý tính năng</span>
+                    </div>
+                </div>
+                <div class="fb-cat-item" id="btnPeople" data-cat="PEOPLE">
+                    <div class="fb-cat-icon icon-hr"><i class="fa-solid fa-user-tie"></i></div>
+                    <div class="fb-cat-info">
+                        <strong class="font-16">Nhân sự & Quy trình</strong>
+                        <span class="font-12">Góp ý thái độ phối hợp hoặc quy trình</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fb-form-premium">
+                <!-- Khu vực Ứng dụng -->
+                <div id="boxApp">
+                    <label class="fb-label-premium font-14">Danh mục vấn đề</label>
+                    <select class="fb-input-premium font-14" id="fbErrorType">
+                        <option>Sự cố hiển thị (Giao diện lệch, mất font...)</option>
+                        <option>Sự cố chức năng (Nút không bấm được, lỗi dữ liệu...)</option>
+                        <option>Hiệu suất (Ứng dụng tải chậm, giật lag...)</option>
+                        <option>Khác</option>
+                    </select>
+                </div>
+
+                <!-- Khu vực Con người -->
+                <div id="boxPeople" style="display: none;">
+                    <label class="fb-label-premium font-14">Đối tượng/Bộ phận liên quan</label>
+                    <input type="text" class="fb-input-premium font-14" id="fbTarget" placeholder="Ví dụ: Team Tech, GSTB khu vực, Điều phối...">
+                </div>
+
+                <!-- Slider mức độ -->
+                <label class="fb-label-premium font-14">Mức độ ưu tiên: <span id="fbSevLabel" class="sev-highlight">Trung bình</span></label>
+                <div class="fb-range-wrapper">
+                    <input type="range" min="1" max="4" value="2" class="fb-range-premium" id="fbSevRange">
+                    <div class="fb-range-markers font-12">
+                        <span>Thấp</span><span>Trung bình</span><span>Cao</span><span>Khẩn cấp</span>
+                    </div>
+                </div>
+
+                <label class="fb-label-premium font-14">Nội dung chi tiết</label>
+                <textarea class="fb-input-premium font-14" id="fbDesc" rows="4" placeholder="Hãy mô tả chi tiết sự việc giúp chúng tôi nắm bắt thông tin tốt nhất..."></textarea>
+
+                <div class="fb-upload-section">
+                    <input type="file" id="fbFile" accept="image/*,video/*" style="display:none">
+                    <button class="fb-btn-outline font-14" type="button" id="btnFileTrigger">
+                        <i class="fa-solid fa-camera"></i> Đính kèm hình ảnh hoặc video minh chứng
+                    </button>
+                    <div id="fbFileName" class="fb-file-text font-12"></div>
+                </div>
+
+                <label class="fb-label-premium font-14">Giải pháp đề xuất hoặc Kỳ vọng</label>
+                <textarea class="fb-input-premium font-14" id="fbExpect" rows="2" placeholder="Ví dụ: Mong muốn được hướng dẫn lại, điều chỉnh quy trình..."></textarea>
+
+                <!-- Footer -->
+                <div class="fb-footer-premium">
+                    <div class="fb-anon-box">
+                        <label class="fb-switch-premium">
+                            <input type="checkbox" id="fbAnon">
+                            <span class="fb-slider-premium"></span>
+                        </label>
+                        <span class="font-12">Gửi ẩn danh</span>
+                    </div>
+                    <button class="fb-btn-submit-premium font-14" id="btnSubmitFB">
+                        <i class="fa-solid fa-paper-plane"></i> Gửi phản hồi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
