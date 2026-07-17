@@ -165,15 +165,22 @@ class UnimeApp {
         const loader = document.getElementById('page-loader');
         const content = this.contentArea;
 
+        // 1. DỌN DẸP VÀ XOÁ SẠCH NGAY LẬP TỨC
         if (loader) loader.classList.remove('hidden');
+        
+        content.style.transition = 'none'; // Tắt hiệu ứng mờ để ẩn ngay lập tức
         content.style.opacity = '0';
+        content.innerHTML = ''; // <--- DÒNG QUAN TRỌNG: Xoá sạch Welcome Avatar ngay tại đây
+        
         if (this.actionSlot) this.actionSlot.innerHTML = ''; 
 
         try {
             const path = `shots/${shotName}/${shotName}`;
+            
+            // Xoá CSS/JS cũ
             ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove());
 
-            // 1. TẢI HTML VÀ CSS SONG SONG
+            // 2. TẢI HTML VÀ CSS SONG SONG
             const [htmlRes] = await Promise.all([
                 fetch(`${path}.html?t=${Date.now()}`),
                 new Promise(resolve => {
@@ -199,21 +206,25 @@ class UnimeApp {
                 mainHeader?.classList.remove('has-nav-actions');
             }
 
-            // Đổ Body vào
+            // 3. ĐỔ NỘI DUNG MỚI VÀO (Lúc này content đang trống rỗng nên không bị ghosting)
             content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
 
-            // --- BƯỚC CẢI TIẾN: HIỆN TRANG LUÔN, KHÔNG ĐỢI JS/DATA ---
+            // 4. HIỆN TRANG VÀ ẨN LOADER
             if (loader) loader.classList.add('hidden');
-            content.style.transition = 'opacity 0.2s ease';
-            content.style.opacity = '1';
+            
+            // Dùng requestAnimationFrame để đảm bảo trình duyệt đã render nội dung mới rồi mới hiện opacity
+            requestAnimationFrame(() => {
+                content.style.transition = 'opacity 0.25s ease';
+                content.style.opacity = '1';
+            });
 
-            // 2. NẠP JS VÀ CHẠY INIT TRONG CHẾ ĐỘ CHẠY NGẦM
+            // 5. NẠP JS TRONG CHẾ ĐỘ CHẠY NGẦM
             const script = document.createElement('script');
             script.id = 'shot-js';
             script.src = `${path}.js?t=${Date.now()}`;
             script.onload = () => {
                 if (typeof window[`${shotName}Init`] === 'function') {
-                    window[`${shotName}Init`](); // Fetch Google Sheets sẽ tự chạy ngầm bên trong shot
+                    window[`${shotName}Init`]();
                 }
             };
             document.body.appendChild(script);
@@ -226,7 +237,7 @@ class UnimeApp {
             content.style.opacity = '1'; 
         }
     }
-
+    
     handleMainToggle() {
         const isMobile = window.innerWidth <= 992;
         const overlay = document.getElementById('sidebar-overlay');
