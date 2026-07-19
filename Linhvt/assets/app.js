@@ -248,7 +248,7 @@ class UnimeApp {
     }
 
     handleMainToggle() {
-        const isMobile = window.innerWidth <= 992;
+        const isMobile = window.innerWidth <= 1024;
         const overlay = document.getElementById('sidebar-overlay');
         if (isMobile) {
             const isOpen = this.sidebar.classList.toggle('mobile-active');
@@ -258,6 +258,7 @@ class UnimeApp {
             localStorage.setItem(CONFIG.SIDEBAR_KEY, this.sidebar.classList.contains('collapsed') ? 'mini' : 'full');
         }
     }
+
 
     restoreSidebarState() { if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === 'mini') this.sidebar.classList.add('collapsed'); }
     togglePassword() {
