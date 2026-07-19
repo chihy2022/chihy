@@ -9,16 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = new UnimeApp();
     app.init();
 });
-document.addEventListener("DOMContentLoaded", function() {
-    const isMobile = window.innerWidth <= 1024; // Hoặc dùng điều kiện thiết bị của bạn
-    
-    if (isMobile) {
-        const pdfBtn = document.getElementById('exportPdfBtn');
-        if (pdfBtn) {
-            pdfBtn.style.setProperty('display', 'none', 'important');
-        }
-    }
-});
 
 class UnimeApp {
     constructor() {
@@ -54,6 +44,11 @@ class UnimeApp {
         });
 
         document.addEventListener('click', (e) => this.handleGlobalClicks(e));
+        // Thêm dòng này để cập nhật nút PDF khi thay đổi kích thước màn hình/xoay iPad
+        window.addEventListener('resize', () => {
+        const currentShot = localStorage.getItem('currentShot') || 'welcome';
+        this.updateUIState(currentShot);
+    ``  });
     }
 
     // --- HÀM CẬP NHẬT TRẠNG THÁI HEADER & SIDEBAR (TỐI ƯU GIAO DIỆN) ---
@@ -63,7 +58,11 @@ class UnimeApp {
         const hiddenPdfShots = ['shot7', 'welcome','shot8']; // Danh sách shot KHÔNG HIỆN nút PDF
         
         if (exportBtn) {
-            if (hiddenPdfShots.includes(shotId)) {
+        const isMobile = window.innerWidth <= 1024;
+        const isHiddenShot = hiddenPdfShots.includes(shotId);
+
+        // Nút PDF sẽ ẩn NẾU là mobile HOẶC thuộc danh sách shot bị cấm
+        if (isMobile || isHiddenShot) {
                 exportBtn.style.setProperty('display', 'none', 'important');
             } else {
                 exportBtn.style.setProperty('display', 'flex', 'important');
@@ -301,7 +300,7 @@ async function handleExportPdf(btn) {
 
     const originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang tính toán nội dung...';
+    btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xử lý...';
 
     try {
         // 1. CHỜ ĐỢI: Đảm bảo font và tất cả ảnh đã tải xong
@@ -377,7 +376,17 @@ async function handleExportPdf(btn) {
         });
 
         pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH, undefined, 'FAST');
-        pdf.save(`Full_Report_${new Date().getTime()}.pdf`);
+        
+        // Tạo chuỗi thời gian định dạng YYYYMMDDHHMMSS
+        const now = new Date();
+        const timestamp = now.getFullYear().toString() +
+            (now.getMonth() + 1).toString().padStart(2, '0') +
+            now.getDate().toString().padStart(2, '0') +
+            now.getHours().toString().padStart(2, '0') +
+            now.getMinutes().toString().padStart(2, '0') +
+            now.getSeconds().toString().padStart(2, '0');
+
+        pdf.save(`Umer_dms_${timestamp}.pdf`);
 
     } catch (e) {
         console.error("Lỗi:", e);
