@@ -301,9 +301,9 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* ================================================================
-   6. RESPONSIVE ENGINE - MOBILE & IPAD (MAX-WIDTH: 992PX)
+   6. RESPONSIVE ENGINE - MOBILE & IPAD (MAX-WIDTH: 1024px)
    ================================================================ */
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
     body { overflow-x: hidden; }
     .app-container { width: 100vw; position: relative; }
 
@@ -376,10 +376,10 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* ================================================================
-   RESPONSIVE HEADER ENGINE - MOBILE & IPAD (MAX-WIDTH: 992PX)
+   RESPONSIVE HEADER ENGINE - MOBILE & IPAD (MAX-WIDTH: 1024px)
    ================================================================ */
 
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
     /* 1. CẤU HÌNH HEADER MẶC ĐỊNH (1 HÀNG - Cho Shot 1, 5, 8...) */
     .main-header {
         display: flex !important;
