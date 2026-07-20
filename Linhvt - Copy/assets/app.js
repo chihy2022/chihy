@@ -9,16 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = new UnimeApp();
     app.init();
 });
-document.addEventListener("DOMContentLoaded", function() {
-    const isMobile = window.innerWidth <= 1024; // Hoặc dùng điều kiện thiết bị của bạn
-    
-    if (isMobile) {
-        const pdfBtn = document.getElementById('exportPdfBtn');
-        if (pdfBtn) {
-            pdfBtn.style.setProperty('display', 'none', 'important');
-        }
-    }
-});
 
 class UnimeApp {
     constructor() {
@@ -54,16 +44,25 @@ class UnimeApp {
         });
 
         document.addEventListener('click', (e) => this.handleGlobalClicks(e));
+        // Thêm dòng này để cập nhật nút PDF khi thay đổi kích thước màn hình/xoay iPad
+        window.addEventListener('resize', () => {
+        const currentShot = localStorage.getItem('currentShot') || 'welcome';
+        this.updateUIState(currentShot);
+    ``  });
     }
 
     // --- HÀM CẬP NHẬT TRẠNG THÁI HEADER & SIDEBAR (TỐI ƯU GIAO DIỆN) ---
     updateUIState(shotId) {
         // --- ĐOẠN SETUP ẨN/HIỆN NÚT PDF ---
         const exportBtn = document.getElementById('exportPdfBtn');
-        const hiddenPdfShots = ['shot7','shot8','welcome']; // Danh sách shot KHÔNG HIỆN nút PDF
+        const hiddenPdfShots = ['shot7', 'welcome','shot8']; // Danh sách shot KHÔNG HIỆN nút PDF
         
         if (exportBtn) {
-            if (hiddenPdfShots.includes(shotId)) {
+        const isMobile = window.innerWidth <= 1024;
+        const isHiddenShot = hiddenPdfShots.includes(shotId);
+
+        // Nút PDF sẽ ẩn NẾU là mobile HOẶC thuộc danh sách shot bị cấm
+        if (isMobile || isHiddenShot) {
                 exportBtn.style.setProperty('display', 'none', 'important');
             } else {
                 exportBtn.style.setProperty('display', 'flex', 'important');
@@ -247,9 +246,9 @@ class UnimeApp {
             content.style.opacity = '1'; 
         }
     }
-    
+
     handleMainToggle() {
-        const isMobile = window.innerWidth <= 992;
+        const isMobile = window.innerWidth <= 1024;
         const overlay = document.getElementById('sidebar-overlay');
         if (isMobile) {
             const isOpen = this.sidebar.classList.toggle('mobile-active');
@@ -259,6 +258,7 @@ class UnimeApp {
             localStorage.setItem(CONFIG.SIDEBAR_KEY, this.sidebar.classList.contains('collapsed') ? 'mini' : 'full');
         }
     }
+
 
     restoreSidebarState() { if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === 'mini') this.sidebar.classList.add('collapsed'); }
     togglePassword() {
@@ -295,53 +295,105 @@ class UnimeApp {
 
 // --- HÀM XUẤT PDF CHUẨN MIRROR (ĐÃ FIX RỚT CHỮ) ---
 async function handleExportPdf(btn) {
-    const source = document.getElementById('content-area');
-    if (!source || typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') return;
+    // Chọn vùng nội dung
+    const source = document.querySelector('.main-content') || document.getElementById('content-area');
+    if (!source) return;
+
     const originalText = btn.innerHTML;
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xuất...';
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xử lý...';
 
-    let sandbox = null;
     try {
+        // 1. CHỜ ĐỢI: Đảm bảo font và tất cả ảnh đã tải xong
         await document.fonts.ready;
-        sandbox = document.createElement('div');
-        Object.assign(sandbox.style, { position: 'absolute', left: '-9999px', top: '0', width: source.clientWidth + 'px', background: 'white' });
-        const clone = source.cloneNode(true);
-        sandbox.appendChild(clone);
-        document.body.appendChild(sandbox);
-
-        const oTable = source.querySelector('.modern-table');
-        const cTable = clone.querySelector('.modern-table');
-        if (oTable && cTable) {
-            cTable.style.width = oTable.offsetWidth + 'px';
-            cTable.style.tableLayout = 'fixed';
-            for (let r = 0; r < oTable.rows.length; r++) {
-                for (let c = 0; c < oTable.rows[r].cells.length; c++) {
-                    const oCell = oTable.rows[r].cells[c];
-                    const cCell = cTable.rows[r].cells[c];
-                    if (cCell) {
-                        const s = window.getComputedStyle(oCell);
-                        cCell.style.width = oCell.offsetWidth + 'px';
-                        cCell.style.backgroundColor = s.backgroundColor;
-                        cCell.style.textAlign = s.textAlign;
-                        cCell.style.padding = s.padding;
-                        cCell.style.fontSize = s.fontSize;
-                        cCell.style.verticalAlign = 'middle';
-                        if (c === 1) { cCell.style.whiteSpace = 'nowrap'; cCell.style.width = (oCell.offsetWidth + 2) + 'px'; }
-                    }
-                }
-            }
+        
+        // 2. MẸO QUAN TRỌNG: Ép toàn bộ các thẻ cha phải hiển thị hết nội dung (không cho phép cắt)
+        const originalStyles = [];
+        let current = source;
+        while (current && current !== document.body) {
+            originalStyles.push({ el: current, overflow: current.style.overflow, height: current.style.height });
+            current.style.overflow = 'visible';
+            current.style.height = 'auto';
+            current = current.parentElement;
         }
-        clone.querySelectorAll('button, .actions, .sidebar-toggle, .btn-trash, .fa-trash-can').forEach(el => el.remove());
-        clone.style.minHeight = '0'; clone.style.height = 'auto';
-        await new Promise(r => setTimeout(r, 400));
 
-        const canvas = await html2canvas(sandbox, { scale: 2, useCORS: true, logging: false });
-        const imgData = canvas.toDataURL('image/png', 1.0);
+        // Đo chính xác kích thước thực tế sau khi đã ép hiển thị
+        const rect = source.getBoundingClientRect();
+        const fullW = source.scrollWidth || rect.width;
+        const fullH = source.scrollHeight || rect.height;
+
+        // 3. CHỤP ẢNH VỚI NHỮNG CÀI ĐẶT ÉP KHUNG HÌNH
+        const canvas = await html2canvas(source, {
+            scale: 2,               // Độ nét tốt nhất cho in ấn và xem
+            useCORS: true,          // Cho phép lấy ảnh từ server khác (nếu có)
+            logging: false,
+            backgroundColor: "#ffffff",
+            width: fullW,
+            height: fullH,
+            windowWidth: fullW,
+            windowHeight: fullH,    // Ép trình duyệt ảo mở rộng đúng chiều cao thật
+            x: 0,
+            y: 0,
+            scrollX: 0,
+            scrollY: 0,             // Luôn bắt đầu chụp từ đỉnh nội dung
+            onclone: (clonedDoc) => {
+                // Xử lý trong bản clone để không ảnh hưởng giao diện thật
+                const clonedSource = clonedDoc.querySelector('.main-content') || clonedDoc.getElementById('content-area');
+                if (clonedSource) {
+                    clonedSource.style.overflow = 'visible';
+                    clonedSource.style.height = 'auto';
+                    clonedSource.style.maxHeight = 'none';
+                }
+                // Ẩn các nút bấm và thanh cuộn
+                const style = clonedDoc.createElement('style');
+                style.innerHTML = `
+                    * { animation: none !important; transition: none !important; box-shadow: none !important; }
+                    header, .sidebar, .no-export, .btn, button, .actions { display: none !important; }
+                    body { overflow: visible !important; height: auto !important; }
+                `;
+                clonedDoc.head.appendChild(style);
+            }
+        });
+
+        // 4. KHÔI PHỤC LẠI STYLE GỐC (Để giao diện web không bị vỡ)
+        originalStyles.forEach(item => {
+            item.el.style.overflow = item.overflow;
+            item.el.style.height = item.height;
+        });
+
+        // 5. XUẤT PDF MỘT TRANG DÀI
         const { jsPDF } = window.jspdf;
-        const imgW = canvas.width / 2; const imgH = canvas.height / 2;
-        const pdf = new jsPDF({ orientation: imgW > imgH ? 'l' : 'p', unit: 'px', format: [imgW, imgH] });
-        pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
-        pdf.save(`Unime_Report_${new Date().getTime()}.pdf`);
-    } catch (e) { console.error(e); }
-    finally { if (sandbox) sandbox.remove(); btn.disabled = false; btn.innerHTML = originalText; }
+        // Nén JPEG 0.7 để file cực nhẹ nhưng vẫn đủ thông tin
+        const imgData = canvas.toDataURL('image/jpeg', 0.7); 
+        
+        const pdfW = canvas.width / 2;
+        const pdfH = canvas.height / 2;
+
+        const pdf = new jsPDF({
+            orientation: pdfW > pdfH ? 'l' : 'p',
+            unit: 'px',
+            format: [pdfW, pdfH], // Trang PDF sẽ dài đúng bằng nội dung bạn có
+            compress: true
+        });
+
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH, undefined, 'FAST');
+        
+        // Tạo chuỗi thời gian định dạng YYYYMMDDHHMMSS
+        const now = new Date();
+        const timestamp = now.getFullYear().toString() +
+            (now.getMonth() + 1).toString().padStart(2, '0') +
+            now.getDate().toString().padStart(2, '0') +
+            now.getHours().toString().padStart(2, '0') +
+            now.getMinutes().toString().padStart(2, '0') +
+            now.getSeconds().toString().padStart(2, '0');
+
+        pdf.save(`Umer_dms_${timestamp}.pdf`);
+
+    } catch (e) {
+        console.error("Lỗi:", e);
+        alert("Không thể xuất toàn bộ nội dung!");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
 }
