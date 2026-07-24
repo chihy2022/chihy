@@ -33,7 +33,10 @@ class UnimeApp {
         document.getElementById('btnLogin').addEventListener('click', () => this.performLogin());
         document.getElementById('togglePassword').addEventListener('click', () => this.togglePassword());
         document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
-        document.getElementById('exportPdfBtn').addEventListener('click', (e) => handleExportPdf(e.currentTarget));
+        
+        // Gán sự kiện xuất file
+        document.getElementById('exportPdfBtn')?.addEventListener('click', (e) => handleExportPdf(e.currentTarget));
+        document.getElementById('exportPngBtn')?.addEventListener('click', (e) => handleExportPng(e.currentTarget));
 
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', () => this.handleMenuClick(item));
@@ -44,32 +47,34 @@ class UnimeApp {
         });
 
         document.addEventListener('click', (e) => this.handleGlobalClicks(e));
-        // Thêm dòng này để cập nhật nút PDF khi thay đổi kích thước màn hình/xoay iPad
+
         window.addEventListener('resize', () => {
-        const currentShot = localStorage.getItem('currentShot') || 'welcome';
-        this.updateUIState(currentShot);
-    ``  });
+            const currentShot = localStorage.getItem('currentShot') || 'welcome';
+            this.updateUIState(currentShot);
+        });
     }
 
-    // --- HÀM CẬP NHẬT TRẠNG THÁI HEADER & SIDEBAR (TỐI ƯU GIAO DIỆN) ---
+    // --- CẬP NHẬT TRẠNG THÁI HEADER & HIỂN THỊ NÚT XUẤT FILE ---
     updateUIState(shotId) {
-        // --- ĐOẠN SETUP ẨN/HIỆN NÚT PDF ---
-        const exportBtn = document.getElementById('exportPdfBtn');
-        const hiddenPdfShots = ['shot7', 'welcome','shot8']; // Danh sách shot KHÔNG HIỆN nút PDF
+        const pdfBtn = document.getElementById('exportPdfBtn');
+        const pngBtn = document.getElementById('exportPngBtn');
+        const hiddenShots = ['shot7', 'welcome', 'shot8']; 
         
-        if (exportBtn) {
         const isMobile = window.innerWidth <= 1024;
-        const isHiddenShot = hiddenPdfShots.includes(shotId);
+        const isHiddenShot = hiddenShots.includes(shotId);
 
-        // Nút PDF sẽ ẩn NẾU là mobile HOẶC thuộc danh sách shot bị cấm
-        if (isMobile || isHiddenShot) {
-                exportBtn.style.setProperty('display', 'none', 'important');
-            } else {
-                exportBtn.style.setProperty('display', 'flex', 'important');
+        // Xử lý ẩn/hiện cả 2 nút PDF và PNG
+        [pdfBtn, pngBtn].forEach(btn => {
+            if (btn) {
+                if (isMobile || isHiddenShot) {
+                    btn.style.setProperty('display', 'none', 'important');
+                } else {
+                    btn.style.setProperty('display', 'flex', 'important');
+                }
             }
-        }
+        });
 
-        // 2. Cập nhật Highlight Sidebar & Tiêu đề Header
+        // Cập nhật Highlight Sidebar & Tiêu đề Header
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
         const activeMenu = document.querySelector(`.menu-item[data-shot="${shotId}"]`);
         
@@ -81,13 +86,12 @@ class UnimeApp {
         }
     }
 
-    // --- LOGIC PHÂN QUYỀN (SỬA LỖI USER 2) ---
     applyPermissions(user) {
         if (!user) return;
         const rights = user.rights || {};
-        
         const name = String(user.name || "Thành viên").trim();
         const nameDisplay = name !== "" ? name : "Thành viên";
+        
         if (document.getElementById('display-user-name')) document.getElementById('display-user-name').innerText = nameDisplay;
         if (document.getElementById('user-welcome-name')) document.getElementById('user-welcome-name').innerText = nameDisplay;
 
@@ -116,8 +120,6 @@ class UnimeApp {
             this.appContainer.classList.remove('hidden');
 
             let lastShotId = localStorage.getItem('currentShot') || 'welcome';
-            
-            // Kiểm tra quyền của user hiện tại với shot cũ
             const userPerm = (user.rights[lastShotId] || "").toString().toLowerCase().trim();
             if (!(userPerm === "root" || userPerm === "view") && lastShotId !== 'welcome') {
                 lastShotId = 'welcome';
@@ -144,16 +146,12 @@ class UnimeApp {
             if (user && user.rights) {
                 localStorage.setItem(CONFIG.STORAGE_KEY, uid);
                 localStorage.setItem(CONFIG.USER_DATA_KEY, JSON.stringify(user));
-                
                 this.applyPermissions(user);
                 this.loginOverlay.classList.add('hidden');
                 this.appContainer.classList.remove('hidden');
-                
-                this.updateUIState('welcome'); // Cập nhật Header/PDF cho welcome
+                this.updateUIState('welcome');
                 this.loadPage('welcome');
-            } else { 
-                alert("Mã CODE không tồn tại!");
-            }
+            } else { alert("Mã CODE không tồn tại!"); }
         } catch(e) { alert("Lỗi kết nối!"); }
         finally { btn.disabled = false; btn.innerText = "ĐĂNG NHẬP"; }
     }
@@ -161,35 +159,26 @@ class UnimeApp {
     handleMenuClick(item) {
         const shotId = item.getAttribute('data-shot');
         if (!shotId) return;
-
-        this.updateUIState(shotId); // Cập nhật Header/PDF và Active Menu
-
+        this.updateUIState(shotId);
         if (window.innerWidth <= 992) this.handleMainToggle();
         this.loadPage(shotId);
     }
 
-    // Các hàm loadPage, handleMainToggle, GlobalClicks giữ nguyên...
     async loadPage(shotName) {
         if (!shotName) return;
         const loader = document.getElementById('page-loader');
         const content = this.contentArea;
 
-        // 1. DỌN DẸP VÀ XOÁ SẠCH NGAY LẬP TỨC
         if (loader) loader.classList.remove('hidden');
-        
-        content.style.transition = 'none'; // Tắt hiệu ứng mờ để ẩn ngay lập tức
+        content.style.transition = 'none';
         content.style.opacity = '0';
-        content.innerHTML = ''; // <--- DÒNG QUAN TRỌNG: Xoá sạch Welcome Avatar ngay tại đây
-        
+        content.innerHTML = ''; 
         if (this.actionSlot) this.actionSlot.innerHTML = ''; 
 
         try {
             const path = `shots/${shotName}/${shotName}`;
-            
-            // Xoá CSS/JS cũ
             ['shot-css', 'shot-js'].forEach(id => document.getElementById(id)?.remove());
 
-            // 2. TẢI HTML VÀ CSS SONG SONG
             const [htmlRes] = await Promise.all([
                 fetch(`${path}.html?t=${Date.now()}`),
                 new Promise(resolve => {
@@ -207,7 +196,6 @@ class UnimeApp {
             const shotBody = doc.querySelector('.shot-body');
             const mainHeader = document.querySelector('.main-header');
 
-            // Cập nhật Header
             if (this.actionSlot && shotActions && shotActions.innerHTML.trim() !== "") {
                 this.actionSlot.innerHTML = shotActions.innerHTML;
                 mainHeader?.classList.add('has-nav-actions');
@@ -215,31 +203,22 @@ class UnimeApp {
                 mainHeader?.classList.remove('has-nav-actions');
             }
 
-            // 3. ĐỔ NỘI DUNG MỚI VÀO (Lúc này content đang trống rỗng nên không bị ghosting)
             content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
-
-            // 4. HIỆN TRANG VÀ ẨN LOADER
             if (loader) loader.classList.add('hidden');
             
-            // Dùng requestAnimationFrame để đảm bảo trình duyệt đã render nội dung mới rồi mới hiện opacity
             requestAnimationFrame(() => {
                 content.style.transition = 'opacity 0.25s ease';
                 content.style.opacity = '1';
             });
 
-            // 5. NẠP JS TRONG CHẾ ĐỘ CHẠY NGẦM
             const script = document.createElement('script');
             script.id = 'shot-js';
             script.src = `${path}.js?t=${Date.now()}`;
             script.onload = () => {
-                if (typeof window[`${shotName}Init`] === 'function') {
-                    window[`${shotName}Init`]();
-                }
+                if (typeof window[`${shotName}Init`] === 'function') window[`${shotName}Init`]();
             };
             document.body.appendChild(script);
-
             localStorage.setItem('currentShot', shotName);
-
         } catch (e) { 
             console.error("LoadPage Error:", e);
             if (loader) loader.classList.add('hidden');
@@ -259,13 +238,14 @@ class UnimeApp {
         }
     }
 
-
     restoreSidebarState() { if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === 'mini') this.sidebar.classList.add('collapsed'); }
+    
     togglePassword() {
         const input = document.getElementById('login-uid');
         input.type = input.type === 'password' ? 'text' : 'password';
         document.getElementById('togglePassword').classList.toggle('fa-eye');
     }
+
     handleGlobalClicks(e) {
         if (e.target.tagName === 'IMG' && e.target.classList.contains('img-previewable')) {
             const modal = document.getElementById('imageModal');
@@ -278,6 +258,7 @@ class UnimeApp {
             document.body.style.overflow = '';
         }
     }
+
     async silentCheckAuth(uid) {
         try {
             const res = await fetch(`${CONFIG.GGS_URL}?action=getRole&uid=${uid}`);
@@ -288,110 +269,179 @@ class UnimeApp {
             } else { this.forceLogout(); }
         } catch(e) {}
     }
+
     logout() { if (confirm("Đăng xuất?")) this.forceLogout(); }
     forceLogout() { localStorage.clear(); location.reload(); }
 }
 
-
-// --- HÀM XUẤT PDF CHUẨN MIRROR (ĐÃ FIX RỚT CHỮ) ---
+// ================================================================
+// --- HÀM XUẤT PDF TRANG DÀI (FIX MỜ, FIX CẮT CHỮ, NÉT CĂNG) ---
+// ================================================================
 async function handleExportPdf(btn) {
-    // Chọn vùng nội dung
     const source = document.querySelector('.main-content') || document.getElementById('content-area');
     if (!source) return;
 
     const originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xử lý...';
+    btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xử lý PDF...';
 
     try {
-        // 1. CHỜ ĐỢI: Đảm bảo font và tất cả ảnh đã tải xong
         await document.fonts.ready;
-        
-        // 2. MẸO QUAN TRỌNG: Ép toàn bộ các thẻ cha phải hiển thị hết nội dung (không cho phép cắt)
-        const originalStyles = [];
-        let current = source;
-        while (current && current !== document.body) {
-            originalStyles.push({ el: current, overflow: current.style.overflow, height: current.style.height });
-            current.style.overflow = 'visible';
-            current.style.height = 'auto';
-            current = current.parentElement;
-        }
-
-        // Đo chính xác kích thước thực tế sau khi đã ép hiển thị
-        const rect = source.getBoundingClientRect();
-        const fullW = source.scrollWidth || rect.width;
-        const fullH = source.scrollHeight || rect.height;
-
-        // 3. CHỤP ẢNH VỚI NHỮNG CÀI ĐẶT ÉP KHUNG HÌNH
         const canvas = await html2canvas(source, {
-            scale: 2,               // Độ nét tốt nhất cho in ấn và xem
-            useCORS: true,          // Cho phép lấy ảnh từ server khác (nếu có)
+            scale: 2, 
+            useCORS: true,
             logging: false,
             backgroundColor: "#ffffff",
-            width: fullW,
-            height: fullH,
-            windowWidth: fullW,
-            windowHeight: fullH,    // Ép trình duyệt ảo mở rộng đúng chiều cao thật
-            x: 0,
-            y: 0,
-            scrollX: 0,
-            scrollY: 0,             // Luôn bắt đầu chụp từ đỉnh nội dung
+            windowWidth: 1920, 
             onclone: (clonedDoc) => {
-                // Xử lý trong bản clone để không ảnh hưởng giao diện thật
                 const clonedSource = clonedDoc.querySelector('.main-content') || clonedDoc.getElementById('content-area');
-                if (clonedSource) {
-                    clonedSource.style.overflow = 'visible';
-                    clonedSource.style.height = 'auto';
-                    clonedSource.style.maxHeight = 'none';
+                
+                // Ép hiện rõ 100% (Fix mờ nhạt)
+                clonedSource.querySelectorAll('*').forEach(el => {
+                    el.style.opacity = "1";
+                    el.style.transition = "none";
+                    el.style.animation = "none";
+                });
+
+                // Ép giãn hết chiều cao (Fix cắt chữ)
+                let curr = clonedSource;
+                while (curr) {
+                    curr.style.overflow = 'visible';
+                    curr.style.height = 'auto';
+                    curr.style.maxHeight = 'none';
+                    curr.style.display = 'block';
+                    curr = curr.parentElement;
                 }
-                // Ẩn các nút bấm và thanh cuộn
+
                 const style = clonedDoc.createElement('style');
                 style.innerHTML = `
-                    * { animation: none !important; transition: none !important; box-shadow: none !important; }
-                    header, .sidebar, .no-export, .btn, button, .actions { display: none !important; }
-                    body { overflow: visible !important; height: auto !important; }
+                    .sidebar, .btn, button, .no-export, .nav-tabs, .actions { display: none !important; visibility: hidden !important; }
+                    header { position: static !important; width: 100% !important; border: none !important; }
+                    body { overflow: visible !important; height: auto !important; background: #fff !important; }
+                    .main-content { padding: 0 !important; margin: 0 !important; }
                 `;
                 clonedDoc.head.appendChild(style);
             }
         });
 
-        // 4. KHÔI PHỤC LẠI STYLE GỐC (Để giao diện web không bị vỡ)
-        originalStyles.forEach(item => {
-            item.el.style.overflow = item.overflow;
-            item.el.style.height = item.height;
-        });
-
-        // 5. XUẤT PDF MỘT TRANG DÀI
         const { jsPDF } = window.jspdf;
-        // Nén JPEG 0.7 để file cực nhẹ nhưng vẫn đủ thông tin
-        const imgData = canvas.toDataURL('image/jpeg', 0.7); 
-        
-        const pdfW = canvas.width / 2;
-        const pdfH = canvas.height / 2;
+        const imgWidth = canvas.width / 2;
+        const imgHeight = canvas.height / 2;
 
         const pdf = new jsPDF({
-            orientation: pdfW > pdfH ? 'l' : 'p',
+            orientation: imgWidth > imgHeight ? 'l' : 'p',
             unit: 'px',
-            format: [pdfW, pdfH], // Trang PDF sẽ dài đúng bằng nội dung bạn có
+            format: [imgWidth, imgHeight],
+            hotfixes: ["px_scaling"],
             compress: true
         });
 
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH, undefined, 'FAST');
-        
-        // Tạo chuỗi thời gian định dạng YYYYMMDDHHMMSS
-        const now = new Date();
-        const timestamp = now.getFullYear().toString() +
-            (now.getMonth() + 1).toString().padStart(2, '0') +
-            now.getDate().toString().padStart(2, '0') +
-            now.getHours().toString().padStart(2, '0') +
-            now.getMinutes().toString().padStart(2, '0') +
-            now.getSeconds().toString().padStart(2, '0');
+        const imgData = canvas.toDataURL('image/png');
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
 
-        pdf.save(`Umer_dms_${timestamp}.pdf`);
+        const timestamp = new Date().getTime();
+        pdf.save(`POSM_Full_Report_${timestamp}.pdf`);
+    } catch (e) {
+        console.error("Lỗi PDF:", e);
+        alert("Lỗi xuất PDF!");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+// ================================================================
+// --- HÀM XUẤT PNG SIÊU NÉT (CHO TRANG ÍT DATA) ---
+// ================================================================
+async function handleExportPng(btn) {
+    // 1. CHỌN VÙNG NỘI DUNG CHÍNH XÁC
+    const source = document.querySelector('.main-content') || document.getElementById('content-area');
+    if (!source) return;
+
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang tối ưu hóa...';
+
+    try {
+        await document.fonts.ready;
+
+        // --- BƯỚC QUAN TRỌNG: ĐO KÍCH THƯỚC THỰC TẾ ---
+        // Lấy chiều rộng hiện tại trên màn hình của bạn
+        const actualWidth = source.offsetWidth;
+        
+        // Ép thẻ nguồn nhả hết chiều cao để đo con số thật sự
+        const originalStyle = source.getAttribute('style');
+        source.style.height = 'auto';
+        source.style.overflow = 'visible';
+        source.style.display = 'block';
+        
+        // Đo chiều cao thực tế (bao gồm cả phần data ít hay nhiều)
+        const actualHeight = source.scrollHeight;
+        
+        // Trả lại style cũ để không làm hỏng giao diện đang dùng
+        if (originalStyle) source.setAttribute('style', originalStyle); 
+        else source.removeAttribute('style');
+
+        // Tính toán độ nét (Scale 2 là chuẩn nhất, 13 trang thì code tự giảm xuống 1.2)
+        let finalScale = 2; 
+        if (actualHeight * finalScale > 25000) finalScale = 25000 / actualHeight;
+
+        const canvas = await html2canvas(source, {
+            scale: finalScale,
+            useCORS: true,
+            logging: false,
+            backgroundColor: "#ffffff",
+            width: actualWidth,
+            height: actualHeight,
+            windowWidth: actualWidth, // Ép khung nhìn ảo bằng đúng chiều rộng bảng (Chống co cột)
+            onclone: (clonedDoc) => {
+                const clonedSource = clonedDoc.querySelector('.main-content') || clonedDoc.getElementById('content-area');
+                
+                // XOÁ SẠCH: Sidebar, Header, Nút bấm (Giúp ảnh trắng sạch và nhẹ RAM)
+                clonedDoc.querySelectorAll('.sidebar, .btn, button, .no-export, .actions, header, .main-header, #menuToggleBtn, .right-side').forEach(el => el.remove());
+
+                // ÉP CẤU TRÚC PHẲNG: Phá bỏ mọi rào cản overflow từ thẻ nguồn lên tận thẻ html
+                let curr = clonedSource;
+                while (curr && curr !== clonedDoc.documentElement) {
+                    curr.style.height = 'auto !important';
+                    curr.style.minHeight = '0 !important';
+                    curr.style.maxHeight = 'none !important';
+                    curr.style.overflow = 'visible !important';
+                    curr.style.display = 'block !important';
+                    curr.style.position = 'static !important';
+                    curr = curr.parentElement;
+                }
+
+                // CSS ĐẶC TRỊ LAYOUT (FIX CHỮ CANH DƯỚI, FIX RỚT DÒNG)
+                const style = clonedDoc.createElement('style');
+                style.innerHTML = `
+                    html, body { width: 100% !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
+                    .main-content { padding: 30px !important; width: ${actualWidth}px !important; margin: 0 auto !important; display: block !important; }
+                    table { width: 100% !important; table-layout: auto !important; border-collapse: collapse !important; border: 1px solid #ccc !important; }
+                    th, td { 
+                        vertical-align: middle !important; /* Căn giữa dọc */
+                        padding: 12px 8px !important; 
+                        border: 1px solid #dee2e6 !important; 
+                        line-height: 1.4 !important;
+                        word-break: normal !important;
+                    }
+                    /* Fix mờ nhạt */
+                    * { opacity: 1 !important; visibility: visible !important; transition: none !important; animation: none !important; }
+                `;
+                clonedDoc.head.appendChild(style);
+            }
+        });
+
+        // XUẤT FILE
+        const image = canvas.toDataURL("image/png", 1.0);
+        const link = document.createElement('a');
+        link.download = `Bao_cao_Premium_${new Date().getTime()}.png`;
+        link.href = image;
+        link.click();
 
     } catch (e) {
-        console.error("Lỗi:", e);
-        alert("Không thể xuất toàn bộ nội dung!");
+        console.error(e);
+        alert("Lỗi xuất ảnh! Dữ liệu quá dài hãy dùng PDF.");
     } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
