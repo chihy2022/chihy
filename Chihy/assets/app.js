@@ -340,7 +340,7 @@ async function handleExportPdf(btn) {
         pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
 
         const timestamp = new Date().getTime();
-        pdf.save(`POSM_Full_Report_${timestamp}.pdf`);
+        pdf.save(`Umer_dms_pdf_${timestamp}.pdf`);
     } catch (e) {
         console.error("Lỗi PDF:", e);
         alert("Lỗi xuất PDF!");
@@ -435,7 +435,7 @@ async function handleExportPng(btn) {
         // XUẤT FILE
         const image = canvas.toDataURL("image/png", 1.0);
         const link = document.createElement('a');
-        link.download = `Bao_cao_Premium_${new Date().getTime()}.png`;
+        link.download = `Umer_dms_png_${new Date().getTime()}.png`;
         link.href = image;
         link.click();
 
