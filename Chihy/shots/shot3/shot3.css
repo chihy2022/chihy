@@ -1,0 +1,133 @@
+/* --- MÀU NỀN THEO STATUS CHA (Áp dụng cho cả cụm) --- */
+.bg-p-development { background-color: rgba(165, 243, 252, 0.25) !important; }
+.bg-p-done { background-color: rgba(165, 243, 252, 0.25) !important; }
+.bg-p-process { background-color: rgba(187, 247, 208, 0.35) !important; }
+.bg-p-pending { background-color: rgba(254, 202, 202, 0.45) !important; }
+.bg-p-open { background-color: rgba(254, 240, 138, 0.3) !important; }
+.bg-p-close { background-color: rgba(241, 245, 249, 1) !important; color: #94a3b8; }
+
+
+/* --- MÀU CHỮ (Để chữ đậm rõ nét trên nền nhạt) --- */
+.txt-development { color: #0891b2 !important; font-weight: 700; }
+.txt-done { color: #0891b2 !important; font-weight: 700; }
+.txt-process { color: #15803d !important; font-weight: 700; }
+.txt-pending { color: #b91c1c !important; font-weight: 700; }
+.txt-open { color: #a16207 !important; font-weight: 700; }
+/* --- 1. MÀU CHỮ THEO STATUS DÒNG (Own Status) --- */
+.st-development { color: #0891b2 !important; }
+.st-done { color: #0891b2 !important; }
+.st-process { color: #16a34a !important; }
+.st-pending { color: #dc2626 !important; }
+.st-open { color: #ca8a04 !important; }
+.st-close { color: #64748b !important; }
+
+/* --- 3. ĐỊNH DẠNG BADGE STATUS (Dạng viên thuốc) --- */
+.status-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    color: white;
+    text-transform: uppercase;
+    display: inline-block;
+    min-width: 75px;
+    text-align: center;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+.badge-done { background: #0891b2; }
+.badge-development { background: #0891b2; }
+.badge-process { background: #16a34a; }
+.badge-pending { background: #dc2626; }
+.badge-open { background: #ca8a04; }
+.badge-close { background: #64748b; }
+
+/* --- 4. PHÂN CẤP CHA - CON (Hierarchy) --- */
+.indent-parent { 
+    font-weight: 800;
+    font-size: 14px;
+    text-align: right;
+}
+.indent-child { 
+    padding-left: 35px !important; 
+    font-style: italic; 
+    font-size: 12px;
+    text-align: right;
+}
+
+/* --- 5. TỐI ƯU BẢNG & ĐƯỜNG KẺ --- */
+.modern-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #cbd5e1;
+}
+
+.modern-table th {
+    background: #1a4e8a;
+    color: white;
+    font-size: 11px;
+    padding: 12px 8px;
+    text-transform: uppercase;
+    border: 1px solid #1e40af;
+}
+
+.modern-table td {
+    padding: 10px 8px;
+    border: 1px solid #cbd5e1 !important; /* Đường kẻ rõ nét */
+    vertical-align: middle;
+    word-wrap: break-word;
+}
+
+/* Hiệu ứng Hover dòng */
+.modern-table tbody tr:hover {
+    filter: brightness(0.96);
+    transition: all 0.2s;
+}
+
+/* Tối ưu các cột số liệu/ngày tháng canh giữa */
+.modern-table td:nth-child(1),
+.modern-table td:nth-child(2),
+.modern-child td:nth-child(4),
+.modern-table td:nth-child(9),
+.modern-table td:nth-child(10),
+.modern-table td:nth-child(11) {
+    text-align: center;
+}
+
+/* Ẩn thanh cuộn xấu trên Chrome */
+.table-scroll::-webkit-scrollbar { height: 8px; }
+.table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+/* 1. Ép tất cả các container cấp trên phải giãn hết cỡ */
+.app-container, .main-content, #content-area, .body-shot {
+    width: 100% !important;
+    max-width: none !important; /* Bỏ giới hạn chiều rộng nếu có */
+    margin: 0 !important;
+    box-sizing: border-box;
+}
+
+/* 2. Cấu hình lại khung cuộn bảng */
+.table-scroll {
+    width: 100% !important;
+    overflow-x: auto; /* Chỉ hiện thanh cuộn khi màn hình quá nhỏ */
+    background: white;
+}
+
+/* 3. QUAN TRỌNG: Ép bảng phải rộng 100% màn hình */
+.modern-table {
+    width: 100% !important;
+    table-layout: auto; /* Cho phép trình duyệt tự giãn các cột ra để lấp đầy khoảng trống */
+    min-width: 1000px;  /* Đảm bảo bảng không bị quá hẹp trên màn hình nhỏ */
+}
+
+/* 4. Điều chỉnh lại các cột để nội dung tự giãn */
+.modern-table th{
+    white-space: normal; /* Cho phép xuống dòng nếu nội dung dài */
+    text-align: center;
+    word-break: break-word;
+}
+
+.modern-table td {
+    border: 1px solid #94a3b8 !important; 
+    padding: 10px 8px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
