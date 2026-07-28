@@ -1,24 +1,27 @@
 /* --- MÀU NỀN THEO STATUS CHA (Áp dụng cho cả cụm) --- */
-.bg-p-development { background-color: rgba(165, 243, 252, 0.25) !important; }
+.bg-p-deploy { background-color: rgba(165, 243, 252, 0.25) !important; }
 .bg-p-done { background-color: rgba(165, 243, 252, 0.25) !important; }
 .bg-p-process { background-color: rgba(187, 247, 208, 0.35) !important; }
 .bg-p-pending { background-color: rgba(254, 202, 202, 0.45) !important; }
-.bg-p-open { background-color: rgba(254, 240, 138, 0.3) !important; }
+.bg-p-open { background-color: rgba(233, 210, 5, 0.3) !important; }
+.bg-p-new { background-color: rgba(254, 240, 138, 0.3) !important; }
 .bg-p-close { background-color: rgba(241, 245, 249, 1) !important; color: #94a3b8; }
 
 
 /* --- MÀU CHỮ (Để chữ đậm rõ nét trên nền nhạt) --- */
-.txt-development { color: #0891b2 !important; font-weight: 700; }
-.txt-done { color: #0891b2 !important; font-weight: 700; }
-.txt-process { color: #15803d !important; font-weight: 700; }
-.txt-pending { color: #b91c1c !important; font-weight: 700; }
-.txt-open { color: #a16207 !important; font-weight: 700; }
+.txt-deploy { color: #0891b2 !important; }
+.txt-done { color: #0891b2 !important;  }
+.txt-process { color: #15803d !important; }
+.txt-pending { color: #b91c1c !important; }
+.txt-open { color: #a16207 !important;  }
+.txt-new { color: #d39236c7 !important; }
 /* --- 1. MÀU CHỮ THEO STATUS DÒNG (Own Status) --- */
-.st-development { color: #0891b2 !important; }
+.st-deploy { color: #0891b2 !important; }
 .st-done { color: #0891b2 !important; }
 .st-process { color: #16a34a !important; }
 .st-pending { color: #dc2626 !important; }
-.st-open { color: #ca8a04 !important; }
+.st-open { color: #cabd04 !important; }
+.st-new { color: #ca8a04 !important; }
 .st-close { color: #64748b !important; }
 
 /* --- 3. ĐỊNH DẠNG BADGE STATUS (Dạng viên thuốc) --- */
@@ -26,7 +29,6 @@
     padding: 3px 10px;
     border-radius: 20px;
     font-size: 10px;
-    font-weight: 800;
     color: white;
     text-transform: uppercase;
     display: inline-block;
@@ -35,22 +37,22 @@
     border: 1px solid rgba(0,0,0,0.1);
 }
 .badge-done { background: #0891b2; }
-.badge-development { background: #0891b2; }
+.badge-deploy { background: #0891b2; }
 .badge-process { background: #16a34a; }
 .badge-pending { background: #dc2626; }
 .badge-open { background: #ca8a04; }
+.badge-new { background: #dfcb16; }
 .badge-close { background: #64748b; }
 
 /* --- 4. PHÂN CẤP CHA - CON (Hierarchy) --- */
 .indent-parent { 
-    font-weight: 800;
-    font-size: 14px;
+    font-size: 12px;
     text-align: right;
 }
 .indent-child { 
     padding-left: 35px !important; 
     font-style: italic; 
-    font-size: 12px;
+    font-size: 10px;
     text-align: right;
 }
 
@@ -59,12 +61,13 @@
     border-collapse: separate;
     border-spacing: 0;
     border: 1px solid #cbd5e1;
+    font-size: 12px;
 }
 
 .modern-table th {
     background: #1a4e8a;
     color: white;
-    font-size: 11px;
+    font-size: 12px;
     padding: 12px 8px;
     text-transform: uppercase;
     border: 1px solid #1e40af;
