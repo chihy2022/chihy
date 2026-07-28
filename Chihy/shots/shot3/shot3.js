@@ -50,15 +50,15 @@ function renderDigitalTable() {
             <td>${item.au}</td>
             <td>${item.topic}</td>
             <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.taskId}</td>
-            <td>${item.content}</td>
-            <td>${item.other}</td>
-            <td>${item.note}</td>
-            <td>${item.progress}</td>
-            <td style="text-align:center;">
+            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.content}</td>
+            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.other}</td>
+            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.note}</td>
+            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.progress}</td>
+            <td  class="${isChild ? 'indent-child' : 'indent-parent'}" style="text-align:center;">
                 <span class="status-badge badge-${item.status.toLowerCase()}">${item.status}</span>
             </td>
-            <td>${item.timeline}</td>
-            <td>${item.actual}</td>
+            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.timeline}</td>
+            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.actual}</td>
         </tr>`;
     });
     tbody.innerHTML = html;

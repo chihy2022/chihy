@@ -60,7 +60,6 @@
     border: 1px solid #eee;
     vertical-align: top;
     line-height: 1.4;
-    white-space: pre-wrap; 
     /* Tăng độ rõ của line bằng màu xám chuẩn (Gray-300) */
     border: 1px solid #cbd5e1 !important; 
     word-wrap: break-word; /* Đảm bảo chữ không bị tràn ra ngoài ô */
@@ -101,9 +100,7 @@
     padding: 10px 8px;
     /* 2. Canh giữa theo chiều ngang (Horizontal Center) mặc định cho tất cả */
     text-align: center; 
-    
     white-space: pre-wrap;
-    word-wrap: break-word;
 }
 
 /* 3. GIỮ CANH TRÁI CHO CÁC CỘT NHIỀU CHỮ (Mô tả, Task, Khác, Ghi chú) */
