@@ -21,44 +21,82 @@ window.shotDigitalInit = async function() {
     } catch (e) { console.error("Lỗi:", e); }
 };
 
+// 1. Khai báo danh sách status mặc định là chọn tất cả
+let activeStatusFilters = ["OPEN", "PROCESS", "PENDING", "DONE", "CLOSE"];
+
+// 2. Hàm khởi tạo bộ lọc (Gọi hàm này trong window.onload hoặc shotDigitalInit)
+function initStatusFilters() {
+    const container = document.getElementById('st-filter-list');
+    const colors = { "OPEN": "#ca8a04", "PROCESS": "#16a34a", "PENDING": "#dc2626", "DONE": "#0891b2", "CLOSE": "#64748b" };
+    
+    container.innerHTML = Object.keys(colors).map(st => `
+        <div class="st-filter-btn active" 
+             id="btn-filter-${st}" 
+             style="background: ${colors[st]}; color: white;" 
+             onclick="toggleStatusFilter('${st}')">
+            ${st}
+        </div>
+    `).join('');
+}
+
+// 3. Hàm bật/tắt filter khi click
+window.toggleStatusFilter = (st) => {
+    const btn = document.getElementById(`btn-filter-${st}`);
+    if (activeStatusFilters.includes(st)) {
+        activeStatusFilters = activeStatusFilters.filter(s => s !== st);
+        btn.classList.remove('active');
+    } else {
+        activeStatusFilters.push(st);
+        btn.classList.add('active');
+    }
+    renderDigitalTable(); // Vẽ lại bảng
+};
+
+// 4. CẬP NHẬT HÀM RENDER CHÍNH CỦA BẠN
 function renderDigitalTable() {
     const tbody = document.getElementById('digital-table-body');
+    if (!tbody) return;
+
+    const showParent = document.getElementById('filterParent').checked;
+    const showChild = document.getElementById('filterChild').checked;
+
     let html = "";
-    
-    // BIẾN QUAN TRỌNG: Lưu status của dòng cha gần nhất
     let currentParentStatus = "OPEN"; 
 
     window.digitalData.forEach((item, idx) => {
-        // Kiểm tra xem là con hay cha dựa trên dấu "_" ở cột ID (D)
         const isChild = item.taskId.toString().includes('_');
         
+        // CẬP NHẬT STATUS CHA (Luôn chạy để con lấy đúng màu dù cha bị ẩn)
         if (!isChild) {
-            // Nếu là CHA: Cập nhật lại "trạng thái cha hiện tại"
             currentParentStatus = item.status.toUpperCase().trim();
         }
 
-        // Tạo class màu chữ (theo bản thân)
+        // LOGIC LỌC 1: Theo Cha/Con
+        if (!isChild && !showParent) return;
+        if (isChild && !showChild) return;
+
+        // LOGIC LỌC 2: Theo Trạng thái (Mới thêm)
+        if (!activeStatusFilters.includes(item.status.toUpperCase().trim())) return;
+
         const textClass = `txt-${item.status.toLowerCase()}`;
-        
-        // Tạo class màu nền (LUÔN lấy theo currentParentStatus)
-        // Nếu bạn muốn dòng CHA cũng có nền màu đó thì bỏ điều kiện 'isChild ?'
         const bgClass = `bg-p-${currentParentStatus.toLowerCase()}`;
+        const rowIndent = isChild ? 'indent-child' : 'indent-parent';
 
         html += `
         <tr class="${bgClass} ${textClass}">
-            <td>${item.session}</td>
-            <td>${item.au}</td>
-            <td>${item.topic}</td>
-            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.taskId}</td>
-            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.content}</td>
-            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.other}</td>
-            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.note}</td>
-            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.progress}</td>
-            <td  class="${isChild ? 'indent-child' : 'indent-parent'}" style="text-align:center;">
+            <td class="${rowIndent}" style="white-space: pre-wrap;">${item.session}</td>
+            <td class="${rowIndent}" style="white-space: pre-wrap; text-align:center;">${item.au}</td>
+            <td class="${rowIndent}" style="white-space: pre-wrap;">${item.topic}</td>
+            <td class="${rowIndent}" style="white-space: pre-wrap;">${item.taskId}</td>
+            <td class="${rowIndent}" style="white-space: pre-wrap;">${item.content}</td>
+            <td class="${rowIndent}" style="white-space: pre-wrap; text-align:center;">${item.other}</td>
+            <td class="${rowIndent}" style="white-space: pre-wrap;">${item.note}</td>
+            <td class="${rowIndent}" style="text-align:center;">${item.progress}</td>
+            <td class="${rowIndent}" style="text-align:center;">
                 <span class="status-badge badge-${item.status.toLowerCase()}">${item.status}</span>
             </td>
-            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.timeline}</td>
-            <td class="${isChild ? 'indent-child' : 'indent-parent'}">${item.actual}</td>
+            <td class="${rowIndent}" style="text-align:center;">${item.timeline}</td>
+            <td class="${rowIndent}" style="text-align:center;">${item.actual}</td>
         </tr>`;
     });
     tbody.innerHTML = html;

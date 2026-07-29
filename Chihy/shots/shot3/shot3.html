@@ -1,21 +1,43 @@
+<div class="filter-area" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 15px;">
+    <div class="d-flex flex-wrap align-items-center" style="gap: 20px;">
+        <!-- Lọc Cha/Con -->
+        <div class="group-filter">
+            <span style="font-weight: 800; font-size: 11px; color: #64748b; display: block; margin-bottom: 5px;">PHÂN LOẠI</span>
+            <label style="cursor:pointer; font-weight: 700; font-size: 12px; margin-right: 10px;">
+                <input type="checkbox" id="filterParent" checked onchange="renderDigitalTable()"> CHA
+            </label>
+            <label style="cursor:pointer; font-weight: 700; font-size: 12px;">
+                <input type="checkbox" id="filterChild" checked onchange="renderDigitalTable()"> CON
+            </label>
+        </div>
+
+        <!-- Lọc Trạng thái (Click vào chữ để lọc) -->
+        <div class="status-filter-group">
+            <span style="font-weight: 800; font-size: 11px; color: #64748b; display: block; margin-bottom: 5px;">TRẠNG THÁI TASK</span>
+            <div class="d-flex" style="gap: 5px;" id="st-filter-list">
+                <!-- Sẽ render tự động bằng JS -->
+            </div>
+        </div>
+    </div>
+</div>
 <div class="table-scroll shadow-sm">
     <table class="modern-table">
         <thead>
             <tr>
-                <th style="width: 80px;">SESSION</th>
+                <th style="width: 100px;">SESSION</th>
                 <th style="width: 50px;">A/U</th>
-                <th style="width: 150px;">ĐẦU VIỆC</th>
+                <th style="width: 180px;">ĐẦU VIỆC</th>
                 <th style="width: 70px;">ID (D)</th>
                 
                 <!-- Cột này KHÔNG ĐỂ width để nó tự giãn lấp đầy khoảng trắng -->
                 <th>NỘI DUNG</th> 
                 
-                <th style="width: 100px;">Thứ tự ưu tiên</th>
-                <th style="width: 360px;">GHI CHÚ</th>
+                <th style="width: 50px;">ƯU TIÊN</th>
+                <th style="width: 300px;">GHI CHÚ</th>
                 <th style="width: 100px;">TIẾN ĐỘ</th>
                 <th style="width: 100px;">STATUS</th>
-                <th style="width: 100px;">TIMELINE</th>
-                <th style="width: 100px;">THỰC TẾ</th>
+                <th style="width: 120px;">TIMELINE</th>
+                <th style="width: 120px;">THỰC TẾ</th>
             </tr>
         </thead>
         <tbody id="digital-table-body"></tbody>
