@@ -277,173 +277,438 @@ class UnimeApp {
 // ================================================================
 // --- HÀM XUẤT PDF TRANG DÀI (FIX MỜ, FIX CẮT CHỮ, NÉT CĂNG) ---
 // ================================================================
-async function handleExportPdf(btn) {
-    const source = document.querySelector('.main-content') || document.getElementById('content-area');
-    if (!source) return;
+// async function handleExportPdf(btn) {
+//     const source = document.querySelector('.main-content') || document.getElementById('content-area');
+//     if (!source) return;
 
-    const originalText = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xử lý PDF...';
+//     const originalText = btn.innerHTML;
+//     btn.disabled = true;
+//     btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xử lý PDF...';
 
-    try {
-        await document.fonts.ready;
-        const canvas = await html2canvas(source, {
-            scale: 2, 
-            useCORS: true,
-            logging: false,
-            backgroundColor: "#ffffff",
-            windowWidth: 1920, 
-            onclone: (clonedDoc) => {
-                const clonedSource = clonedDoc.querySelector('.main-content') || clonedDoc.getElementById('content-area');
+//     try {
+//         await document.fonts.ready;
+//         const canvas = await html2canvas(source, {
+//             scale: 2, 
+//             useCORS: true,
+//             logging: false,
+//             backgroundColor: "#ffffff",
+//             windowWidth: 1920, 
+//             onclone: (clonedDoc) => {
+//                 const clonedSource = clonedDoc.querySelector('.main-content') || clonedDoc.getElementById('content-area');
                 
-                // Ép hiện rõ 100% (Fix mờ nhạt)
-                clonedSource.querySelectorAll('*').forEach(el => {
-                    el.style.opacity = "1";
-                    el.style.transition = "none";
-                    el.style.animation = "none";
-                });
+//                 // Ép hiện rõ 100% (Fix mờ nhạt)
+//                 clonedSource.querySelectorAll('*').forEach(el => {
+//                     el.style.opacity = "1";
+//                     el.style.transition = "none";
+//                     el.style.animation = "none";
+//                 });
 
-                // Ép giãn hết chiều cao (Fix cắt chữ)
-                let curr = clonedSource;
-                while (curr) {
-                    curr.style.overflow = 'visible';
-                    curr.style.height = 'auto';
-                    curr.style.maxHeight = 'none';
-                    curr.style.display = 'block';
-                    curr = curr.parentElement;
-                }
+//                 // Ép giãn hết chiều cao (Fix cắt chữ)
+//                 let curr = clonedSource;
+//                 while (curr) {
+//                     curr.style.overflow = 'visible';
+//                     curr.style.height = 'auto';
+//                     curr.style.maxHeight = 'none';
+//                     curr.style.display = 'block';
+//                     curr = curr.parentElement;
+//                 }
 
-                const style = clonedDoc.createElement('style');
-                style.innerHTML = `
-                    .sidebar, .btn, button, .no-export, .nav-tabs, .actions { display: none !important; visibility: hidden !important; }
-                    header { position: static !important; width: 100% !important; border: none !important; }
-                    body { overflow: visible !important; height: auto !important; background: #fff !important; }
-                    .main-content { padding: 0 !important; margin: 0 !important; }
-                `;
-                clonedDoc.head.appendChild(style);
-            }
-        });
+//                 const style = clonedDoc.createElement('style');
+//                 style.innerHTML = `
+//                     .sidebar, .btn, button, .no-export, .nav-tabs, .actions { display: none !important; visibility: hidden !important; }
+//                     header { position: static !important; width: 100% !important; border: none !important; }
+//                     body { overflow: visible !important; height: auto !important; background: #fff !important; }
+//                     .main-content { padding: 0 !important; margin: 0 !important; }
+//                 `;
+//                 clonedDoc.head.appendChild(style);
+//             }
+//         });
 
-        const { jsPDF } = window.jspdf;
-        const imgWidth = canvas.width / 2;
-        const imgHeight = canvas.height / 2;
+//         const { jsPDF } = window.jspdf;
+//         const imgWidth = canvas.width / 2;
+//         const imgHeight = canvas.height / 2;
 
-        const pdf = new jsPDF({
-            orientation: imgWidth > imgHeight ? 'l' : 'p',
-            unit: 'px',
-            format: [imgWidth, imgHeight],
-            hotfixes: ["px_scaling"],
-            compress: true
-        });
+//         const pdf = new jsPDF({
+//             orientation: imgWidth > imgHeight ? 'l' : 'p',
+//             unit: 'px',
+//             format: [imgWidth, imgHeight],
+//             hotfixes: ["px_scaling"],
+//             compress: true
+//         });
 
-        const imgData = canvas.toDataURL('image/png');
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
+//         const imgData = canvas.toDataURL('image/png');
+//         pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
 
-        const timestamp = new Date().getTime();
-        pdf.save(`Umer_dms_pdf_${timestamp}.pdf`);
-    } catch (e) {
-        console.error("Lỗi PDF:", e);
-        alert("Lỗi xuất PDF!");
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-    }
-}
+//         const timestamp = new Date().getTime();
+//         pdf.save(`Umer_dms_pdf_${timestamp}.pdf`);
+//     } catch (e) {
+//         console.error("Lỗi PDF:", e);
+//         alert("Lỗi xuất PDF!");
+//     } finally {
+//         btn.disabled = false;
+//         btn.innerHTML = originalText;
+//     }
+// }
 
 // ================================================================
 // --- HÀM XUẤT PNG SIÊU NÉT (CHO TRANG ÍT DATA) ---
 // ================================================================
-async function handleExportPng(btn) {
-    // 1. CHỌN VÙNG NỘI DUNG CHÍNH XÁC
-    const source = document.querySelector('.main-content') || document.getElementById('content-area');
-    if (!source) return;
+// async function handleExportPng(btn) {
+//     // 1. CHỌN VÙNG NỘI DUNG CHÍNH XÁC
+//     const source = document.querySelector('.main-content') || document.getElementById('content-area');
+//     if (!source) return;
 
-    const originalText = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang tối ưu hóa...';
+//     const originalText = btn.innerHTML;
+//     btn.disabled = true;
+//     btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang tối ưu hóa...';
 
-    try {
-        await document.fonts.ready;
+//     try {
+//         await document.fonts.ready;
 
-        // --- BƯỚC QUAN TRỌNG: ĐO KÍCH THƯỚC THỰC TẾ ---
-        // Lấy chiều rộng hiện tại trên màn hình của bạn
-        const actualWidth = source.offsetWidth;
+//         // --- BƯỚC QUAN TRỌNG: ĐO KÍCH THƯỚC THỰC TẾ ---
+//         // Lấy chiều rộng hiện tại trên màn hình của bạn
+//         const actualWidth = source.offsetWidth;
         
-        // Ép thẻ nguồn nhả hết chiều cao để đo con số thật sự
-        const originalStyle = source.getAttribute('style');
-        source.style.height = 'auto';
-        source.style.overflow = 'visible';
-        source.style.display = 'block';
+//         // Ép thẻ nguồn nhả hết chiều cao để đo con số thật sự
+//         const originalStyle = source.getAttribute('style');
+//         source.style.height = 'auto';
+//         source.style.overflow = 'visible';
+//         source.style.display = 'block';
         
-        // Đo chiều cao thực tế (bao gồm cả phần data ít hay nhiều)
-        const actualHeight = source.scrollHeight;
+//         // Đo chiều cao thực tế (bao gồm cả phần data ít hay nhiều)
+//         const actualHeight = source.scrollHeight;
         
-        // Trả lại style cũ để không làm hỏng giao diện đang dùng
-        if (originalStyle) source.setAttribute('style', originalStyle); 
-        else source.removeAttribute('style');
+//         // Trả lại style cũ để không làm hỏng giao diện đang dùng
+//         if (originalStyle) source.setAttribute('style', originalStyle); 
+//         else source.removeAttribute('style');
 
-        // Tính toán độ nét (Scale 2 là chuẩn nhất, 13 trang thì code tự giảm xuống 1.2)
-        let finalScale = 2; 
-        if (actualHeight * finalScale > 25000) finalScale = 25000 / actualHeight;
+//         // Tính toán độ nét (Scale 2 là chuẩn nhất, 13 trang thì code tự giảm xuống 1.2)
+//         let finalScale = 2; 
+//         if (actualHeight * finalScale > 25000) finalScale = 25000 / actualHeight;
 
-        const canvas = await html2canvas(source, {
-            scale: finalScale,
-            useCORS: true,
-            logging: false,
-            backgroundColor: "#ffffff",
-            width: actualWidth,
-            height: actualHeight,
-            windowWidth: actualWidth, // Ép khung nhìn ảo bằng đúng chiều rộng bảng (Chống co cột)
-            onclone: (clonedDoc) => {
-                const clonedSource = clonedDoc.querySelector('.main-content') || clonedDoc.getElementById('content-area');
+//         const canvas = await html2canvas(source, {
+//             scale: finalScale,
+//             useCORS: true,
+//             logging: false,
+//             backgroundColor: "#ffffff",
+//             width: actualWidth,
+//             height: actualHeight,
+//             windowWidth: actualWidth, // Ép khung nhìn ảo bằng đúng chiều rộng bảng (Chống co cột)
+//             onclone: (clonedDoc) => {
+//                 const clonedSource = clonedDoc.querySelector('.main-content') || clonedDoc.getElementById('content-area');
                 
-                // XOÁ SẠCH: Sidebar, Header, Nút bấm (Giúp ảnh trắng sạch và nhẹ RAM)
-                clonedDoc.querySelectorAll('.sidebar, .btn, button, .no-export, .actions, header, .main-header, #menuToggleBtn, .right-side').forEach(el => el.remove());
+//                 // XOÁ SẠCH: Sidebar, Header, Nút bấm (Giúp ảnh trắng sạch và nhẹ RAM)
+//                 clonedDoc.querySelectorAll('.sidebar, .btn, button, .no-export, .actions, header, .main-header, #menuToggleBtn, .right-side').forEach(el => el.remove());
 
-                // ÉP CẤU TRÚC PHẲNG: Phá bỏ mọi rào cản overflow từ thẻ nguồn lên tận thẻ html
-                let curr = clonedSource;
-                while (curr && curr !== clonedDoc.documentElement) {
-                    curr.style.height = 'auto !important';
-                    curr.style.minHeight = '0 !important';
-                    curr.style.maxHeight = 'none !important';
-                    curr.style.overflow = 'visible !important';
-                    curr.style.display = 'block !important';
-                    curr.style.position = 'static !important';
-                    curr = curr.parentElement;
-                }
+//                 // ÉP CẤU TRÚC PHẲNG: Phá bỏ mọi rào cản overflow từ thẻ nguồn lên tận thẻ html
+//                 let curr = clonedSource;
+//                 while (curr && curr !== clonedDoc.documentElement) {
+//                     curr.style.height = 'auto !important';
+//                     curr.style.minHeight = '0 !important';
+//                     curr.style.maxHeight = 'none !important';
+//                     curr.style.overflow = 'visible !important';
+//                     curr.style.display = 'block !important';
+//                     curr.style.position = 'static !important';
+//                     curr = curr.parentElement;
+//                 }
 
-                // CSS ĐẶC TRỊ LAYOUT (FIX CHỮ CANH DƯỚI, FIX RỚT DÒNG)
-                const style = clonedDoc.createElement('style');
-                style.innerHTML = `
-                    html, body { width: 100% !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
-                    .main-content { padding: 30px !important; width: ${actualWidth}px !important; margin: 0 auto !important; display: block !important; }
-                    table { width: 100% !important; table-layout: auto !important; border-collapse: collapse !important; border: 1px solid #ccc !important; }
-                    th, td { 
-                        vertical-align: middle !important; /* Căn giữa dọc */
-                        padding: 12px 8px !important; 
-                        border: 1px solid #dee2e6 !important; 
-                        line-height: 1.4 !important;
-                        word-break: normal !important;
-                    }
-                    /* Fix mờ nhạt */
-                    * { opacity: 1 !important; visibility: visible !important; transition: none !important; animation: none !important; }
-                `;
-                clonedDoc.head.appendChild(style);
+//                 // CSS ĐẶC TRỊ LAYOUT (FIX CHỮ CANH DƯỚI, FIX RỚT DÒNG)
+//                 const style = clonedDoc.createElement('style');
+//                 style.innerHTML = `
+//                     html, body { width: 100% !important; height: auto !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
+//                     .main-content { padding: 30px !important; width: ${actualWidth}px !important; margin: 0 auto !important; display: block !important; }
+//                     table { width: 100% !important; table-layout: auto !important; border-collapse: collapse !important; border: 1px solid #ccc !important; }
+//                     th, td { 
+//                         vertical-align: middle !important; /* Căn giữa dọc */
+//                         padding: 12px 8px !important; 
+//                         border: 1px solid #dee2e6 !important; 
+//                         line-height: 1.4 !important;
+//                         word-break: normal !important;
+//                     }
+//                     /* Fix mờ nhạt */
+//                     * { opacity: 1 !important; visibility: visible !important; transition: none !important; animation: none !important; }
+//                 `;
+//                 clonedDoc.head.appendChild(style);
+//             }
+//         });
+
+//         // XUẤT FILE
+//         const image = canvas.toDataURL("image/png", 1.0);
+//         const link = document.createElement('a');
+//         link.download = `Umer_dms_png_${new Date().getTime()}.png`;
+//         link.href = image;
+//         link.click();
+
+//     } catch (e) {
+//         console.error(e);
+//         alert("Lỗi xuất ảnh! Dữ liệu quá dài hãy dùng PDF.");
+//     } finally {
+//         btn.disabled = false;
+//         btn.innerHTML = originalText;
+//     }
+// }
+async function handleExportPng(btn) {
+  // 1. CHỌN VÙNG DỮ LIỆU CHÍNH
+  const source =
+    document.querySelector(".main-content") ||
+    document.getElementById("content-area");
+  const table = source ? source.querySelector("table") : null;
+  if (!table) return alert("Không tìm thấy dữ liệu bảng!");
+
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang vẽ ảnh...';
+
+  try {
+    await document.fonts.ready;
+
+    // --- BƯỚC 1: ĐO ĐẠC KÍCH THƯỚC THỰC ---
+    const tableW = table.scrollWidth;
+    const tableH = table.scrollHeight;
+
+    // Cộng thêm khoảng trống tiêu đề và lề
+    const finalW = tableW + 100;
+    const finalH = tableH + 400; // Bù thêm 400px cho chắc chắn lấy hết Header và Footer
+
+    console.log("Kích thước xuất:", finalW, "x", finalH);
+
+    const canvas = await html2canvas(source, {
+      scale: 1.5, // Giảm xuống 1.5 để tránh lỗi bộ nhớ (trắng màn hình/crash)
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      width: finalW,
+      height: finalH,
+      windowWidth: finalW,
+      windowHeight: finalH,
+      x: 0,
+      y: 0,
+      scrollX: 0,
+      scrollY: -window.scrollY, // Tránh lệch tọa độ do cuộn chuột
+      onclone: (clonedDoc) => {
+        const clonedSource =
+          clonedDoc.querySelector(".main-content") ||
+          clonedDoc.getElementById("content-area");
+
+        // 1. ẨN SIDEBAR VÀ CÁC NÚT (Dùng display: none thay vì remove để ổn định DOM)
+        clonedDoc
+          .querySelectorAll(
+            ".sidebar, button, .actions, .no-export, #menuToggleBtn, .right-side, header",
+          )
+          .forEach((el) => {
+            el.style.display = "none";
+          });
+
+        // 2. ÉP BẢNG VÀ CHA PHẢI HIỂN THỊ HẾT
+        clonedSource.querySelectorAll("*").forEach((el) => {
+          el.style.transform = "none";
+          el.style.transition = "none";
+          el.style.animation = "none";
+          el.style.filter = "none";
+        });
+        let curr = clonedSource;
+        while (curr && curr !== clonedDoc.documentElement) {
+          curr.style.setProperty("height", "auto", "important");
+          curr.style.setProperty("max-height", "none", "important");
+          curr.style.setProperty("overflow", "visible", "important");
+          curr = curr.parentElement;
+        }
+
+        // 3. THAO TÁC TRỰC TIẾP TRÊN DOM — đáng tin cậy hơn inject CSS với html2canvas
+        const BADGE_COLORS = {
+          "badge-open": "#ca8a04",
+          "badge-process": "#16a34a",
+          "badge-pending": "#dc2626",
+          "badge-done": "#0891b2",
+          "badge-deploy": "#0891b2",
+          "badge-new": "#d39236",
+          "badge-close": "#64748b",
+        };
+
+        clonedSource.querySelectorAll("td").forEach((td, i) => {
+          // Canh giữa dọc trực tiếp trên td
+          td.style.verticalAlign = "middle";
+          td.style.height = "auto";
+          td.style.padding = "8px 10px";
+          td.style.lineHeight = "1.4";
+
+          // Căn lề ngang theo cột
+          const colsCenter = [1, 2, 4, 8, 9, 10, 11];
+          const colsLeft = [3, 5, 7];
+          const colIdx = i % (clonedSource.querySelectorAll("tr")[0]?.cells?.length || 11) + 1;
+          if (colsCenter.includes(colIdx)) td.style.textAlign = "center";
+          else if (colsLeft.includes(colIdx)) td.style.textAlign = "left";
+
+          // Ép wrapper trực tiếp bên trong td thành inline-block để vertical-align hoạt động
+          Array.from(td.children).forEach((child) => {
+            if (child.tagName !== "SPAN" && child.tagName !== "A") {
+              child.style.display = "inline-block";
             }
+            child.style.verticalAlign = "middle";
+          });
         });
 
-        // XUẤT FILE
-        const image = canvas.toDataURL("image/png", 1.0);
-        const link = document.createElement('a');
-        link.download = `Umer_dms_png_${new Date().getTime()}.png`;
-        link.href = image;
-        link.click();
+        clonedSource.querySelectorAll(".status-badge").forEach((badge) => {
+          // Áp style trực tiếp — bypass html2canvas CSS specificity issue
+          badge.style.display = "inline-block";
+          badge.style.borderRadius = "20px";
+          badge.style.padding = "3px 10px";
+          badge.style.minWidth = "75px";
+          badge.style.textAlign = "center";
+          badge.style.fontSize = "10px";
+          badge.style.color = "white";
+          badge.style.verticalAlign = "middle";
+          badge.style.lineHeight = "1.4";
+          badge.style.whiteSpace = "nowrap";
+          badge.style.border = "1px solid rgba(0,0,0,0.1)";
 
-    } catch (e) {
-        console.error(e);
-        alert("Lỗi xuất ảnh! Dữ liệu quá dài hãy dùng PDF.");
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-    }
+          // Áp màu nền trực tiếp theo class
+          for (const [cls, color] of Object.entries(BADGE_COLORS)) {
+            if (badge.classList.contains(cls)) {
+              badge.style.backgroundColor = color;
+              break;
+            }
+          }
+        });
+      },
+    });
+
+    // TẢI ẢNH
+    const link = document.createElement("a");
+    link.download = `Umer_Digital_Report_${new Date().getTime()}.png`;
+    link.href = canvas.toDataURL("image/png", 1.0);
+    link.click();
+  } catch (e) {
+    console.error("Lỗi trích xuất:", e);
+    alert("Lỗi xuất ảnh! Vui lòng cuộn lên đầu trang và thử lại lần nữa.");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+
+async function handleExportPdf(btn) {
+  const source =
+    document.querySelector(".main-content") ||
+    document.getElementById("content-area");
+  if (!source) return;
+
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xử lý PDF...';
+
+  try {
+    await document.fonts.ready;
+    const canvas = await html2canvas(source, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: "#ffffff",
+      windowWidth: 1920,
+      onclone: (clonedDoc) => {
+        const clonedSource =
+          clonedDoc.querySelector(".main-content") ||
+          clonedDoc.getElementById("content-area");
+
+        // Ép hiện rõ 100% (Fix mờ nhạt)
+        clonedSource.querySelectorAll("*").forEach((el) => {
+          el.style.opacity = "1";
+          el.style.transition = "none";
+          el.style.animation = "none";
+          el.style.transform = "none";
+          el.style.filter = "none";
+        });
+
+        // Ép giãn hết chiều cao (Fix cắt chữ)
+        let curr = clonedSource;
+        while (curr && curr !== clonedDoc.documentElement) {
+          curr.style.overflow = "visible";
+          curr.style.height = "auto";
+          curr.style.maxHeight = "none";
+          curr = curr.parentElement;
+        }
+
+        // ẨN CÁC THÀNH PHẦN KHÔNG CẦN EXPORT
+        const style = clonedDoc.createElement("style");
+        style.innerHTML = `
+                  .sidebar, .no-export, .nav-tabs, .actions { display: none !important; visibility: hidden !important; }
+                  header { position: static !important; width: 100% !important; border: none !important; }
+                  body { overflow: visible !important; height: auto !important; background: #fff !important; }
+                  .main-content { padding: 0 !important; margin: 0 !important; }
+              `;
+        clonedDoc.head.appendChild(style);
+
+        // THAO TÁC TRỰC TIẾP TRÊN DOM — đáng tin cậy hơn inject CSS với html2canvas
+        const BADGE_COLORS = {
+          "badge-open": "#ca8a04",
+          "badge-process": "#16a34a",
+          "badge-pending": "#dc2626",
+          "badge-done": "#0891b2",
+          "badge-deploy": "#0891b2",
+          "badge-new": "#d39236",
+          "badge-close": "#64748b",
+        };
+
+        clonedSource.querySelectorAll("td").forEach((td) => {
+          // Canh giữa dọc trực tiếp trên td
+          td.style.verticalAlign = "middle";
+          td.style.height = "auto";
+
+          // Ép wrapper trực tiếp bên trong td thành inline-block để vertical-align hoạt động
+          Array.from(td.children).forEach((child) => {
+            if (child.tagName !== "SPAN" && child.tagName !== "A") {
+              child.style.display = "inline-block";
+            }
+            child.style.verticalAlign = "middle";
+          });
+        });
+
+        clonedSource.querySelectorAll(".status-badge").forEach((badge) => {
+          // Áp style trực tiếp — bypass html2canvas CSS specificity issue
+          badge.style.display = "inline-block";
+          badge.style.borderRadius = "20px";
+          badge.style.padding = "3px 10px";
+          badge.style.minWidth = "75px";
+          badge.style.textAlign = "center";
+          badge.style.fontSize = "10px";
+          badge.style.color = "white";
+          badge.style.verticalAlign = "middle";
+          badge.style.lineHeight = "1.4";
+          badge.style.whiteSpace = "nowrap";
+          badge.style.border = "1px solid rgba(0,0,0,0.1)";
+
+          // Áp màu nền trực tiếp theo class
+          for (const [cls, color] of Object.entries(BADGE_COLORS)) {
+            if (badge.classList.contains(cls)) {
+              badge.style.backgroundColor = color;
+              break;
+            }
+          }
+        });
+      },
+    });
+
+    const { jsPDF } = window.jspdf;
+    const imgWidth = canvas.width / 2;
+    const imgHeight = canvas.height / 2;
+
+    const pdf = new jsPDF({
+      orientation: imgWidth > imgHeight ? "l" : "p",
+      unit: "px",
+      format: [imgWidth, imgHeight],
+      hotfixes: ["px_scaling"],
+      compress: true,
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
+
+    const timestamp = new Date().getTime();
+    pdf.save(`Umer_dms_pdf_${timestamp}.pdf`);
+  } catch (e) {
+    console.error("Lỗi PDF:", e);
+    alert("Lỗi xuất PDF!");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
 }

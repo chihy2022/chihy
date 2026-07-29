@@ -1,24 +1,30 @@
-<div class="filter-area" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 15px;">
-    <div class="d-flex flex-wrap align-items-center" style="gap: 20px;">
-        <!-- Lọc Cha/Con -->
-        <div class="group-filter">
-            <span style="font-weight: 800; font-size: 11px; color: #64748b; display: block; margin-bottom: 5px;">PHÂN LOẠI</span>
-            <label style="cursor:pointer; font-weight: 700; font-size: 12px; margin-right: 10px;">
-                <input type="checkbox" id="filterParent" checked onchange="renderDigitalTable()"> CHA
-            </label>
-            <label style="cursor:pointer; font-weight: 700; font-size: 12px;">
-                <input type="checkbox" id="filterChild" checked onchange="renderDigitalTable()"> CON
-            </label>
-        </div>
-
-        <!-- Lọc Trạng thái (Click vào chữ để lọc) -->
-        <div class="status-filter-group">
-            <span style="font-weight: 800; font-size: 11px; color: #64748b; display: block; margin-bottom: 5px;">TRẠNG THÁI TASK</span>
-            <div class="d-flex" style="gap: 5px;" id="st-filter-list">
-                <!-- Sẽ render tự động bằng JS -->
-            </div>
+<h2 class="shot-title" style="
+    font-weight: 800;
+    color: var(--primary);
+">DIGITAL TRANSFORMATION (POSM E2E / DASHBOARD / PERFORMANCE)</h2>
+<p class="sub-text" style="
+    font-size: 14px;
+    color: #64748b;
+">Đối tác: Acacy | Giai đoạn: H2 2026 | Cập nhật lần cuối: <span id="last-update">___________</span></p>
+<div class="filter-area" style="background: #f8fafc;padding-top: 10px;margin-bottom: 10px;display: flex;flex-wrap: wrap;align-items: center;gap: 25px;">
+    
+    <!-- 1. LỌC PHÂN LOẠI -->
+    <div class="filter-section" style="display: flex; gap: 10px;">
+        <span style="font-size: 14px; color: #64748b; display: block; margin-bottom: 5px;">ID</span>
+        <div style="display: flex; gap: 15px;">
+            <label class="check-item"><input type="checkbox" id="filterParent" checked onchange="renderDigitalTable()"> <b>Task</b></label>
+            <label class="check-item"><input type="checkbox" id="filterChild" checked onchange="renderDigitalTable()"> <b>Detail</b></label>
         </div>
     </div>
+
+    <!-- 2. LỌC MULTI-STATUS -->
+    <div class="filter-section"style="display: flex; gap: 10px;">
+    <span style="font-size: 14px; color: #64748b; display: block; margin-bottom: 5px;">Status</span>
+    <!-- ĐẢM BẢO ID NÀY PHẢI ĐÚNG -->
+    <div id="status-pill-container" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; vertical-align: middle;"></div>
+</div>
+    
+    <div id="filter-summary" style="margin-left: auto; font-size: 14px; font-style: italic; color: #64748b;"></div>
 </div>
 <div class="table-scroll shadow-sm">
     <table class="modern-table">
