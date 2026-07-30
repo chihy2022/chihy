@@ -1,3 +1,8 @@
+/**
+ * CẤU HÌNH HỆ THỐNG
+ * GGS_URL: Đường dẫn đến Google Apps Script xử lý dữ liệu
+ * STORAGE_KEY/USER_DATA_KEY: Các khóa để lưu mã định danh và thông tin người dùng vào LocalStorage
+ */
 const CONFIG = {
   GGS_URL:
     "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec",
@@ -6,6 +11,7 @@ const CONFIG = {
   SIDEBAR_KEY: "sidebar-state",
 };
 
+// Khởi tạo ứng dụng khi toàn bộ HTML đã tải xong
 document.addEventListener("DOMContentLoaded", () => {
   const app = new UnimeApp();
   app.init();
@@ -13,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 class UnimeApp {
   constructor() {
+    // Khởi tạo các biến truy cập nhanh đến các phần tử giao diện chính
     this.contentArea = document.getElementById("content-area");
     this.actionSlot = document.getElementById("shot-actions-slot");
     this.headerTitle = document.getElementById("dynamic-header-title");
@@ -22,19 +29,25 @@ class UnimeApp {
     this.appContainer = document.querySelector(".app-container");
   }
 
+  // Hàm khởi chạy ứng dụng
   init() {
-    this.setupEventListeners();
-    this.checkAuth();
-    this.restoreSidebarState();
+    this.setupEventListeners(); // Gán các sự kiện click, resize...
+    this.checkAuth();           // Kiểm tra trạng thái đăng nhập
+    this.restoreSidebarState(); // Khôi phục trạng thái đóng/mở của sidebar từ lần trước
   }
 
+  // Thiết lập tất cả các sự kiện tương tác của người dùng
   setupEventListeners() {
+
+    // Menu & Sidebar
     document
       .getElementById("menuToggleBtn")
       .addEventListener("click", () => this.handleMainToggle());
     this.sidebarOverlay?.addEventListener("click", () =>
       this.handleMainToggle(),
     );
+
+    // Đăng nhập & Đăng xuất
     document
       .getElementById("btnLogin")
       .addEventListener("click", () => this.performLogin());
@@ -45,7 +58,7 @@ class UnimeApp {
       .getElementById("logoutBtn")
       .addEventListener("click", () => this.logout());
 
-    // Gán sự kiện xuất file
+    // Nút xuất file (PDF và PNG)
     document
       .getElementById("exportPdfBtn")
       ?.addEventListener("click", (e) => handleExportPdf(e.currentTarget));
@@ -53,25 +66,32 @@ class UnimeApp {
       .getElementById("exportPngBtn")
       ?.addEventListener("click", (e) => handleExportPng(e.currentTarget));
 
+    // Xử lý khi click vào các mục menu
     document.querySelectorAll(".menu-item").forEach((item) => {
       item.addEventListener("click", () => this.handleMenuClick(item));
     });
 
+    // Xử lý đóng/mở các nhóm menu (Dropdown menu)
     document.querySelectorAll(".group-header").forEach((header) => {
       header.addEventListener("click", () =>
         header.parentElement.classList.toggle("active"),
       );
     });
 
+    // Các sự kiện click toàn cục (ví dụ: phóng to ảnh)
     document.addEventListener("click", (e) => this.handleGlobalClicks(e));
 
+    // Xử lý khi thay đổi kích thước màn hình
     window.addEventListener("resize", () => {
       const currentShot = localStorage.getItem("currentShot") || "welcome";
       this.updateUIState(currentShot);
     });
   }
 
-  // --- CẬP NHẬT TRẠNG THÁI HEADER & HIỂN THỊ NÚT XUẤT FILE ---
+  /**
+   * CẬP NHẬT TRẠNG THÁI GIAO DIỆN (HEADER & NÚT XUẤT FILE)
+   * Ẩn các nút export trên điện thoại hoặc ở các trang không có dữ liệu bảng
+   */
   updateUIState(shotId) {
     const pdfBtn = document.getElementById("exportPdfBtn");
     const pngBtn = document.getElementById("exportPngBtn");
@@ -80,7 +100,7 @@ class UnimeApp {
     const isMobile = window.innerWidth <= 1024;
     const isHiddenShot = hiddenShots.includes(shotId);
 
-    // Xử lý ẩn/hiện cả 2 nút PDF và PNG
+    // Điều khiển ẩn hiện nút xuất file
     [pdfBtn, pngBtn].forEach((btn) => {
       if (btn) {
         if (isMobile || isHiddenShot) {
@@ -91,7 +111,7 @@ class UnimeApp {
       }
     });
 
-    // Cập nhật Highlight Sidebar & Tiêu đề Header
+    // Đánh dấu mục menu đang được chọn (Active)
     document
       .querySelectorAll(".menu-item")
       .forEach((m) => m.classList.remove("active"));
@@ -108,17 +128,23 @@ class UnimeApp {
     }
   }
 
+  /**
+   * PHÂN QUYỀN NGƯỜI DÙNG
+   * Ẩn/Hiện các menu dựa trên quyền (rights) mà Google Sheets trả về
+   */
   applyPermissions(user) {
     if (!user) return;
     const rights = user.rights || {};
     const name = String(user.name || "Thành viên").trim();
     const nameDisplay = name !== "" ? name : "Thành viên";
 
+    // Hiển thị tên người dùng lên giao diện
     if (document.getElementById("display-user-name"))
       document.getElementById("display-user-name").innerText = nameDisplay;
     if (document.getElementById("user-welcome-name"))
       document.getElementById("user-welcome-name").innerText = nameDisplay;
 
+     // Duyệt qua từng menu để ẩn/hiện
     document.querySelectorAll(".menu-item[data-shot]").forEach((item) => {
       const shotId = item.getAttribute("data-shot");
       const perm = (rights[shotId] || "").toString().toLowerCase().trim();
@@ -130,6 +156,7 @@ class UnimeApp {
       );
     });
 
+    // Ẩn cả nhóm menu nếu bên trong không có mục nào được phép xem
     document.querySelectorAll(".menu-group").forEach((group) => {
       const hasVisible = Array.from(
         group.querySelectorAll(".menu-item[data-shot]"),
@@ -142,6 +169,7 @@ class UnimeApp {
     });
   }
 
+  // Kiểm tra đăng nhập khi vừa tải trang
   checkAuth() {
     const uid = localStorage.getItem(CONFIG.STORAGE_KEY);
     const cachedUser = localStorage.getItem(CONFIG.USER_DATA_KEY);
@@ -152,11 +180,13 @@ class UnimeApp {
       this.loginOverlay.classList.add("hidden");
       this.appContainer.classList.remove("hidden");
 
+      // Khôi phục trang cuối cùng người dùng xem
       let lastShotId = localStorage.getItem("currentShot") || "welcome";
       const userPerm = (user.rights[lastShotId] || "")
         .toString()
         .toLowerCase()
         .trim();
+      // Nếu trang cũ không có quyền truy cập thì quay về 'welcome'
       if (
         !(userPerm === "root" || userPerm === "view") &&
         lastShotId !== "welcome"
@@ -166,10 +196,11 @@ class UnimeApp {
 
       this.updateUIState(lastShotId);
       this.loadPage(lastShotId);
-      this.silentCheckAuth(uid);
+      this.silentCheckAuth(uid); // Kiểm tra ngầm quyền truy cập từ server
     }
   }
 
+  // Xử lý quy trình đăng nhập
   async performLogin(forcedUid = null) {
     const uidInput = document.getElementById("login-uid");
     const btn = document.getElementById("btnLogin");
@@ -180,6 +211,7 @@ class UnimeApp {
     btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> XÁC THỰC...';
 
     try {
+      // Gọi API Google Scripts để lấy thông tin user
       const res = await fetch(`${CONFIG.GGS_URL}?action=getRole&uid=${uid}`);
       const user = await res.json();
       if (user && user.rights) {
@@ -201,14 +233,19 @@ class UnimeApp {
     }
   }
 
+  // Khi click vào mục menu bên trái
   handleMenuClick(item) {
     const shotId = item.getAttribute("data-shot");
     if (!shotId) return;
     this.updateUIState(shotId);
-    if (window.innerWidth <= 992) this.handleMainToggle();
+    if (window.innerWidth <= 992) this.handleMainToggle();// Tự đóng sidebar trên mobile sau khi chọn
     this.loadPage(shotId);
   }
 
+  /**
+   * TẢI TRANG ĐỘNG (SPA ENGINE)
+   * Tải file HTML, CSS và JS của từng "Shot" mà không load lại toàn bộ web
+   */
   async loadPage(shotName) {
     if (!shotName) return;
     const loader = document.getElementById("page-loader");
@@ -217,15 +254,16 @@ class UnimeApp {
     if (loader) loader.classList.remove("hidden");
     content.style.transition = "none";
     content.style.opacity = "0";
-    content.innerHTML = "";
+    content.innerHTML = "";// Xóa nội dung cũ
     if (this.actionSlot) this.actionSlot.innerHTML = "";
 
     try {
       const path = `shots/${shotName}/${shotName}`;
+      // Xóa CSS/JS của trang cũ để tránh xung đột
       ["shot-css", "shot-js"].forEach((id) =>
         document.getElementById(id)?.remove(),
       );
-
+      // Tải đồng thời HTML và CSS
       const [htmlRes] = await Promise.all([
         fetch(`${path}.html?t=${Date.now()}`),
         new Promise((resolve) => {
@@ -241,10 +279,11 @@ class UnimeApp {
 
       const htmlText = await htmlRes.text();
       const doc = new DOMParser().parseFromString(htmlText, "text/html");
-      const shotActions = doc.querySelector(".shot-actions");
-      const shotBody = doc.querySelector(".shot-body");
+      const shotActions = doc.querySelector(".shot-actions");// Phần nút bấm thêm trên header
+      const shotBody = doc.querySelector(".shot-body");// Nội dung chính
       const mainHeader = document.querySelector(".main-header");
 
+      // Nếu trang có các nút chức năng riêng, đẩy chúng lên header
       if (
         this.actionSlot &&
         shotActions &&
@@ -259,11 +298,13 @@ class UnimeApp {
       content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
       if (loader) loader.classList.add("hidden");
 
+      // Hiệu ứng mờ dần khi hiện nội dung mới
       requestAnimationFrame(() => {
         content.style.transition = "opacity 0.25s ease";
         content.style.opacity = "1";
       });
 
+      // Tải và chạy file JS của trang đó
       const script = document.createElement("script");
       script.id = "shot-js";
       script.src = `${path}.js?t=${Date.now()}`;
@@ -280,6 +321,7 @@ class UnimeApp {
     }
   }
 
+  // Đóng/Mở thanh menu bên trái
   handleMainToggle() {
     const isMobile = window.innerWidth <= 1024;
     const overlay = document.getElementById("sidebar-overlay");
@@ -288,6 +330,7 @@ class UnimeApp {
       overlay?.classList.toggle("active", isOpen);
     } else {
       this.sidebar.classList.toggle("collapsed");
+      // Lưu trạng thái mini/full để lần sau mở lại đúng như vậy
       localStorage.setItem(
         CONFIG.SIDEBAR_KEY,
         this.sidebar.classList.contains("collapsed") ? "mini" : "full",
@@ -295,17 +338,20 @@ class UnimeApp {
     }
   }
 
+  // Khôi phục trạng thái sidebar từ bộ nhớ
   restoreSidebarState() {
     if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === "mini")
       this.sidebar.classList.add("collapsed");
   }
 
+  // Hiện/Ẩn mật khẩu (UID) ở màn hình đăng nhập
   togglePassword() {
     const input = document.getElementById("login-uid");
     input.type = input.type === "password" ? "text" : "password";
     document.getElementById("togglePassword").classList.toggle("fa-eye");
   }
 
+  // Xử lý các click vào ảnh để xem ảnh lớn (Lightbox)
   handleGlobalClicks(e) {
     if (
       e.target.tagName === "IMG" &&
@@ -325,6 +371,7 @@ class UnimeApp {
     }
   }
 
+  // Kiểm tra quyền ngầm (không làm gián đoạn người dùng)
   async silentCheckAuth(uid) {
     try {
       const res = await fetch(`${CONFIG.GGS_URL}?action=getRole&uid=${uid}`);
@@ -346,10 +393,10 @@ class UnimeApp {
     location.reload();
   }
 }
-
-// Áp toàn bộ style dành cho xuất PNG lên một #content-area (bản thật đã clone).
-// Dùng chung cho cả bước ĐO chiều cao (offscreen) và bước VẼ (onclone) để
-// hai bước không bao giờ lệch nhau -> không bị mất dòng ở cuối bảng.
+/**
+ * HÀM HỖ TRỢ XUẤT ẢNH PNG
+ * Áp dụng các style đặc biệt để khi chụp ảnh bảng không bị lỗi layout
+ */
 function applyPngExportStyles(contentEl, tableW, finalW) {
   // 1. Ép container giãn hết & không cắt nội dung
   contentEl.style.setProperty("width", finalW + "px", "important");
@@ -403,8 +450,8 @@ function applyPngExportStyles(contentEl, tableW, finalW) {
     td.style.padding = "8px 10px";
     td.style.lineHeight = "1.4";
 
-    const colsCenter = [1, 2, 4, 8, 9, 10, 11];
-    const colsLeft = [3, 5, 7];
+    const colsCenter = [2,6, 8, 9, 10, 11];  // Các cột cần căn giữa
+    const colsLeft = [1,3,4, 5, 7];
     const colIdx = (i % colCount) + 1;
     if (colsCenter.includes(colIdx)) td.style.textAlign = "center";
     else if (colsLeft.includes(colIdx)) td.style.textAlign = "left";
@@ -417,6 +464,7 @@ function applyPngExportStyles(contentEl, tableW, finalW) {
     });
   });
 
+  // Áp màu trực tiếp cho các nhãn trạng thái (Badge)
   contentEl.querySelectorAll(".status-badge").forEach((badge) => {
     badge.style.display = "inline-block";
     badge.style.borderRadius = "20px";
@@ -439,6 +487,9 @@ function applyPngExportStyles(contentEl, tableW, finalW) {
   });
 }
 
+/**
+ * XỬ LÝ XUẤT PNG
+ */
 async function handleExportPng(btn) {
   // 1. CHỌN VÙNG DỮ LIỆU CHÍNH
   const source =
@@ -544,6 +595,9 @@ async function handleExportPng(btn) {
   }
 }
 
+/**
+ * XỬ LÝ XUẤT PDF
+ */
 async function handleExportPdf(btn) {
   const source =
     document.querySelector(".main-content") ||
