@@ -450,8 +450,8 @@ function applyPngExportStyles(contentEl, tableW, finalW) {
     td.style.padding = "8px 10px";
     td.style.lineHeight = "1.4";
 
-    const colsCenter = [2,6, 8, 9, 10, 11];  // Các cột cần căn giữa
-    const colsLeft = [1,3,4, 5, 7];
+    const colsCenter = [4,7,8];  // Các cột cần căn giữa
+    const colsLeft = [1,2,3,5,6];
     const colIdx = (i % colCount) + 1;
     if (colsCenter.includes(colIdx)) td.style.textAlign = "center";
     else if (colsLeft.includes(colIdx)) td.style.textAlign = "left";
