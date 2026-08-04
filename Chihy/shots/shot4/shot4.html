@@ -1,38 +1,62 @@
-<head>
-    <!-- Nhúng file CSS (nhớ có ../ vì file css ở ngoài) -->
-    <link rel="stylesheet" href="../style.css">
-</head>
-<body>
-        <!-- Phần 1: Execution Roadmap -->
-        <section id="execution-roadmap"> 
-        <div class="section">
-            <img id="myImg" src="assets/images/DashAgenda.png" alt="DashAgenda" style="cursor: zoom-in; width: 100%;">
-            <img id="myImg" src="assets/images/DashSummaryExecutive.png" alt="DashSummaryExecutive" style="cursor: zoom-in; width: 100%;">
-        </div>
-        </section>
-        <!-- Phần 2: Use Case Powerhouse -->
-        <section id="use-case-powerhouse">
-        <div class="section">
-            <img id="myImg" src="assets/images/DashEmployeesProfile.png" alt="DashEmployeesProfile" style="cursor: zoom-in; width: 100%;">
-            <img id="myImg" src="assets/images/DashComplianceanalysis.png" alt="DashComplianceanalysis" style="cursor: zoom-in; width: 100%;">
-             <img id="myImg" src="assets/images/DashDisplayResult.png" alt="DashDisplayResulrt" style="cursor: zoom-in; width: 100%;">
-        </div>
-        </section>
-        <!-- Phần 3: RACI Matrix -->
-        <section id="raci-matrix">
-        <div class="section">
-            <img id="myImg" src="assets/images/DashQcResult.png" alt="DashQcResult" style="cursor: zoom-in; width: 100%;">
-            <img id="myImg" src="assets/images/DashKpiPerformance.png" alt="DashKpiPerformance" style="cursor: zoom-in; width: 100%;">
-        </div>
-        </section>
+<div class="chihy-shot-wrapper">
+    <!-- MAIN CARD -->
+    <div class="chihy-card">
+        <!-- NAV TABS -->
+        <ul class="nav-tabs">
+            <li class="tab-item active" onclick="switchView('tab-list', this)">List</li>
+            <li class="tab-item" onclick="switchView('tab-kanban', this)">Kanban</li>
+            <li class="tab-item" onclick="switchView('tab-gantt', this)">Gantt</li>
+        </ul>
 
-    </div>
-    <!-- Khung Popup (Modal)-->
-    <div id="imageModal" class="modal">
-        <span class="close">&times;</span>
-        <img class="modal-content" id="imgFull">
-        <div id="caption"></div>
+        <div class="tab-content">
+            <div id="tab-list" class="tab-pane active">
+                <!-- FILTER TOOLBAR -->
+                <div class="filter-toolbar">
+                    <div class="filter-group">
+                        <span class="filter-label">Loại ID:</span>
+                        <label class="custom-check">
+                            <input type="checkbox" id="filterParent" checked onchange="renderDigitalTable()">
+                            <span class="checkmark"></span> Task
+                        </label>
+                        <label class="custom-check">
+                            <input type="checkbox" id="filterChild" checked onchange="renderDigitalTable()">
+                            <span class="checkmark"></span> Detail
+                        </label>
+                    </div>
+
+                    <div class="filter-group">
+                        <span class="filter-label">Trạng thái:</span>
+                        <div id="status-filter-container" class="pills-row"></div>
+                    </div>
+
+                    <div class="filter-actions">
+                        <span onclick="clearAllFilters()" class="clear-btn">Clear Filter</span>
+                        <div id="filter-summary" class="summary-text">Hiển thị: 0 dòng</div>
+                    </div>
+                </div>
+
+                <!-- DATA TABLE -->
+                <div class="table-container">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 150px;">Session / A/U</th>
+                                <th style="width: 300px;">Đầu việc & Tiến độ</th>
+                                <th>Nội dung chi tiết</th>
+                                <th style="width: 80px; text-align:center;">Ưu tiên</th>
+                                <th style="width: 320px;">Ghi chú</th>
+                                <th style="width: 100px;">Trạng thái</th>
+                                <th style="width: 120px; text-align:center;">Timeline</th>
+                                <th style="width: 120px; text-align:center;">Thực tế</th>
+                            </tr>
+                        </thead>
+                        <tbody id="digital-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Empty Tabs -->
+            <div id="tab-kanban" class="tab-pane"><div class="empty-view">Chihy Kanban ... </div></div>
+            <div id="tab-gantt" class="tab-pane"><div class="empty-view">Chihy Gantt ... </div></div>
+        </div>
     </div>
 </div>
-<script src="../assets/app.js"></script>
-</body>
