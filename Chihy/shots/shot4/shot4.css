@@ -10,6 +10,35 @@
     --clr-red: #ef4444; --clr-gray: #64748b; --clr-new: #2dd4bf; 
 }
 
+/* Loading Screen Style */
+.loading-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: none; /* Mặc định ẩn */
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    flex-direction: column;
+}
+.loader-content { text-align: center; }
+.spinner {
+    width: 40px; height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--chihy-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.loading-overlay p {
+    color: var(--chihy-blue);
+    font-weight: 600;
+    font-size: 16px;
+    margin: 0;
+}
+
 .chihy-shot-wrapper { font-family: 'Inter', sans-serif; color: var(--text-grey); font-size: 14px; -webkit-font-smoothing: antialiased; }
 
 .shot-title { font-weight: 850; color: var(--chihy-blue); font-size: 24px; margin: 0; letter-spacing: -0.02em; }
