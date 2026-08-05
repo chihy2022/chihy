@@ -394,8 +394,52 @@ class UnimeApp {
   }
 }
 /**
+ * BẢNG MÀU BADGE - dùng chung cho cả PNG và PDF
+ * (áp trực tiếp inline style vì html2canvas đôi khi không đọc đúng
+ * class CSS khi vẽ canvas)
+ */
+const EXPORT_BADGE_COLORS = {
+  "badge-open": "#ca8a04",
+  "badge-process": "#16a34a",
+  "badge-pending": "#dc2626",
+  "badge-done": "#0891b2",
+  "badge-deploy": "#0891b2",
+  "badge-new": "#d39236",
+  "badge-close": "#64748b",
+};
+
+/**
+ * Áp màu trực tiếp cho badge trạng thái - KHÔNG đụng tới display/vertical-align
+ * của các phần tử khác để không làm vỡ layout gốc (flex, wrap...).
+ */
+function applyExportBadgeColors(root) {
+  root.querySelectorAll(".status-badge").forEach((badge) => {
+    badge.style.borderRadius = "20px";
+    badge.style.padding = "3px 10px";
+    badge.style.minWidth = "75px";
+    badge.style.textAlign = "center";
+    badge.style.fontSize = "10px";
+    badge.style.color = "white";
+    badge.style.lineHeight = "1.4";
+    badge.style.whiteSpace = "nowrap";
+    badge.style.border = "1px solid rgba(0,0,0,0.1)";
+    // Không set display ở đây -> giữ nguyên display gốc (inline-block/flex...)
+    // của badge như trên web, tránh vỡ vị trí cạnh title/task-header-flex.
+
+    for (const [cls, color] of Object.entries(EXPORT_BADGE_COLORS)) {
+      if (badge.classList.contains(cls)) {
+        badge.style.backgroundColor = color;
+        break;
+      }
+    }
+  });
+}
+
+/**
  * HÀM HỖ TRỢ XUẤT ẢNH PNG
- * Áp dụng các style đặc biệt để khi chụp ảnh bảng không bị lỗi layout
+ * Chỉ can thiệp phần cần thiết để không cắt/lệch nội dung khi chụp ảnh,
+ * KHÔNG đụng tới display / vertical-align của các phần tử trong ô
+ * để giữ đúng layout như trên web (top-align, wrap 2 dòng, flex...).
  */
 function applyPngExportStyles(contentEl, tableW, finalW) {
   // 1. Ép container giãn hết & không cắt nội dung
@@ -407,7 +451,7 @@ function applyPngExportStyles(contentEl, tableW, finalW) {
   contentEl.style.setProperty("overflow", "visible", "important");
   contentEl.style.setProperty("margin", "0", "important");
 
-  // 2. Bỏ hiệu ứng gây mờ/lệch
+  // 2. Bỏ hiệu ứng gây mờ/lệch (an toàn, không ảnh hưởng layout)
   contentEl.querySelectorAll("*").forEach((el) => {
     el.style.transform = "none";
     el.style.transition = "none";
@@ -432,59 +476,36 @@ function applyPngExportStyles(contentEl, tableW, finalW) {
     tbl.style.setProperty("max-width", tableW + "px", "important");
   }
 
-  // 5. Canh lề + padding cho từng ô (thao tác trực tiếp trên DOM)
-  const BADGE_COLORS = {
-    "badge-open": "#ca8a04",
-    "badge-process": "#16a34a",
-    "badge-pending": "#dc2626",
-    "badge-done": "#0891b2",
-    "badge-deploy": "#0891b2",
-    "badge-new": "#d39236",
-    "badge-close": "#64748b",
-  };
+  // 5. Padding/line-height + canh ngang cho từng ô.
+  //    KHÔNG set verticalAlign="middle" (web đang canh TOP, giữ nguyên vậy).
+  //    KHÔNG ép display:inline-block lên children (làm vỡ flex + wrap 2 dòng).
+  //    Tính vị trí cột THEO TỪNG DÒNG (tr.cells) thay vì đếm phẳng toàn bảng,
+  //    vì nếu có dòng nào lệch số ô (loading row, colspan...) đếm phẳng sẽ
+  //    làm lệch cột dây chuyền cho mọi dòng phía sau -> canh sai hàng loạt.
+  const colsCenter = [4, 7, 8]; // Các cột cần căn giữa theo chiều ngang
+  const colsLeft = [1, 2, 3, 5, 6];
 
-  const colCount = contentEl.querySelectorAll("tr")[0]?.cells?.length || 11;
-  contentEl.querySelectorAll("td").forEach((td, i) => {
-    td.style.verticalAlign = "middle";
-    td.style.height = "auto";
-    td.style.padding = "8px 10px";
-    td.style.lineHeight = "1.4";
+  contentEl.querySelectorAll("tr").forEach((tr) => {
+    Array.from(tr.cells).forEach((td, colIdxZeroBased) => {
+      if (td.tagName !== "TD") return; // bỏ qua <th> ở header
+      const colIdx = colIdxZeroBased + 1;
 
-    const colsCenter = [4,7,8];  // Các cột cần căn giữa
-    const colsLeft = [1,2,3,5,6];
-    const colIdx = (i % colCount) + 1;
-    if (colsCenter.includes(colIdx)) td.style.textAlign = "center";
-    else if (colsLeft.includes(colIdx)) td.style.textAlign = "left";
+      td.style.padding = "8px 10px";
+      td.style.lineHeight = "1.4";
+      td.style.whiteSpace = "normal";        // luôn cho phép xuống dòng
+      td.style.overflowWrap = "break-word";  // chỉ ngắt khi thật sự cần,
+      td.style.wordBreak = "normal";         // KHÔNG cắt giữa các badge/số nhỏ như "(3)"
+      // Giữ nguyên vertical-align mặc định của web (top) -> không set gì thêm
 
-    Array.from(td.children).forEach((child) => {
-      if (child.tagName !== "SPAN" && child.tagName !== "A") {
-        child.style.display = "inline-block";
-      }
-      child.style.verticalAlign = "middle";
+      if (colsCenter.includes(colIdx)) td.style.textAlign = "center";
+      else if (colsLeft.includes(colIdx)) td.style.textAlign = "left";
+      else td.style.textAlign = "left"; // mặc định canh trái nếu không rơi vào danh sách trên
+      // Không đụng tới style.display/verticalAlign của các thẻ con bên trong td
     });
   });
 
-  // Áp màu trực tiếp cho các nhãn trạng thái (Badge)
-  contentEl.querySelectorAll(".status-badge").forEach((badge) => {
-    badge.style.display = "inline-block";
-    badge.style.borderRadius = "20px";
-    badge.style.padding = "3px 10px";
-    badge.style.minWidth = "75px";
-    badge.style.textAlign = "center";
-    badge.style.fontSize = "10px";
-    badge.style.color = "white";
-    badge.style.verticalAlign = "middle";
-    badge.style.lineHeight = "1.4";
-    badge.style.whiteSpace = "nowrap";
-    badge.style.border = "1px solid rgba(0,0,0,0.1)";
-
-    for (const [cls, color] of Object.entries(BADGE_COLORS)) {
-      if (badge.classList.contains(cls)) {
-        badge.style.backgroundColor = color;
-        break;
-      }
-    }
-  });
+  // Áp màu cho badge trạng thái
+  applyExportBadgeColors(contentEl);
 }
 
 /**
@@ -511,12 +532,14 @@ async function handleExportPng(btn) {
     const cs = getComputedStyle(source);
     const padL = parseFloat(cs.paddingLeft) || 0;
     const padR = parseFloat(cs.paddingRight) || 0;
-    const finalW = tableW + padL + padR;
+    // Lấy chiều rộng LỚN NHẤT giữa bảng và toàn bộ khối nội dung (gồm cả
+    // thanh filter phía trên bảng). Nếu chỉ dùng chiều rộng bảng, những khối
+    // rộng hơn bảng (như thanh Loại ID / Trạng thái / Clear Filter) sẽ bị ép
+    // hẹp lại, làm chữ trong checkbox "Task"/"Detail" bị đè/chồng lên nhau.
+    const naturalW = Math.ceil(Math.max(source.scrollWidth, source.getBoundingClientRect().width));
+    const finalW = Math.max(tableW + padL + padR, naturalW);
 
     // --- BƯỚC 2: ĐO CHIỀU CAO SAU KHI ĐÃ ÁP STYLE XUẤT (offscreen) ---
-    // Style xuất (padding ô 8px, line-height 1.4...) làm mỗi dòng CAO HƠN lúc
-    // hiển thị. Nếu đo trên DOM gốc rồi crop theo đó -> thiếu chiều cao -> mất
-    // dòng cuối. Vì vậy clone ra ngoài màn hình, áp đúng style rồi đo lại.
     const ghost = source.cloneNode(true);
     ghost.removeAttribute("id"); // tránh trùng id với DOM gốc
     ghostWrap = document.createElement("div");
@@ -622,7 +645,7 @@ async function handleExportPdf(btn) {
           clonedDoc.querySelector(".main-content") ||
           clonedDoc.getElementById("content-area");
 
-        // Ép hiện rõ 100% (Fix mờ nhạt)
+        // Ép hiện rõ 100% (Fix mờ nhạt) - không đụng display/vertical-align
         clonedSource.querySelectorAll("*").forEach((el) => {
           el.style.opacity = "1";
           el.style.transition = "none";
@@ -650,53 +673,18 @@ async function handleExportPdf(btn) {
               `;
         clonedDoc.head.appendChild(style);
 
-        // THAO TÁC TRỰC TIẾP TRÊN DOM — đáng tin cậy hơn inject CSS với html2canvas
-        const BADGE_COLORS = {
-          "badge-open": "#ca8a04",
-          "badge-process": "#16a34a",
-          "badge-pending": "#dc2626",
-          "badge-done": "#0891b2",
-          "badge-deploy": "#0891b2",
-          "badge-new": "#d39236",
-          "badge-close": "#64748b",
-        };
-
+        // Padding/line-height + wrap cho các ô — KHÔNG ép vertical-align
+        // hay display của children (giữ đúng layout top-align + flex như web)
         clonedSource.querySelectorAll("td").forEach((td) => {
-          // Canh giữa dọc trực tiếp trên td
-          td.style.verticalAlign = "middle";
-          td.style.height = "auto";
-
-          // Ép wrapper trực tiếp bên trong td thành inline-block để vertical-align hoạt động
-          Array.from(td.children).forEach((child) => {
-            if (child.tagName !== "SPAN" && child.tagName !== "A") {
-              child.style.display = "inline-block";
-            }
-            child.style.verticalAlign = "middle";
-          });
+          td.style.padding = "8px 10px";
+          td.style.lineHeight = "1.4";
+          td.style.whiteSpace = "normal";
+          td.style.overflowWrap = "break-word"; // chỉ ngắt khi cần
+          td.style.wordBreak = "normal";         // không cắt giữa badge/số nhỏ như "(3)"
         });
 
-        clonedSource.querySelectorAll(".status-badge").forEach((badge) => {
-          // Áp style trực tiếp — bypass html2canvas CSS specificity issue
-          badge.style.display = "inline-block";
-          badge.style.borderRadius = "20px";
-          badge.style.padding = "3px 10px";
-          badge.style.minWidth = "75px";
-          badge.style.textAlign = "center";
-          badge.style.fontSize = "10px";
-          badge.style.color = "white";
-          badge.style.verticalAlign = "middle";
-          badge.style.lineHeight = "1.4";
-          badge.style.whiteSpace = "nowrap";
-          badge.style.border = "1px solid rgba(0,0,0,0.1)";
-
-          // Áp màu nền trực tiếp theo class
-          for (const [cls, color] of Object.entries(BADGE_COLORS)) {
-            if (badge.classList.contains(cls)) {
-              badge.style.backgroundColor = color;
-              break;
-            }
-          }
-        });
+        // Áp màu badge trạng thái (bypass html2canvas CSS specificity issue)
+        applyExportBadgeColors(clonedSource);
       },
     });
 
