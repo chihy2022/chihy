@@ -88,3 +88,68 @@
 .bg-orange { background: var(--clr-open); } .bg-red { background: var(--clr-red); } .bg-gray { background: var(--clr-gray); } .bg-new {background:var(--clr-new);}
 
 .empty-view { padding: 150px; text-align: center; color: #cbd5e1; font-size: 20px; font-weight: 700; }
+
+/* Nút toggle đóng mở dòng con */
+.toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--chihy-blue);
+    margin-right: 8px;
+    transition: all 0.2s;
+}
+.toggle-btn:hover {
+    background: var(--chihy-blue);
+    color: white;
+}
+.toggle-btn.collapsed {
+    background: #e2e8f0;
+}
+
+/* Hiệu ứng ẩn dòng */
+.row-child.is-hidden {
+    display: none;
+}
+/* Container tiêu đề để chứa text và badge số lượng */
+.task-header-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Đẩy số lượng sang bên phải */
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+/* Style cho số lượng con (6) giống trong hình */
+.count-badge {
+    background: #f0f7ff;
+    border: 1px solid #d1e5ff;
+    color: #0071c5;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+/* Hiệu ứng khi rê chuột vào dòng cha */
+.row-parent {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.row-parent:hover {
+    background-color: #f8fafc;
+}
+
+/* Icon chỉ hướng đóng mở (tùy chọn thêm cho chuyên nghiệp) */
+.toggle-icon {
+    font-size: 10px;
+    margin-right: 5px;
+    color: #94a3b8;
+}

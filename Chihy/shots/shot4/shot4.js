@@ -60,58 +60,112 @@ function clearAllFilters() {
     renderDigitalTable();
 }
 
+// Biến lưu trạng thái các dòng đang bị đóng
+let collapsedParents = new Set(); 
+
 function renderDigitalTable() {
     const tbody = document.getElementById('digital-table-body');
     const showParent = document.getElementById('filterParent').checked;
     const showChild = document.getElementById('filterChild').checked;
-    let html = ""; let count = 0;
-    let lastParentSession = ""; let lastParentAU = ""; let lastParentTopic = "";
-
+    
     if(!window.digitalData) return;
 
+    // BƯỚC 1: Đếm số lượng con của từng cha
+    const childCounts = {};
+    window.digitalData.forEach(item => {
+        const idStr = item.taskId.toString();
+        if (idStr.includes('_')) {
+            const parentId = idStr.split('_')[0]; // Lấy "Task2" từ "Task2_01"
+            childCounts[parentId] = (childCounts[parentId] || 0) + 1;
+        }
+    });
+
+    let html = ""; let countRows = 0;
+    let lastParentSession = ""; let lastParentAU = "";
+
     window.digitalData.forEach((item) => {
-        const isChild = item.taskId.toString().includes('_');
-        if (!isChild) { lastParentSession = item.session; lastParentAU = item.au; lastParentTopic = item.topic; }
-        
+        const idStr = item.taskId.toString();
+        const isChild = idStr.includes('_');
+        const parentId = isChild ? idStr.split('_')[0] : idStr;
+
+        // Lưu thông tin cha để hiển thị cho con nếu cần
+        if (!isChild) { 
+            lastParentSession = item.session; 
+            lastParentAU = item.au; 
+        }
+
+        // Logic lọc Task/Detail và Trạng thái
         const st = item.status.toLowerCase();
         if (!isChild && !showParent) return;
         if (isChild && !showChild) return;
         const isStatusMatch = activeStatuses.some(s => st.includes(s));
         if (!isStatusMatch && activeStatuses.length > 0) return;
 
-        count++;
-        const sToPass = (isChild && !showParent) ? lastParentSession : (isChild ? "" : item.session);
-        const aToPass = (isChild && !showParent) ? lastParentAU : (isChild ? "" : item.au);
-        const tToPass = (isChild && !showParent) ? lastParentTopic : "";
-        html += renderRow(item, isChild, sToPass, aToPass, tToPass); 
+        // CHỨC NĂNG ẨN/HIỆN: Nếu cha đang đóng thì không render con
+        if (isChild && collapsedParents.has(parentId)) return;
+
+        countRows++;
+        const numChildren = childCounts[idStr] || 0; // Lấy số lượng con nếu là dòng cha
+
+        html += renderRowCustom(item, isChild, lastParentSession, lastParentAU, numChildren); 
     });
+
     tbody.innerHTML = html;
-    document.getElementById('filter-summary').innerText = `Hiển thị: ${count} dòng`;
+    document.getElementById('filter-summary').innerText = `Hiển thị: ${countRows} dòng`;
 }
 
-function renderRow(item, isChild, session, au, parentTopic) {
-    const st = item.status.toLowerCase();
-    let colorClass = "st-orange"; let bgClass = "bg-orange";
+    function renderRowCustom(item, isChild, session, au, numChildren) {
+        const st = item.status.toLowerCase();
+        const idStr = item.taskId.toString();
+        
+        let colorClass = "st-orange"; let bgClass = "bg-orange";
+        if (st.includes('done') || st.includes('build') || st.includes('close')) { 
+            colorClass = st.includes('close') ? "st-gray" : "st-blue"; 
+            bgClass = st.includes('close') ? "bg-gray" : "bg-blue"; 
+        } else if (st.includes('process')) { colorClass = "st-green"; bgClass = "bg-green"; }
+        else if (st.includes('pending')) { colorClass = "st-red"; bgClass = "bg-red"; }
+        else if (st.includes('new')) { colorClass = "st-new"; bgClass = "bg-new"; }
 
-    if (st.includes('done') || st.includes('build')) { colorClass = "st-blue"; bgClass = "bg-blue"; }
-    else if (st.includes('process')) { colorClass = "st-green"; bgClass = "bg-green"; }
-    else if (st.includes('pending')) { colorClass = "st-red"; bgClass = "bg-red"; }
-    else if (st.includes('close')) { colorClass = "st-gray"; bgClass = "bg-gray"; }
-    else if (st.includes('new')) { colorClass = "st-new"; bgClass = "bg-new"; }
-    return `
-    <tr class="${isChild ? 'row-child' : 'row-parent'} ${colorClass}">
-        <td><div style="font-weight:700; color:var(--chihy-blue);">${session}</div><div style="font-size:10px">${au}</div></td>
-        <td class="${isChild ? 'tree-node-cell' : ''}">
-            ${parentTopic ? `<div style="font-size:10px; color:#cbd5e1; font-weight:700;">${parentTopic}</div>` : ''}
-            <span class="task-title">${item.topic || ''}</span>
-            <div style="display:flex; align-items:center;"><span class="id-tag">${item.taskId}</span><span class="progress-text">${item.progress || ''}</span></div>
-        </td>
-        <td style="white-space: pre-wrap; ">${item.content || ''}</td>
-        <td >${item.priority || ''}</td>
-        <td style="white-space: pre-wrap; ">${item.note || ''}</td>
-        <td><div class="status-chip ${bgClass}">${item.status}</div></td>
-        <td >${item.timeline || ''}</td>
-        <td >${item.actual || ''}</td>
-    </tr>`;
-}
+        // Xử lý hiển thị badge số lượng (6)
+        const countBadge = (!isChild && numChildren > 0) 
+            ? `<span class="count-badge">(${numChildren})</span>` 
+            : '';
+
+        // Thêm sự kiện click cho dòng cha
+        const rowAttr = !isChild ? `onclick="toggleParent('${idStr}')"` : '';
+
+        return `
+        <tr class="${isChild ? 'row-child' : 'row-parent'} ${colorClass}" ${rowAttr}>
+            <td>
+                <div style="font-weight:700; color:var(--chihy-blue);">${isChild ? '' : session}</div>
+                <div style="font-size:10px">${isChild ? '' : au}</div>
+            </td>
+            <td class="${isChild ? 'tree-node-cell' : ''}">
+                <div class="task-header-flex">
+                    <span class="task-title">${item.topic || ''}</span>
+                    ${countBadge}
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <span class="id-tag">${item.taskId}</span>
+                    <span class="progress-text">${item.progress || ''}</span>
+                </div>
+            </td>
+            <td style="white-space: pre-wrap;">${item.content || ''}</td>
+            <td>${item.priority || ''}</td>
+            <td style="white-space: pre-wrap;">${item.note || ''}</td>
+            <td><div class="status-chip ${bgClass}">${item.status}</div></td>
+            <td>${item.timeline || ''}</td>
+            <td>${item.actual || ''}</td>
+        </tr>`;
+    }
+
+    // Hàm xử lý đóng mở khi click vào dòng
+    function toggleParent(parentId) {
+        if (collapsedParents.has(parentId)) {
+            collapsedParents.delete(parentId);
+        } else {
+            collapsedParents.add(parentId);
+        }
+        renderDigitalTable(); // Vẽ lại bảng để áp dụng ẩn/hiện
+    }
 shotDigitalInit();
