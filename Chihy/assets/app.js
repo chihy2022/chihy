@@ -536,29 +536,24 @@ function applyPngExportStyles(contentEl, finalW, colWidths) {
   const tbl = contentEl.querySelector("table");
   lockTableColumnWidths(tbl, colWidths);
 
-  // 5. Padding/line-height + canh ngang cho từng ô.
+  // 5. Padding/line-height cho từng ô.
   //    KHÔNG set verticalAlign="middle" (web đang canh TOP, giữ nguyên vậy).
   //    KHÔNG ép display:inline-block lên children (làm vỡ flex + wrap 2 dòng).
-  const colsCenter = [4, 7, 8]; // Các cột cần căn giữa theo chiều ngang
-  const colsLeft = [1, 2, 3, 5, 6];
-
+  //    KHÔNG ép text-align theo index cột cố định nữa: mỗi "shot" có cấu
+  //    trúc cột khác nhau, hard-code theo index (vd cột 4,7,8) chỉ đúng cho
+  //    1 bảng cụ thể và làm SAI lệch bảng khác (vd cột "MÔ TẢ" bị ép canh
+  //    giữa dù web để canh trái). Luôn tôn trọng text-align mà web đã set
+  //    sẵn cho từng ô/cột.
   contentEl.querySelectorAll("tr").forEach((tr) => {
-    Array.from(tr.cells).forEach((td, colIdxZeroBased) => {
+    Array.from(tr.cells).forEach((td) => {
       if (td.tagName !== "TD") return; // bỏ qua <th> ở header
-      const colIdx = colIdxZeroBased + 1;
 
       td.style.padding = "8px 10px";
       td.style.lineHeight = "1.4";
-      // KHÔNG set white-space ở đây -> giữ nguyên "pre-wrap" mà bạn đã set sẵn
-      // cho một số cột (để giữ đúng xuống dòng thủ công). pre-wrap vốn đã
-      // cho phép wrap bình thường, không cần ép về "normal".
+      // KHÔNG set white-space -> giữ nguyên "pre-wrap" đã set sẵn cho 1 số cột
       td.style.overflowWrap = "break-word";  // chỉ ngắt khi thật sự cần
       td.style.wordBreak = "normal";         // KHÔNG cắt giữa badge/số nhỏ như "(3)"
-      // Giữ nguyên vertical-align mặc định của web (top) -> không set gì thêm
-
-      if (colsCenter.includes(colIdx)) td.style.textAlign = "center";
-      else td.style.textAlign = "left";
-      // Không đụng tới style.display/verticalAlign của các thẻ con bên trong td
+      // Giữ nguyên vertical-align và text-align mặc định của web -> không set gì thêm
     });
   });
 
