@@ -16,9 +16,9 @@
 
 <div class="chihy-shot-wrapper">
     <div class="chihy-card">
-        <ul class="nav-tabs">
+        <!-- <ul class="nav-tabs">
             <li class="tab-item active">List</li>
-        </ul>
+        </ul> -->
 
         <div class="tab-content">
             <div id="tab-list" class="tab-pane active">
@@ -26,11 +26,13 @@
                     <div class="filter-group">
                         <span class="filter-label">Loại ID:</span>
                         <label class="custom-check">
-                            <input type="checkbox" id="filterParent" checked onchange="renderDigitalTable()">
+                            <!-- Thêm disabled để không cho bỏ tick Task -->
+                            <input type="checkbox" id="filterParent" checked disabled> 
                             <span class="checkmark"></span> Task
                         </label>
                         <label class="custom-check">
-                            <input type="checkbox" id="filterChild" checked onchange="renderDigitalTable()">
+                            <!-- Đổi sang hàm handleGlobalDetail khi thay đổi trạng thái Detail -->
+                            <input type="checkbox" id="filterChild" onchange="handleGlobalDetail(this)">
                             <span class="checkmark"></span> Detail
                         </label>
                     </div>

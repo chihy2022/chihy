@@ -28,7 +28,7 @@
 .filter-label { font-size: 12px; color: var(--text-muted); }
 
 .custom-check { font-size: 12px; position: relative; padding-left: 26px; cursor: pointer; display: inline-flex; align-items: center; color: var(--text-dark); }
-.custom-check input { position: absolute; opacity: 0; }
+.custom-check input { position: absolute; opacity: 0; pointer-events: none; }
 .checkmark { position: absolute; left: 0; height: 18px; width: 18px; border: 2px solid #e2e8f0; border-radius: 4px; background: #fff; }
 .custom-check input:checked ~ .checkmark { background: var(--chihy-blue); border-color: var(--chihy-blue); }
 .custom-check input:checked ~ .checkmark:after { content: "✓"; position: absolute; color: white; font-size: 12px; left: 3px; top: -1px; }
@@ -50,6 +50,35 @@
 .modern-table th { padding: 15px 10px; font-size: 12px; color: var(--text-muted); text-align: left; }
 .modern-table td { padding: 5px 15px; border-bottom: 1px solid var(--border-soft); vertical-align: top; line-height: 1.6; }
 
+/* 1. Làm đậm đường kẻ phân cách cho dòng CHA */
+.modern-table .row-parent td {
+    /* Thay đổi màu từ #f1f5f9 (rất nhạt) sang màu xám đậm hơn một chút */
+    border-bottom: 2px solid #e2e8f0 !important; 
+    
+    /* Tăng độ giãn cách (padding) để dòng cha trông "thoát" hơn, tạo cảm giác phân nhóm tốt hơn */
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+
+}
+
+/* 2. Giữ cho đường kẻ của dòng CON thật nhạt để không làm rối mắt */
+.modern-table .row-child td {
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+/* 3. Tạo khoảng cách rõ rệt hơn khi kết thúc một Group con */
+/* Giúp phân biệt ranh giới giữa cuối Group này và đầu Group kia */
+.row-child:last-child td {
+    border-bottom: 2px solid #cbd5e1 !important; /* Đường kẻ kết thúc Group đậm nhất */
+}
+
+/* 4. Hiệu ứng khi rê chuột vào dòng cha sẽ đậm hơn để định vị */
+.row-parent:hover td {
+    background-color: #f1f5f9 !important;
+}
+
 /* Tô màu border bên trái cho dòng cha */
 .row-parent td:first-child { border-left: 3px solid transparent; }
 .row-parent.st-blue td:first-child { border-left-color: var(--clr-done); }
@@ -69,7 +98,7 @@
 .row-child:last-child .tree-node-cell::before { height: 48px; }
 
 /* ID TAG OUTLINE */
-.id-tag { display: inline-flex; padding: 2px 10px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 10px; color: var(--text-muted); margin-right: 8px; background: #fff; }
+.id-tag { display: inline-flex; padding: 2px 10px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 10px; color: var(--text-muted); margin-right: 8px; }
 
 /* TASK TEXT STYLES */
 .task-title { font-weight: 500; color: #1e293b; display: block; margin-bottom: 4px; font-size: 14px; }
@@ -152,4 +181,28 @@
     font-size: 10px;
     margin-right: 5px;
     color: #94a3b8;
+}
+
+/* Thiết lập các nhóm màu Group dựa trên trạng thái CHA */
+/* Blue - Done/Build */
+.group-active-done { background-color: #f0f7ff !important; border-left: 3px solid #0071c5 !important; }
+/* Green - Process */
+.group-active-process { background-color: #f0fdf4 !important; border-left: 3px solid #10b981 !important; }
+/* Orange - Open/Triển khai */
+.group-active-open { background-color: #fffaf0 !important; border-left: 3px solid #f97316 !important; }
+/* Red - Pending */
+.group-active-pending { background-color: #fef2f2 !important; border-left: 3px solid #ef4444 !important; }
+/* Gray - Close */
+.group-active-close { background-color: #f8fafc !important; border-left: 3px solid #64748b !important; }
+/* Teal - New */
+.group-active-new { background-color: #f0fdfa !important; border-left: 3px solid #2dd4bf !important; }
+
+/* Đảm bảo các ô con không bị đè nền trắng/xám mặc định */
+tr.row-child.expanded-group-row td {
+    background-color: transparent !important;
+}
+
+/* Ẩn border mặc định khi đã có group border */
+.expanded-group-row td:first-child {
+    border-left: none !important; 
 }
