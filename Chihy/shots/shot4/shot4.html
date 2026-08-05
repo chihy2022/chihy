@@ -1,16 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Transformation - Unime System</title>
+    
+    <!-- Link CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Thư viện jQuery (BẮT BUỘC ĐỂ CHẠY ĐƯỢC JS) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
 <div class="chihy-shot-wrapper">
-    <!-- MAIN CARD -->
     <div class="chihy-card">
-        <!-- NAV TABS -->
         <ul class="nav-tabs">
-            <li class="tab-item active" onclick="switchView('tab-list', this)">List</li>
-            <li class="tab-item" onclick="switchView('tab-kanban', this)">Kanban</li>
-            <li class="tab-item" onclick="switchView('tab-gantt', this)">Gantt</li>
+            <li class="tab-item active">List</li>
         </ul>
 
         <div class="tab-content">
             <div id="tab-list" class="tab-pane active">
-                <!-- FILTER TOOLBAR -->
                 <div class="filter-toolbar">
                     <div class="filter-group">
                         <span class="filter-label">Loại ID:</span>
@@ -31,11 +42,10 @@
 
                     <div class="filter-actions">
                         <span onclick="clearAllFilters()" class="clear-btn">Clear Filter</span>
-                        <div id="filter-summary" class="summary-text">Hiển thị: 0 dòng</div>
+                        <div id="filter-summary" class="summary-text">Đang tải dữ liệu...</div>
                     </div>
                 </div>
 
-                <!-- DATA TABLE -->
                 <div class="table-container">
                     <table class="modern-table">
                         <thead>
@@ -43,20 +53,24 @@
                                 <th style="width: 150px;">Session / A/U</th>
                                 <th style="width: 300px;">Đầu việc & Tiến độ</th>
                                 <th>Nội dung chi tiết</th>
-                                <th style="width: 80px; text-align:center;">Ưu tiên</th>
-                                <th style="width: 320px;">Ghi chú</th>
+                                <th style="width: 80px;">Ưu tiên</th>
+                                <th style="width: 250px;">Ghi chú</th>
                                 <th style="width: 100px;">Trạng thái</th>
-                                <th style="width: 130px; text-align:center;">Timeline</th>
-                                <th style="width: 130px; text-align:center;">Thực tế</th>
+                                <th style="width: 110px;">Timeline</th>
+                                <th style="width: 110px;">Thực tế</th>
                             </tr>
                         </thead>
-                        <tbody id="digital-table-body"></tbody>
+                        <tbody id="digital-table-body">
+                            <!-- Dữ liệu sẽ tự động đổ vào đây -->
+                        </tbody>
                     </table>
                 </div>
             </div>
-            <!-- Empty Tabs -->
-            <div id="tab-kanban" class="tab-pane"><div class="empty-view">Chihy Kanban ... </div></div>
-            <div id="tab-gantt" class="tab-pane"><div class="empty-view">Chihy Gantt ... </div></div>
         </div>
     </div>
 </div>
+
+<!-- Link JS -->
+<script src="script.js"></script>
+</body>
+</html>

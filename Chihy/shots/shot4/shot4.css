@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
     --chihy-blue: #0071c5;
@@ -51,7 +50,14 @@
 .modern-table th { padding: 15px 10px; font-size: 12px; color: var(--text-muted); text-align: left; }
 .modern-table td { padding: 5px 15px; border-bottom: 1px solid var(--border-soft); vertical-align: top; line-height: 1.6; }
 
-.row-parent td:first-child { border-left: 5px solid var(--chihy-blue); }
+/* Tô màu border bên trái cho dòng cha */
+.row-parent td:first-child { border-left: 3px solid transparent; }
+.row-parent.st-blue td:first-child { border-left-color: var(--clr-done); }
+.row-parent.st-green td:first-child { border-left-color: var(--clr-process); }
+.row-parent.st-orange td:first-child { border-left-color: var(--clr-open); }
+.row-parent.st-red td:first-child { border-left-color: var(--clr-red); }
+.row-parent.st-gray td:first-child { border-left-color: var(--clr-gray); }
+.row-parent.st-new td:first-child { border-left-color: var(--clr-new); }
 .row-parent td { font-size: 14px; color: #1e293b; font-weight: 500; }
 .row-child td { background: #fcfdfe; font-size: 12px; color: var(--text-grey); }
 

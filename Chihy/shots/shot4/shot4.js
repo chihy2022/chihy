@@ -107,7 +107,7 @@ function renderRow(item, isChild, session, au, parentTopic) {
             <div style="display:flex; align-items:center;"><span class="id-tag">${item.taskId}</span><span class="progress-text">${item.progress || ''}</span></div>
         </td>
         <td style="white-space: pre-wrap; ">${item.content || ''}</td>
-        <td style="text-align:center;" >${item.priority || ''}</td>
+        <td >${item.priority || ''}</td>
         <td style="white-space: pre-wrap; ">${item.note || ''}</td>
         <td><div class="status-chip ${bgClass}">${item.status}</div></td>
         <td >${item.timeline || ''}</td>
