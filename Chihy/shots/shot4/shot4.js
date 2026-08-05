@@ -159,83 +159,88 @@
         renderDigitalTable();
     }
 
-    function renderDigitalTable() {
-        const tbody = document.getElementById('digital-table-body');
-        const filterParentEl = document.getElementById('filterParent');
-        if (!tbody || !filterParentEl || !window.digitalData) return;
+function renderDigitalTable() {
+    const tbody = document.getElementById('digital-table-body');
+    const filterParentEl = document.getElementById('filterParent');
+    if (!tbody || !filterParentEl || !window.digitalData) return;
 
-        const showParentFilter = filterParentEl.checked;
+    const showParentFilter = filterParentEl.checked;
 
-        const rows = [];
-        let displayCount = 0;
-        let lastParentSession = "";
-        let lastParentAU = "";
+    const rows = [];
+    let displayCount = 0;
+    let lastParentSession = "";
+    let lastParentAU = "";
+    const groupHeaderRendered = new Set(); // các parentId đã hiển thị Session/A/U
 
-        window.digitalData.forEach((item) => {
-            const isChild = item.taskId.includes('_');
-            const parentId = isChild ? item.taskId.split('_')[0] : item.taskId;
-
-            if (!isChild) {
-                lastParentSession = item.session;
-                lastParentAU = item.au;
-            }
-
-            if (isChild) {
-                if (collapsedParents.has(parentId)) return;
-            } else {
-                if (!showParentFilter) return;
-            }
-
-            if (activeStatuses.length > 0 && !activeStatuses.some(s => item.status.includes(s))) return;
-
-            displayCount++;
-            const pStatus = parentStatusMap[parentId] || 'open';
-            const numChildren = childCounts[item.taskId] || 0;
-
-            rows.push(renderRowTemplate(item, isChild, lastParentSession, lastParentAU, numChildren, pStatus));
-        });
-
-        tbody.innerHTML = rows.join('');
-        const summaryEl = document.getElementById('filter-summary');
-        if (summaryEl) summaryEl.innerText = `Hiển thị: ${displayCount} dòng`;
-    }
-
-    function renderRowTemplate(item, isChild, session, au, numChildren, pStatus) {
+    window.digitalData.forEach((item) => {
+        const isChild = item.taskId.includes('_');
         const parentId = isChild ? item.taskId.split('_')[0] : item.taskId;
-        const isExpanded = !collapsedParents.has(parentId);
-        const isInGroup = isExpanded && (isChild || numChildren > 0);
 
-        const pConf = Object.entries(COLOR_MAP).find(([key]) => pStatus.includes(key))?.[1] || COLOR_MAP.default;
-        const sConf = Object.entries(COLOR_MAP).find(([key]) => item.status.includes(key))?.[1] || COLOR_MAP.default;
+        if (!isChild) {
+            lastParentSession = item.session;
+            lastParentAU = item.au;
+        }
 
-        const finalBorderClass = isInGroup ? pConf.border : sConf.border;
-        const groupBgClass = isInGroup ? `${pConf.bg} expanded-group-row` : "";
+        if (isChild) {
+            if (collapsedParents.has(parentId)) return;
+        } else {
+            if (!showParentFilter) return;
+        }
 
-        return `
-        <tr class="${isChild ? 'row-child' : 'row-parent'} ${finalBorderClass} ${groupBgClass}" 
-            ${!isChild ? `onclick="toggleParent('${item.taskId}')"` : ''}>
-            <td>
-                <div style="font-weight:700; color:var(--chihy-blue);">${(isChild && isInGroup) ? '' : session}</div>
-                <div style="font-size:10px">${(isChild && isInGroup) ? '' : au}</div>
-            </td>
-            <td class="${isChild ? 'tree-node-cell' : ''}">
-                <div class="task-header-flex">
-                    <span class="task-title">${item.topic || ''}</span>
-                    ${(!isChild && numChildren > 0) ? `<span class="count-badge">(${numChildren})</span>` : ''}
-                </div>
-                <div style="display:flex; align-items:center;">
-                    <span class="id-tag">${item.taskId}</span>
-                    <span class="progress-text">${item.progress || ''}</span>
-                </div>
-            </td>
-            <td style="white-space: pre-wrap;">${item.content || ''}</td>
-            <td>${item.priority || ''}</td>
-            <td style="white-space: pre-wrap;">${item.note || ''}</td>
-            <td><div class="status-chip ${sConf.chip}">${item.status}</div></td>
-            <td>${item.timeline || ''}</td>
-            <td>${item.actual || ''}</td>
-        </tr>`;
-    }
+        if (activeStatuses.length > 0 && !activeStatuses.some(s => item.status.includes(s))) return;
+
+        displayCount++;
+        const pStatus = parentStatusMap[parentId] || 'open';
+        const numChildren = childCounts[item.taskId] || 0;
+
+        // Dòng này có phải là dòng đầu tiên của group được vẽ ra không?
+        const showHeader = !groupHeaderRendered.has(parentId);
+        if (showHeader) groupHeaderRendered.add(parentId);
+
+        rows.push(renderRowTemplate(item, isChild, lastParentSession, lastParentAU, numChildren, pStatus, showHeader));
+    });
+
+    tbody.innerHTML = rows.join('');
+    const summaryEl = document.getElementById('filter-summary');
+    if (summaryEl) summaryEl.innerText = `Hiển thị: ${displayCount} dòng`;
+}
+
+function renderRowTemplate(item, isChild, session, au, numChildren, pStatus, showHeader) {
+    const parentId = isChild ? item.taskId.split('_')[0] : item.taskId;
+    const isExpanded = !collapsedParents.has(parentId);
+    const isInGroup = isExpanded && (isChild || numChildren > 0);
+
+    const pConf = Object.entries(COLOR_MAP).find(([key]) => pStatus.includes(key))?.[1] || COLOR_MAP.default;
+    const sConf = Object.entries(COLOR_MAP).find(([key]) => item.status.includes(key))?.[1] || COLOR_MAP.default;
+
+    const finalBorderClass = isInGroup ? pConf.border : sConf.border;
+    const groupBgClass = isInGroup ? `${pConf.bg} expanded-group-row` : "";
+
+    return `
+    <tr class="${isChild ? 'row-child' : 'row-parent'} ${finalBorderClass} ${groupBgClass}" 
+        ${!isChild ? `onclick="toggleParent('${item.taskId}')"` : ''}>
+        <td>
+            <div style="font-weight:700; color:var(--chihy-blue);">${showHeader ? session : ''}</div>
+            <div style="font-size:10px">${showHeader ? au : ''}</div>
+        </td>
+        <td class="${isChild ? 'tree-node-cell' : ''}">
+            <div class="task-header-flex">
+                <span class="task-title">${item.topic || ''}</span>
+                ${(!isChild && numChildren > 0) ? `<span class="count-badge">(${numChildren})</span>` : ''}
+            </div>
+            <div style="display:flex; align-items:center;">
+                <span class="id-tag">${item.taskId}</span>
+                <span class="progress-text">${item.progress || ''}</span>
+            </div>
+        </td>
+        <td style="white-space: pre-wrap;">${item.content || ''}</td>
+        <td>${item.priority || ''}</td>
+        <td style="white-space: pre-wrap;">${item.note || ''}</td>
+        <td><div class="status-chip ${sConf.chip}">${item.status}</div></td>
+        <td>${item.timeline || ''}</td>
+        <td>${item.actual || ''}</td>
+    </tr>`;
+}
 
     function initStatusFilters() {
         const container = document.getElementById('status-filter-container');

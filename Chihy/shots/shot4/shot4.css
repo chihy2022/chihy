@@ -212,26 +212,26 @@
     color: #94a3b8;
 }
 
-/* Thiết lập các nhóm màu Group dựa trên trạng thái CHA */
-/* Blue - Done/Build */
-.group-active-done { background-color: #f0f7ff !important; border-left: 3px solid #0071c5 !important; }
-/* Green - Process */
-.group-active-process { background-color: #f0fdf4 !important; border-left: 3px solid #10b981 !important; }
-/* Orange - Open/Triển khai */
-.group-active-open { background-color: #fffaf0 !important; border-left: 3px solid #f97316 !important; }
-/* Red - Pending */
-.group-active-pending { background-color: #fef2f2 !important; border-left: 3px solid #ef4444 !important; }
-/* Gray - Close */
-.group-active-close { background-color: #f8fafc !important; border-left: 3px solid #64748b !important; }
-/* Teal - New */
-.group-active-new { background-color: #f0fdfa !important; border-left: 3px solid #2dd4bf !important; }
+/* Thiết lập nền màu Group dựa trên trạng thái CHA (chỉ background, KHÔNG border ở tr) */
+.group-active-done    { background-color: #f0f7ff !important; }
+.group-active-process { background-color: #f0fdf4 !important; }
+.group-active-open    { background-color: #fffaf0 !important; }
+.group-active-pending { background-color: #fef2f2 !important; }
+.group-active-close   { background-color: #f8fafc !important; }
+.group-active-new     { background-color: #f0fdfa !important; }
 
 /* Đảm bảo các ô con không bị đè nền trắng/xám mặc định */
 tr.row-child.expanded-group-row td {
     background-color: transparent !important;
 }
 
-/* Ẩn border mặc định khi đã có group border */
+/* Border màu gán trực tiếp vào TD đầu tiên (không phải TR) để tránh bị border-collapse gộp/lem giữa các dòng */
 .expanded-group-row td:first-child {
-    border-left: none !important; 
+    border-left: 3px solid transparent !important;
 }
+.expanded-group-row.group-active-done td:first-child    { border-left-color: var(--clr-done) !important; }
+.expanded-group-row.group-active-process td:first-child { border-left-color: var(--clr-process) !important; }
+.expanded-group-row.group-active-open td:first-child    { border-left-color: var(--clr-open) !important; }
+.expanded-group-row.group-active-pending td:first-child { border-left-color: var(--clr-red) !important; }
+.expanded-group-row.group-active-close td:first-child   { border-left-color: var(--clr-gray) !important; }
+.expanded-group-row.group-active-new td:first-child     { border-left-color: var(--clr-new) !important; }
