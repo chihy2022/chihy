@@ -423,8 +423,6 @@ function applyExportBadgeColors(root) {
     badge.style.lineHeight = "1.4";
     badge.style.whiteSpace = "nowrap";
     badge.style.border = "1px solid rgba(0,0,0,0.1)";
-    // Không set display ở đây -> giữ nguyên display gốc (inline-block/flex...)
-    // của badge như trên web, tránh vỡ vị trí cạnh title/task-header-flex.
 
     for (const [cls, color] of Object.entries(EXPORT_BADGE_COLORS)) {
       if (badge.classList.contains(cls)) {
@@ -436,12 +434,78 @@ function applyExportBadgeColors(root) {
 }
 
 /**
- * HÀM HỖ TRỢ XUẤT ẢNH PNG
- * Chỉ can thiệp phần cần thiết để không cắt/lệch nội dung khi chụp ảnh,
- * KHÔNG đụng tới display / vertical-align của các phần tử trong ô
- * để giữ đúng layout như trên web (top-align, wrap 2 dòng, flex...).
+ * Đo độ rộng THẬT của từng cột từ bảng GỐC đang hiển thị trên web
+ * (trước khi bị clone/chỉnh sửa gì cả). Đây là nguồn dữ liệu đáng tin cậy
+ * nhất để tái tạo đúng layout, vì nó phản ánh chính xác cách trình duyệt
+ * đã tính toán độ rộng cột theo nội dung thực tế.
  */
-function applyPngExportStyles(contentEl, tableW, finalW) {
+function measureLiveColumnWidths(liveTable) {
+  const firstRow = liveTable.querySelector("tr");
+  if (!firstRow) return [];
+  return Array.from(firstRow.cells).map((cell) =>
+    Math.ceil(cell.getBoundingClientRect().width),
+  );
+}
+
+/**
+ * Khóa cứng độ rộng từng cột trong bảng (clone) bằng <colgroup> + table-layout:fixed.
+ * Đây là điểm mấu chốt: với table-layout:auto, nội dung dài trong 1 ô có thể
+ * ép cột đó giãn ra và TRÀN LẤN sang cột bên cạnh (đúng lỗi trong ảnh chụp).
+ * table-layout:fixed buộc trình duyệt phải tôn trọng đúng độ rộng cột đã cho,
+ * và bắt buộc nội dung phải xuống dòng bên trong cột thay vì tràn ra ngoài.
+ */
+function lockTableColumnWidths(tbl, colWidths) {
+  if (!tbl || !colWidths || !colWidths.length) return;
+
+  tbl.style.setProperty("table-layout", "fixed", "important");
+
+  let colgroup = tbl.querySelector("colgroup");
+  if (colgroup) colgroup.remove();
+  colgroup = document.createElement("colgroup");
+  colWidths.forEach((w) => {
+    const col = document.createElement("col");
+    col.style.width = w + "px";
+    colgroup.appendChild(col);
+  });
+  tbl.insertBefore(colgroup, tbl.firstChild);
+
+  const totalW = colWidths.reduce((a, b) => a + b, 0);
+  tbl.style.setProperty("width", totalW + "px", "important");
+  tbl.style.setProperty("min-width", totalW + "px", "important");
+  tbl.style.setProperty("max-width", totalW + "px", "important");
+}
+
+/**
+ * Chống trường hợp label chứa checkbox (vd: "Task", "Detail") bị flex-shrink
+ * bóp nhỏ lại khiến chữ chồng lên ô checkbox. Luôn giữ đúng kích thước tự
+ * nhiên của label, bất kể container cha có bị co hẹp hay không.
+ */
+function lockCheckboxLabels(root) {
+  root.querySelectorAll("label").forEach((label) => {
+    if (label.querySelector('input[type="checkbox"]')) {
+      label.style.setProperty("white-space", "nowrap", "important");
+      label.style.setProperty("flex-shrink", "0", "important");
+      label.style.setProperty("display", "inline-flex", "important");
+      label.style.setProperty("align-items", "center", "important");
+    }
+  });
+  // Container cha trực tiếp của các label này (thanh filter) nên cho phép
+  // wrap xuống dòng nếu thật sự không đủ chỗ, thay vì bóp méo/chồng chữ.
+  root.querySelectorAll("label input[type='checkbox']").forEach((input) => {
+    const flexParent = input.closest("label")?.parentElement;
+    if (flexParent) {
+      flexParent.style.setProperty("flex-wrap", "wrap", "important");
+    }
+  });
+}
+
+/**
+ * HÀM HỖ TRỢ XUẤT ẢNH PNG
+ * KHÔNG đụng tới display / vertical-align của các phần tử trong ô để giữ
+ * đúng layout như trên web (top-align, wrap 2 dòng, flex...). Chỉ khóa
+ * đúng độ rộng cột + chống bóp label checkbox.
+ */
+function applyPngExportStyles(contentEl, finalW, colWidths) {
   // 1. Ép container giãn hết & không cắt nội dung
   contentEl.style.setProperty("width", finalW + "px", "important");
   contentEl.style.setProperty("max-width", "none", "important");
@@ -467,21 +531,14 @@ function applyPngExportStyles(contentEl, tableW, finalW) {
     scrollBox.style.setProperty("max-width", "none", "important");
   }
 
-  // 4. Khóa chiều rộng bảng đúng bằng kích thước đo được
-  //    -> tránh table-layout:auto tự giãn thêm làm mất cột bên phải
+  // 4. KHÓA ĐÚNG ĐỘ RỘNG TỪNG CỘT như trên web -> chặn hiện tượng nội dung
+  //    dài tràn lấn sang cột bên cạnh (lỗi trong ảnh chụp gửi trước đó)
   const tbl = contentEl.querySelector("table");
-  if (tbl) {
-    tbl.style.setProperty("width", tableW + "px", "important");
-    tbl.style.setProperty("min-width", tableW + "px", "important");
-    tbl.style.setProperty("max-width", tableW + "px", "important");
-  }
+  lockTableColumnWidths(tbl, colWidths);
 
   // 5. Padding/line-height + canh ngang cho từng ô.
   //    KHÔNG set verticalAlign="middle" (web đang canh TOP, giữ nguyên vậy).
   //    KHÔNG ép display:inline-block lên children (làm vỡ flex + wrap 2 dòng).
-  //    Tính vị trí cột THEO TỪNG DÒNG (tr.cells) thay vì đếm phẳng toàn bảng,
-  //    vì nếu có dòng nào lệch số ô (loading row, colspan...) đếm phẳng sẽ
-  //    làm lệch cột dây chuyền cho mọi dòng phía sau -> canh sai hàng loạt.
   const colsCenter = [4, 7, 8]; // Các cột cần căn giữa theo chiều ngang
   const colsLeft = [1, 2, 3, 5, 6];
 
@@ -492,19 +549,23 @@ function applyPngExportStyles(contentEl, tableW, finalW) {
 
       td.style.padding = "8px 10px";
       td.style.lineHeight = "1.4";
-      td.style.whiteSpace = "normal";        // luôn cho phép xuống dòng
-      td.style.overflowWrap = "break-word";  // chỉ ngắt khi thật sự cần,
-      td.style.wordBreak = "normal";         // KHÔNG cắt giữa các badge/số nhỏ như "(3)"
+      // KHÔNG set white-space ở đây -> giữ nguyên "pre-wrap" mà bạn đã set sẵn
+      // cho một số cột (để giữ đúng xuống dòng thủ công). pre-wrap vốn đã
+      // cho phép wrap bình thường, không cần ép về "normal".
+      td.style.overflowWrap = "break-word";  // chỉ ngắt khi thật sự cần
+      td.style.wordBreak = "normal";         // KHÔNG cắt giữa badge/số nhỏ như "(3)"
       // Giữ nguyên vertical-align mặc định của web (top) -> không set gì thêm
 
       if (colsCenter.includes(colIdx)) td.style.textAlign = "center";
-      else if (colsLeft.includes(colIdx)) td.style.textAlign = "left";
-      else td.style.textAlign = "left"; // mặc định canh trái nếu không rơi vào danh sách trên
+      else td.style.textAlign = "left";
       // Không đụng tới style.display/verticalAlign của các thẻ con bên trong td
     });
   });
 
-  // Áp màu cho badge trạng thái
+  // 6. Chống bóp label checkbox (Task/Detail...)
+  lockCheckboxLabels(contentEl);
+
+  // 7. Áp màu cho badge trạng thái
   applyExportBadgeColors(contentEl);
 }
 
@@ -527,17 +588,20 @@ async function handleExportPng(btn) {
   try {
     await document.fonts.ready;
 
-    // --- BƯỚC 1: ĐO CHIỀU RỘNG THẬT CỦA BẢNG + PADDING ---
-    const tableW = Math.ceil(table.getBoundingClientRect().width);
+    // --- BƯỚC 1: ĐO ĐÚNG ĐỘ RỘNG TỪNG CỘT + TOÀN KHỐI TỪ BẢNG GỐC (LIVE DOM) ---
+    // Đo TRƯỚC khi clone/chỉnh sửa bất cứ thứ gì, vì đây là số liệu chuẩn
+    // nhất phản ánh đúng những gì đang hiển thị trên web.
+    const colWidths = measureLiveColumnWidths(table);
+    const tableW = colWidths.reduce((a, b) => a + b, 0) || Math.ceil(table.getBoundingClientRect().width);
     const cs = getComputedStyle(source);
     const padL = parseFloat(cs.paddingLeft) || 0;
     const padR = parseFloat(cs.paddingRight) || 0;
     // Lấy chiều rộng LỚN NHẤT giữa bảng và toàn bộ khối nội dung (gồm cả
-    // thanh filter phía trên bảng). Nếu chỉ dùng chiều rộng bảng, những khối
-    // rộng hơn bảng (như thanh Loại ID / Trạng thái / Clear Filter) sẽ bị ép
-    // hẹp lại, làm chữ trong checkbox "Task"/"Detail" bị đè/chồng lên nhau.
+    // thanh filter phía trên bảng), cộng thêm buffer an toàn để tránh sai số
+    // đo lường làm bóp thanh filter (checkbox Task/Detail bị đè chữ).
     const naturalW = Math.ceil(Math.max(source.scrollWidth, source.getBoundingClientRect().width));
-    const finalW = Math.max(tableW + padL + padR, naturalW);
+    const BUFFER = 32;
+    const finalW = Math.max(tableW + padL + padR, naturalW) + BUFFER;
 
     // --- BƯỚC 2: ĐO CHIỀU CAO SAU KHI ĐÃ ÁP STYLE XUẤT (offscreen) ---
     const ghost = source.cloneNode(true);
@@ -548,13 +612,13 @@ async function handleExportPng(btn) {
     ghostWrap.style.width = finalW + "px";
     document.body.appendChild(ghostWrap);
     ghostWrap.appendChild(ghost);
-    applyPngExportStyles(ghost, tableW, finalW);
+    applyPngExportStyles(ghost, finalW, colWidths);
     await document.fonts.ready;
     const finalH = Math.ceil(ghost.scrollHeight) + 8; // +8px đệm an toàn
     document.body.removeChild(ghostWrap);
     ghostWrap = null;
 
-    console.log("Kích thước xuất:", finalW, "x", finalH);
+    console.log("Kích thước xuất:", finalW, "x", finalH, "| Cột:", colWidths);
 
     // --- BƯỚC 3: VẼ ---
     const canvas = await html2canvas(source, {
@@ -598,8 +662,8 @@ async function handleExportPng(btn) {
           el.style.setProperty("margin", "0", "important");
         });
 
-        // Áp CHÍNH XÁC cùng bộ style đã dùng để đo chiều cao
-        applyPngExportStyles(clonedSource, tableW, finalW);
+        // Áp CHÍNH XÁC cùng bộ style + cùng bộ độ rộng cột đã dùng để đo chiều cao
+        applyPngExportStyles(clonedSource, finalW, colWidths);
       },
     });
 
@@ -628,12 +692,19 @@ async function handleExportPdf(btn) {
 
   if (!source) return;
 
+  const table = source.querySelector("table");
+
   const originalText = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xử lý PDF...';
 
   try {
     await document.fonts.ready;
+
+    // Đo độ rộng cột từ bảng gốc TRƯỚC khi html2canvas clone, để đảm bảo
+    // clone dùng trong onclone cũng khớp layout với web.
+    const colWidths = table ? measureLiveColumnWidths(table) : [];
+
     const canvas = await html2canvas(source, {
       scale: 2,
       useCORS: true,
@@ -673,15 +744,22 @@ async function handleExportPdf(btn) {
               `;
         clonedDoc.head.appendChild(style);
 
+        // Khóa đúng độ rộng cột như bảng gốc -> chặn nội dung tràn lấn cột
+        const clonedTable = clonedSource.querySelector("table");
+        lockTableColumnWidths(clonedTable, colWidths);
+
         // Padding/line-height + wrap cho các ô — KHÔNG ép vertical-align
         // hay display của children (giữ đúng layout top-align + flex như web)
         clonedSource.querySelectorAll("td").forEach((td) => {
           td.style.padding = "8px 10px";
           td.style.lineHeight = "1.4";
-          td.style.whiteSpace = "normal";
+          // KHÔNG set white-space -> giữ nguyên "pre-wrap" đã set sẵn cho 1 số cột
           td.style.overflowWrap = "break-word"; // chỉ ngắt khi cần
           td.style.wordBreak = "normal";         // không cắt giữa badge/số nhỏ như "(3)"
         });
+
+        // Chống bóp label checkbox (Task/Detail...)
+        lockCheckboxLabels(clonedSource);
 
         // Áp màu badge trạng thái (bypass html2canvas CSS specificity issue)
         applyExportBadgeColors(clonedSource);
