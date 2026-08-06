@@ -9,8 +9,11 @@ const CONFIG = {
   STORAGE_KEY: "Unime_UID",
   USER_DATA_KEY: "Unime_UserData",
   SIDEBAR_KEY: "sidebar-state",
+  // Đường dẫn CSS CHUNG - dùng chung cho MỌI shot. Sửa lại path này cho đúng
+  // với vị trí thực tế của file style.css so với index.html gốc.
+  SHARED_CSS_PATH: "style.css", // add
 };
-
+ 
 // Khởi tạo ứng dụng khi toàn bộ HTML đã tải xong
 document.addEventListener("DOMContentLoaded", () => {
   const app = new UnimeApp();
@@ -243,6 +246,66 @@ class UnimeApp {
   }
 
   /**
+   * ĐẢM BẢO CSS CHUNG (dùng cho MỌI shot: --chihy-blue, .modern-table,
+   * .row-parent, .status-chip, màu badge...) LUÔN được nạp, bất kể vào
+   * bằng cách nào (F5 hay điều hướng qua menu SPA).
+   *
+   * Trước đây shot4.html có 3 <link> trong <head> (style.css, ../../style.css,
+   * shot4.css), NHƯNG loadPage() bên dưới chỉ trích xuất phần .shot-body của
+   * HTML fetch về, bỏ hoàn toàn <head> của nó -> các <link> đó KHÔNG BAO GIỜ
+   * được trình duyệt nạp khi điều hướng qua menu. Chỉ khi mở thẳng file .html
+   * (F5 trên chính file đó) thì trình duyệt mới tự đọc <head> gốc và nạp đủ.
+   *
+   * Hàm này nạp CSS chung 1 LẦN DUY NHẤT (không phụ thuộc shot đang mở),
+   * và không bao giờ bị gỡ bỏ khi chuyển giữa các shot.
+   */
+  ensureSharedCss() {
+    return new Promise((resolve) => {
+      if (document.getElementById("shared-css")) {
+        resolve();
+        return;
+      }
+      const link = document.createElement("link");
+      link.id = "shared-css";
+      link.rel = "stylesheet";
+      link.href = CONFIG.SHARED_CSS_PATH;
+      link.onload = resolve;
+      link.onerror = resolve;
+      document.head.appendChild(link);
+    });
+  }
+ 
+  /**
+   * ĐẢM BẢO CSS CHUNG (dùng cho MỌI shot: --chihy-blue, .modern-table,
+   * .row-parent, .status-chip, màu badge...) LUÔN được nạp, bất kể vào
+   * bằng cách nào (F5 hay điều hướng qua menu SPA).
+   *
+   * Trước đây shot4.html có 3 <link> trong <head> (style.css, ../../style.css,
+   * shot4.css), NHƯNG loadPage() bên dưới chỉ trích xuất phần .shot-body của
+   * HTML fetch về, bỏ hoàn toàn <head> của nó -> các <link> đó KHÔNG BAO GIỜ
+   * được trình duyệt nạp khi điều hướng qua menu. Chỉ khi mở thẳng file .html
+   * (F5 trên chính file đó) thì trình duyệt mới tự đọc <head> gốc và nạp đủ.
+   *
+   * Hàm này nạp CSS chung 1 LẦN DUY NHẤT (không phụ thuộc shot đang mở),
+   * và không bao giờ bị gỡ bỏ khi chuyển giữa các shot.
+   */
+  ensureSharedCss() {
+    return new Promise((resolve) => {
+      if (document.getElementById("shared-css")) {
+        resolve();
+        return;
+      }
+      const link = document.createElement("link");
+      link.id = "shared-css";
+      link.rel = "stylesheet";
+      link.href = CONFIG.SHARED_CSS_PATH;
+      link.onload = resolve;
+      link.onerror = resolve;
+      document.head.appendChild(link);
+    });
+  }
+ 
+  /**
    * TẢI TRANG ĐỘNG (SPA ENGINE)
    * Tải file HTML, CSS và JS của từng "Shot" mà không load lại toàn bộ web
    */
@@ -250,22 +313,24 @@ class UnimeApp {
     if (!shotName) return;
     const loader = document.getElementById("page-loader");
     const content = this.contentArea;
-
+ 
     if (loader) loader.classList.remove("hidden");
     content.style.transition = "none";
     content.style.opacity = "0";
     content.innerHTML = "";// Xóa nội dung cũ
     if (this.actionSlot) this.actionSlot.innerHTML = "";
-
+ 
     try {
       const path = `shots/${shotName}/${shotName}`;
-      // Xóa CSS/JS của trang cũ để tránh xung đột
+      // Xóa CSS/JS của trang cũ để tránh xung đột (CSS CHUNG "shared-css"
+      // KHÔNG nằm trong danh sách này -> không bao giờ bị gỡ khi chuyển shot)
       ["shot-css", "shot-js"].forEach((id) =>
         document.getElementById(id)?.remove(),
       );
-      // Tải đồng thời HTML và CSS
+      // Tải đồng thời: HTML riêng của shot + CSS chung (nếu chưa có) + CSS riêng của shot
       const [htmlRes] = await Promise.all([
         fetch(`${path}.html?t=${Date.now()}`),
+        this.ensureSharedCss(),
         new Promise((resolve) => {
           const link = document.createElement("link");
           link.id = "shot-css";
@@ -276,13 +341,13 @@ class UnimeApp {
           document.head.appendChild(link);
         }),
       ]);
-
+ 
       const htmlText = await htmlRes.text();
       const doc = new DOMParser().parseFromString(htmlText, "text/html");
       const shotActions = doc.querySelector(".shot-actions");// Phần nút bấm thêm trên header
       const shotBody = doc.querySelector(".shot-body");// Nội dung chính
       const mainHeader = document.querySelector(".main-header");
-
+ 
       // Nếu trang có các nút chức năng riêng, đẩy chúng lên header
       if (
         this.actionSlot &&
@@ -294,16 +359,16 @@ class UnimeApp {
       } else {
         mainHeader?.classList.remove("has-nav-actions");
       }
-
+ 
       content.innerHTML = shotBody ? shotBody.innerHTML : htmlText;
       if (loader) loader.classList.add("hidden");
-
+ 
       // Hiệu ứng mờ dần khi hiện nội dung mới
       requestAnimationFrame(() => {
         content.style.transition = "opacity 0.25s ease";
         content.style.opacity = "1";
       });
-
+ 
       // Tải và chạy file JS của trang đó
       const script = document.createElement("script");
       script.id = "shot-js";
