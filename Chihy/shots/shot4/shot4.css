@@ -1,4 +1,5 @@
 :root {
+    --primary: #00599a;
     --chihy-blue: #0071c5;
     --text-grey: #475569;
     --text-dark: #1e293b;
@@ -38,9 +39,9 @@
     margin: 0;
 }
 
-.chihy-shot-wrapper { font-family: 'Inter', sans-serif; color: var(--text-grey); font-size: 14px; -webkit-font-smoothing: antialiased; }
+.chihy-shot-wrapper { color: var(--text-grey); font-size: 14px; -webkit-font-smoothing: antialiased; }
 
-.shot-title { font-weight: 850; color: var(--chihy-blue); font-size: 24px; margin: 0; letter-spacing: -0.02em; }
+.shot-title { font-weight: 850; color: var(--primary); font-size: 24px; margin: 0; letter-spacing: -0.02em; }
 .shot-subtitle { color: var(--text-muted); font-size: 13px; margin: 5px 0 20px 0; font-weight: 500; }
 
 /* CARD & TABS */
