@@ -89,7 +89,7 @@ img { max-width: 100%; height: auto; display: block; }
 .sidebar-toggle:hover { background: var(--primary-gradient); color: white; transform: translateY(-50%) scale(1.1); }
 .sidebar.collapsed .sidebar-toggle i { transform: rotate(180deg); }
 
-.sidebar-header { padding: 22px 20px 20px; height: auto; margin-bottom: 20px; }
+.sidebar-header { height: 70px; padding: 0 20px; margin-bottom: 20px; display: flex; align-items: center; box-sizing: border-box; }
 .user-profile { display: flex; align-items: center; gap: 12px; }
 .user-info { display: flex; flex-direction: column; justify-content: center; }
 .avatar { width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--sidebar-logo-bg); border-radius: 12px; box-shadow: 0 4px 10px rgba(47, 111, 237, 0.35); }
@@ -111,7 +111,7 @@ img { max-width: 100%; height: auto; display: block; }
     margin-top: 4px;
 }
 
-.menu-item:hover { background: var(--sidebar-hover); }
+.menu-item:hover { background: var(--sidebar-hover); color: var(--sidebar-text); }
 .menu-item.active { background: var(--sidebar-active-bg); color: var(--sidebar-active-text); }
 /* FIX QUAN TRỌNG: Ép icon vào khung cố định để chữ luôn thẳng hàng */
 .menu-item, 
@@ -120,7 +120,7 @@ img { max-width: 100%; height: auto; display: block; }
     flex-direction: row !important; /* Đảm bảo luôn nằm ngang */
     align-items: center !important;
     padding: 10px 12px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     gap: 12px;
     cursor: pointer;
@@ -130,7 +130,7 @@ img { max-width: 100%; height: auto; display: block; }
     min-height: 42px;
     position: relative;
     text-decoration: none;
-    color: var(--sidebar-text);
+    color: var(--sidebar-text-muted);
 }
 .menu-item i, 
 .header-main i {
@@ -143,15 +143,15 @@ img { max-width: 100%; height: auto; display: block; }
     flex-shrink: 0;
 }
 .menu-icon {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: var(--sidebar-text-muted);
     flex-shrink: 0;
 }
-.menu-icon svg { width: 18px; height: 18px; }
+.menu-icon svg { width: 21px; height: 21px; }
 .menu-item.active .menu-icon,
 .menu-item:hover .menu-icon { color: var(--sidebar-text); }
 .menu-item.active .menu-icon { color: var(--sidebar-active-text); }
@@ -221,8 +221,8 @@ img { max-width: 100%; height: auto; display: block; }
     padding-left: 12px !important;
 }
 .sidebar.collapsed .menu-section-label { display: none; }
-.sidebar.collapsed .menu-item span, 
-.sidebar.collapsed .header-main span, 
+.sidebar.collapsed .menu-item .menu-label, 
+.sidebar.collapsed .header-main .menu-label, 
 .sidebar.collapsed .chevron {
     display: none;
 }
@@ -232,7 +232,23 @@ img { max-width: 100%; height: auto; display: block; }
 .sidebar.collapsed .group-header {
     justify-content: center;
     padding: 12px 0;
+    gap: 0;
 }
+/* Đảm bảo icon LUÔN hiển thị rõ khi thu gọn */
+.sidebar.collapsed .menu-icon {
+    width: 100%;
+    color: var(--sidebar-text-muted);
+}
+.sidebar.collapsed .menu-item:hover .menu-icon { color: var(--sidebar-text); }
+.sidebar.collapsed .menu-item.active .menu-icon { color: var(--sidebar-active-text); }
+/* Ẩn thanh line trái khi thu gọn vì không đủ chỗ hiển thị đẹp */
+.sidebar.collapsed .menu-item.active::before,
+.sidebar.collapsed .sub-item.active::before { display: none; }
+.sidebar.collapsed .menu-item.active,
+.sidebar.collapsed .sub-item.active { border-radius: 10px; margin: 0 8px 4px; }
+/* Nhóm con (sub-item) khi thu gọn cũng nằm giữa icon như menu chính */
+.sidebar.collapsed .group-content { display: flex; flex-direction: column; align-items: center; }
+.sidebar.collapsed .sub-item { width: 44px; }
 .sidebar-footer { padding: 14px; border-top: 1px solid var(--sidebar-border); }
 .user-card { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--sidebar-bg-alt); border-radius: 12px; cursor: pointer; overflow: hidden; }
 .user-card:hover { background: var(--sidebar-hover); }
@@ -294,28 +310,33 @@ img { max-width: 100%; height: auto; display: block; }
 
 .btn-menu-global:hover { background: #e2e8f0; }
 
-/* --- NÚT XUẤT PDF (FIX CỨNG HÌNH VUÔNG) --- */
+/* --- NÚT XUẤT PDF / PNG (Gọn, thanh thoát, đồng bộ tông xanh sidebar) --- */
 .btn-primary {
-    background: var(--primary-gradient);
-    color: white;
-    border: none;
-    height: 44px;
-    padding: 0 15px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 13px;
+    background: #eef3ff;
+    color: var(--sidebar-logo-bg);
+    border: 1px solid #dbe6fb;
+    height: 36px;
+    padding: 0 13px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12.5px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+    box-shadow: none;
+    transition: all 0.2s ease;
     flex-shrink: 0;
 }
+.btn-primary i { font-size: 12px; }
 
 .btn-primary:hover {
-    box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
-    filter: brightness(1.1);
-    transform: translateY(-2px);
+    background: var(--sidebar-logo-bg);
+    border-color: var(--sidebar-logo-bg);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(47, 111, 237, 0.25);
+    filter: none;
+    transform: none;
 }
 
 .content-body { flex: 1; padding: 25px; overflow-y: auto; transition: opacity 0.3s; }
@@ -329,7 +350,7 @@ img { max-width: 100%; height: auto; display: block; }
     from { opacity: 0; }
     to { opacity: 1; }
 }
-.sidebar.collapsed .user-info, .sidebar.collapsed .menu-item span, .sidebar.collapsed .header-main span, .sidebar.collapsed .chevron, .sidebar.collapsed .user-details { display: none; }
+.sidebar.collapsed .user-info, .sidebar.collapsed .menu-item .menu-label, .sidebar.collapsed .header-main .menu-label, .sidebar.collapsed .chevron, .sidebar.collapsed .user-details { display: none; }
 
 .is-exporting #content-area {
     height: auto !important;
@@ -401,11 +422,11 @@ img { max-width: 100%; height: auto; display: block; }
     }
     /* NÚT PDF BIẾN THÀNH ICON TRÒN */
     .btn-primary {
-        width: 38px; height: 38px; padding: 0;
-        justify-content: center; border-radius: 10px;
+        width: 34px; height: 34px; padding: 0;
+        justify-content: center; border-radius: 8px;
     }
     .btn-primary span { display: none; }
-    .btn-primary i { margin: 0; font-size: 16px; }
+    .btn-primary i { margin: 0; font-size: 14px; }
 
     /* LOGIN BOX */
     .login-box { width: 92% !important; padding: 30px 20px !important; }
