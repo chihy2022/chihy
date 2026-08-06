@@ -92,8 +92,8 @@ img { max-width: 100%; height: auto; display: block; }
 .sidebar-header { height: 70px; padding: 0 20px; margin-bottom: 20px; display: flex; align-items: center; box-sizing: border-box; }
 .user-profile { display: flex; align-items: center; gap: 12px; }
 .user-info { display: flex; flex-direction: column; justify-content: center; }
-.avatar { width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--sidebar-logo-bg); border-radius: 12px; box-shadow: 0 4px 10px rgba(47, 111, 237, 0.35); }
-.avatar img { width: 65%; height: auto; object-fit: contain; }
+.avatar { width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--sidebar-logo-bg); border-radius: 12px; box-shadow: 0 4px 10px rgba(47, 111, 237, 0.35); overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
 .avatar i { color: #ffffff; font-size: 19px; }
 .app-name { display: block; font-weight: 800; font-size: 20px; color: var(--sidebar-text); white-space: nowrap; line-height: 1.1; margin-bottom: 3px; }
 .app-sub { padding-top: 2px; display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sidebar-text-muted); white-space: nowrap; line-height: 1; }
