@@ -579,7 +579,7 @@ function applyPngExportStyles(contentEl, finalW, colWidths) {
   contentEl.style.setProperty("max-height", "none", "important");
   contentEl.style.setProperty("overflow", "visible", "important");
   contentEl.style.setProperty("margin", "0", "important");
-
+ 
   // 2. Bỏ hiệu ứng gây mờ/lệch (an toàn, không ảnh hưởng layout)
   contentEl.querySelectorAll("*").forEach((el) => {
     el.style.transform = "none";
@@ -587,20 +587,35 @@ function applyPngExportStyles(contentEl, finalW, colWidths) {
     el.style.animation = "none";
     el.style.filter = "none";
   });
-
-  // 3. Khung cuộn bảng: không được cắt (bỏ overflow-x: auto)
-  const scrollBox = contentEl.querySelector(".table-scroll");
+ 
+  // 3. Khung cuộn bảng: không được cắt (bỏ giới hạn chiều cao + overflow)
+  //    LƯU Ý: class thực tế là ".table-container" (thêm khi làm sticky header),
+  //    KHÔNG PHẢI ".table-scroll" như trước đây -> đây chính là lý do xuất
+  //    PDF/PNG trước đó chỉ ra đúng phần đang hiển thị trong khung cuộn,
+  //    không ra hết toàn bộ dòng đang được lọc/hiển thị.
+  const scrollBox = contentEl.querySelector(".table-container, .table-scroll");
   if (scrollBox) {
     scrollBox.style.setProperty("overflow", "visible", "important");
+    scrollBox.style.setProperty("overflow-y", "visible", "important");
+    scrollBox.style.setProperty("overflow-x", "visible", "important");
+    scrollBox.style.setProperty("max-height", "none", "important");
+    scrollBox.style.setProperty("height", "auto", "important");
     scrollBox.style.setProperty("width", "auto", "important");
     scrollBox.style.setProperty("max-width", "none", "important");
   }
-
+ 
+  // 3b. Header đang "sticky" để dính khi cuộn -> khi xuất ảnh cần trả về vị
+  //    trí tĩnh bình thường, nếu không nó có thể đè/che các dòng dữ liệu
+  //    phía trên khi table-container đã bị mở hết chiều cao.
+  contentEl.querySelectorAll("thead th").forEach((th) => {
+    th.style.setProperty("position", "static", "important");
+  });
+ 
   // 4. KHÓA ĐÚNG ĐỘ RỘNG TỪNG CỘT như trên web -> chặn hiện tượng nội dung
   //    dài tràn lấn sang cột bên cạnh (lỗi trong ảnh chụp gửi trước đó)
   const tbl = contentEl.querySelector("table");
   lockTableColumnWidths(tbl, colWidths);
-
+ 
   // 5. Padding/line-height cho từng ô.
   //    KHÔNG set verticalAlign="middle" (web đang canh TOP, giữ nguyên vậy).
   //    KHÔNG ép display:inline-block lên children (làm vỡ flex + wrap 2 dòng).
@@ -612,7 +627,7 @@ function applyPngExportStyles(contentEl, finalW, colWidths) {
   contentEl.querySelectorAll("tr").forEach((tr) => {
     Array.from(tr.cells).forEach((td) => {
       if (td.tagName !== "TD") return; // bỏ qua <th> ở header
-
+ 
       td.style.padding = "8px 10px";
       td.style.lineHeight = "1.4";
       // KHÔNG set white-space -> giữ nguyên "pre-wrap" đã set sẵn cho 1 số cột
@@ -621,10 +636,10 @@ function applyPngExportStyles(contentEl, finalW, colWidths) {
       // Giữ nguyên vertical-align và text-align mặc định của web -> không set gì thêm
     });
   });
-
+ 
   // 6. Chống bóp label checkbox (Task/Detail...)
   lockCheckboxLabels(contentEl);
-
+ 
   // 7. Áp màu cho badge trạng thái
   applyExportBadgeColors(contentEl);
 }
@@ -749,22 +764,22 @@ async function handleExportPdf(btn) {
   const source =
     document.querySelector(".main-content") ||
     document.getElementById("content-area");
-
+ 
   if (!source) return;
-
+ 
   const table = source.querySelector("table");
-
+ 
   const originalText = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xử lý PDF...';
-
+ 
   try {
     await document.fonts.ready;
-
+ 
     // Đo độ rộng cột từ bảng gốc TRƯỚC khi html2canvas clone, để đảm bảo
     // clone dùng trong onclone cũng khớp layout với web.
     const colWidths = table ? measureLiveColumnWidths(table) : [];
-
+ 
     const canvas = await html2canvas(source, {
       scale: 2,
       useCORS: true,
@@ -775,7 +790,7 @@ async function handleExportPdf(btn) {
         const clonedSource =
           clonedDoc.querySelector(".main-content") ||
           clonedDoc.getElementById("content-area");
-
+ 
         // Ép hiện rõ 100% (Fix mờ nhạt) - không đụng display/vertical-align
         clonedSource.querySelectorAll("*").forEach((el) => {
           el.style.opacity = "1";
@@ -784,7 +799,7 @@ async function handleExportPdf(btn) {
           el.style.transform = "none";
           el.style.filter = "none";
         });
-
+ 
         // Ép giãn hết chiều cao (Fix cắt chữ)
         let curr = clonedSource;
         while (curr && curr !== clonedDoc.documentElement) {
@@ -793,7 +808,7 @@ async function handleExportPdf(btn) {
           curr.style.maxHeight = "none";
           curr = curr.parentElement;
         }
-
+ 
         // ẨN CÁC THÀNH PHẦN KHÔNG CẦN EXPORT
         const style = clonedDoc.createElement("style");
         style.innerHTML = `
@@ -803,11 +818,28 @@ async function handleExportPdf(btn) {
                   .main-content { padding: 0 !important; margin: 0 !important; }
               `;
         clonedDoc.head.appendChild(style);
-
+ 
+        // Khung cuộn bảng (".table-container", thêm khi làm sticky header):
+        // trước đây KHÔNG được xử lý ở đây -> html2canvas chỉ chụp đúng phần
+        // đang hiển thị trong khung cuộn 600px, không ra hết các dòng đang
+        // lọc/hiển thị. Bỏ hẳn giới hạn chiều cao + overflow của nó.
+        clonedSource.querySelectorAll(".table-container, .table-scroll").forEach((box) => {
+          box.style.setProperty("overflow", "visible", "important");
+          box.style.setProperty("overflow-y", "visible", "important");
+          box.style.setProperty("overflow-x", "visible", "important");
+          box.style.setProperty("max-height", "none", "important");
+          box.style.setProperty("height", "auto", "important");
+        });
+        // Trả header về vị trí tĩnh (bỏ sticky) để không đè lên dữ liệu khi
+        // khung cuộn đã được mở hết chiều cao.
+        clonedSource.querySelectorAll("thead th").forEach((th) => {
+          th.style.setProperty("position", "static", "important");
+        });
+ 
         // Khóa đúng độ rộng cột như bảng gốc -> chặn nội dung tràn lấn cột
         const clonedTable = clonedSource.querySelector("table");
         lockTableColumnWidths(clonedTable, colWidths);
-
+ 
         // Padding/line-height + wrap cho các ô — KHÔNG ép vertical-align
         // hay display của children (giữ đúng layout top-align + flex như web)
         clonedSource.querySelectorAll("td").forEach((td) => {
@@ -817,19 +849,19 @@ async function handleExportPdf(btn) {
           td.style.overflowWrap = "break-word"; // chỉ ngắt khi cần
           td.style.wordBreak = "normal";         // không cắt giữa badge/số nhỏ như "(3)"
         });
-
+ 
         // Chống bóp label checkbox (Task/Detail...)
         lockCheckboxLabels(clonedSource);
-
+ 
         // Áp màu badge trạng thái (bypass html2canvas CSS specificity issue)
         applyExportBadgeColors(clonedSource);
       },
     });
-
+ 
     const { jsPDF } = window.jspdf;
     const imgWidth = canvas.width / 2;
     const imgHeight = canvas.height / 2;
-
+ 
     const pdf = new jsPDF({
       orientation: imgWidth > imgHeight ? "l" : "p",
       unit: "px",
@@ -837,10 +869,10 @@ async function handleExportPdf(btn) {
       hotfixes: ["px_scaling"],
       compress: true,
     });
-
+ 
     const imgData = canvas.toDataURL("image/png");
     pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
-
+ 
     const timestamp = new Date().getTime();
     pdf.save(`Umer_dms_pdf_${timestamp}.pdf`);
   } catch (e) {
