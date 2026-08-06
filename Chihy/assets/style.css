@@ -190,7 +190,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 /* MAIN CONTENT */
 .main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; min-width: 0; }
-.main-header { align-items: center; height: 70px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; border-bottom: 1px solid var(--border); z-index: 100; position: relative; }
+.main-header { align-items: center; height: 70px; background: var(--bg-app); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; border-bottom: 1px solid var(--border); z-index: 100; position: relative; }
 .header-divider { width: 1px; height: 24px; background: var(--border); margin: 0 10px; }
 .content-area { min-height: calc(100vh - 70px); height: auto !important; overflow-y: auto; }
 
