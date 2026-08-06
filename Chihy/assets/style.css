@@ -10,6 +10,18 @@
     --sidebar-w: 280px;
     --sidebar-c: 80px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ---- SIDEBAR (DARK THEME) ---- */
+    --sidebar-bg: #12203d;
+    --sidebar-bg-alt: #17294c;
+    --sidebar-text: #eef1f8;
+    --sidebar-text-muted: #8891ab;
+    --sidebar-border: rgba(255, 255, 255, 0.07);
+    --sidebar-hover: rgba(255, 255, 255, 0.06);
+    --sidebar-logo-bg: #2f6fed;
+    --sidebar-active-bg: rgba(59, 111, 237, 0.16);
+    --sidebar-active-text: #6ea8ff;
+    --sidebar-active-bar: #3b6fed;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Be Vietnam Pro', sans-serif; }
@@ -70,107 +82,145 @@ img { max-width: 100%; height: auto; display: block; }
 /* LAYOUT CHÍNH */
 .app-container { display: flex; width: 100vw; height: 100vh; }
 
-/* SIDEBAR TREE STYLE */
-.sidebar { width: var(--sidebar-w); background: white; border-right: 1px solid var(--border); display: flex; flex-direction: column; transition: var(--transition); position: relative; overflow: visible !important; z-index: 1001; flex-shrink: 0; }
+/* SIDEBAR - DARK NAVY STYLE */
+.sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); border-right: none; display: flex; flex-direction: column; transition: var(--transition); position: relative; overflow: visible !important; z-index: 1001; flex-shrink: 0; }
 .sidebar.collapsed { width: var(--sidebar-c); }
-.sidebar-toggle { position: absolute; right: -14px; top: 35px; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: white; cursor: pointer; z-index: 10002; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; transform: translateY(-50%); color: var(--text-gray); }
+.sidebar-toggle { position: absolute; right: -14px; top: 35px; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: white; cursor: pointer; z-index: 10002; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; transform: translateY(-50%); color: var(--text-gray); }
 .sidebar-toggle:hover { background: var(--primary-gradient); color: white; transform: translateY(-50%) scale(1.1); }
 .sidebar.collapsed .sidebar-toggle i { transform: rotate(180deg); }
 
-.sidebar-header { padding: 15px; height: 70px; margin-bottom: 35px; }
+.sidebar-header { padding: 22px 20px 20px; height: auto; margin-bottom: 20px; }
 .user-profile { display: flex; align-items: center; gap: 12px; }
 .user-info { display: flex; flex-direction: column; justify-content: center; }
-.avatar { width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;}
-.avatar img { width: 100%; height: auto; object-fit: contain; }
-.app-name { display: block; font-weight: 800; font-size: 22px; color: var(--primary); white-space: nowrap; line-height: 1.1;margin-bottom: 2px; }
-.app-sub { padding-top: 3px; display: block; font-size: 14px; color: var(--text-gray); white-space: nowrap;line-height: 1; }
+.avatar { width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--sidebar-logo-bg); border-radius: 12px; box-shadow: 0 4px 10px rgba(47, 111, 237, 0.35); }
+.avatar img { width: 65%; height: auto; object-fit: contain; }
+.avatar i { color: #ffffff; font-size: 19px; }
+.app-name { display: block; font-weight: 800; font-size: 20px; color: var(--sidebar-text); white-space: nowrap; line-height: 1.1; margin-bottom: 3px; }
+.app-sub { padding-top: 2px; display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sidebar-text-muted); white-space: nowrap; line-height: 1; }
 
-.sidebar-menu { flex: 1; padding: 10px 12px; overflow-y: auto; overflow-x: hidden; }
-.menu-item:hover { background: #f3f4f6; }
-.menu-item.active { background: var(--primary-light); color: var(--primary); }
+.sidebar-menu { flex: 1; padding: 4px 14px; overflow-y: auto; overflow-x: hidden; }
+
+/* Nhãn tiêu đề nhóm dạng chữ tĩnh (Tổng quan / UMER Ecosystem / Khác) */
+.menu-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--sidebar-text-muted);
+    padding: 6px 12px 8px;
+    margin-top: 4px;
+}
+
+.menu-item:hover { background: var(--sidebar-hover); }
+.menu-item.active { background: var(--sidebar-active-bg); color: var(--sidebar-active-text); }
 /* FIX QUAN TRỌNG: Ép icon vào khung cố định để chữ luôn thẳng hàng */
 .menu-item, 
 .group-header {
     display: flex !important;
     flex-direction: row !important; /* Đảm bảo luôn nằm ngang */
     align-items: center !important;
-    padding: 10px 15px;
-    font-size: 16px;
+    padding: 10px 12px;
+    font-size: 15px;
     font-weight: 600;
     gap: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    min-height: 44px;
+    border-radius: 10px;
+    margin-bottom: 4px;
+    min-height: 42px;
     position: relative;
     text-decoration: none;
-    color: var(--text-dark);
+    color: var(--sidebar-text);
 }
 .menu-item i, 
 .header-main i {
-    width: 24px;
+    width: 22px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 18px;
-    color: var(--text-gray);
+    font-size: 16px;
+    color: var(--sidebar-text-muted);
     flex-shrink: 0;
 }
-.header-main { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 16px; flex: 1; }
-.group-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; margin-left: 26px; border-left: 1px solid #e5e7eb; }
-.menu-group.active .group-content { max-height: 400px; padding: 4px 0; }
-.menu-group.active .chevron { transform: rotate(180deg); }
+.menu-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--sidebar-text-muted);
+    flex-shrink: 0;
+}
+.menu-icon svg { width: 18px; height: 18px; }
+.menu-item.active .menu-icon,
+.menu-item:hover .menu-icon { color: var(--sidebar-text); }
+.menu-item.active .menu-icon { color: var(--sidebar-active-text); }
+.header-main { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sidebar-text-muted); flex: 1; }
+/* Ẩn icon trong nhãn nhóm để giống nhãn chữ đơn giản như hình mẫu */
+.header-main i { display: none; }
+.group-header { cursor: default; padding: 14px 12px 6px; margin-bottom: 2px; }
+.group-content { max-height: none !important; overflow: visible !important; margin-left: 0; border-left: none; padding: 0 !important; }
+.chevron { display: none !important; }
 
 .sub-item {
-    padding-left: 25px !important;
+    padding-left: 12px !important;
     font-size: 14px;
-    font-weight: 500;
-    color: var(--text-gray);
+    font-weight: 600;
+    color: var(--sidebar-text-muted);
     position: relative;
     background: transparent;
-    border-radius: 0 10px 10px 0; 
+    border-radius: 10px;
 }
 
-/* Đường kẻ line xám mặc định cho menu con */
-.sub-item::before {
+/* Bỏ đường kẻ line xám (không có trong giao diện mới) */
+.sub-item::before { content: none; }
+.sub-item:hover { color: var(--sidebar-text); background: var(--sidebar-hover); }
+/* Active cho Menu chính (Báo cáo tiến độ) - nền xanh nhạt + line trái */
+.menu-item.active:not(.sub-item) {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+    font-weight: 700;
+    border-radius: 8px;
+    position: relative;
+}
+.menu-item.active:not(.sub-item)::before {
     content: "";
     position: absolute;
-    left: 0px;
-    top: 50%;
-    width: 12px;
-    height: 1.5px;
-    background: #e5e7eb;
-    transform: translateY(-50%);
-    transition: all 0.2s;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--sidebar-active-bar);
 }
-.sub-item:hover { color: var(--primary); }/* Active cho Menu chính (Báo cáo tiến độ) */
-.menu-item.active:not(.sub-item) {
-    background: var(--primary-light);
-    color: var(--primary);
-    font-weight: 700;
-}
-.menu-item.active:not(.sub-item) i { color: var(--primary); }
+.menu-item.active:not(.sub-item) i { color: var(--sidebar-active-text); }
 
-/* Active cho Menu con (Mobile Dashboard) - Dạng Card tròn mờ */
+/* Active cho Menu con (Digital Transformation) - nền xanh nhạt + line trái, đúng theo hình mẫu */
 .sub-item.active {
-    background: var(--primary-light) !important; /* Nền xanh nhạt */
-    color: var(--primary) !important;
+    background: var(--sidebar-active-bg) !important;
+    color: var(--sidebar-active-text) !important;
     font-weight: 700;
+    border-radius: 8px;
+    position: relative;
 }
-
-/* Đường kẻ line hóa xanh và đậm hơn khi active */
 .sub-item.active::before {
-    background: var(--primary);
-    width: 17px; /* Dài hơn chút cho đẹp */
-    height: 2px;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--sidebar-active-bar);
 }
-/* --- 4. FIX KHI SIDEBAR THU GỌN (COLLAPSED) --- */
+.sub-item.active i { color: var(--sidebar-active-text); }
+
+/* --- FIX KHI SIDEBAR THU GỌN (COLLAPSED) --- */
 .sidebar.collapsed .sub-item {
     margin-left: 0;
-    padding-left: 15px !important;
+    padding-left: 12px !important;
 }
-.sidebar.collapsed .sub-item::before { display: none; }
+.sidebar.collapsed .menu-section-label { display: none; }
 .sidebar.collapsed .menu-item span, 
 .sidebar.collapsed .header-main span, 
 .sidebar.collapsed .chevron {
@@ -183,10 +233,12 @@ img { max-width: 100%; height: auto; display: block; }
     justify-content: center;
     padding: 12px 0;
 }
-.sidebar-footer { padding: 15px; border-top: 1px solid var(--border); }
-.user-card { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f9fafb; border-radius: 12px; cursor: pointer; overflow: hidden; }
-.user-avatar-sm { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
-.user-details { flex: 1; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-footer { padding: 14px; border-top: 1px solid var(--sidebar-border); }
+.user-card { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--sidebar-bg-alt); border-radius: 12px; cursor: pointer; overflow: hidden; }
+.user-card:hover { background: var(--sidebar-hover); }
+.user-avatar-sm { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--sidebar-logo-bg); display: flex; align-items: center; justify-content: center; }
+.user-details { flex: 1; font-size: 13px; font-weight: 600; color: var(--sidebar-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-card > i { color: var(--sidebar-text-muted); }
 
 /* MAIN CONTENT */
 .main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; min-width: 0; }
@@ -314,7 +366,7 @@ img { max-width: 100%; height: auto; display: block; }
         transform: translateX(-100%);
         z-index: 10000;
         width: var(--sidebar-w) !important;
-        box-shadow: 15px 0 30px rgba(0,0,0,0.1);
+        box-shadow: 15px 0 30px rgba(0,0,0,0.25);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
