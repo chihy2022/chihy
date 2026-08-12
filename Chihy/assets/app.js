@@ -5,7 +5,7 @@
  */
 const CONFIG = {
   GGS_URL:
-    "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec",
+    "https://script.google.com/macros/s/AKfycbw71ByZYOTRfNV5fzfL6C_JCSHo3eTbTGAoJ43U4mkSHGhrLtjC8cj1dwAE87521p1MbQ/exec",
   STORAGE_KEY: "Unime_UID",
   USER_DATA_KEY: "Unime_UserData",
   SIDEBAR_KEY: "sidebar-state",
