@@ -1,5 +1,5 @@
 window.shot8Init = function() {
-    const GGS_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec?sheet=Goc_phanhoi";
+    const GGS_URL = "https://script.google.com/macros/s/AKfycbw71ByZYOTRfNV5fzfL6C_JCSHo3eTbTGAoJ43U4mkSHGhrLtjC8cj1dwAE87521p1MbQ/exec?sheet=Goc_phanhoi";
     
     let fileData = "";
     let fileName = "";

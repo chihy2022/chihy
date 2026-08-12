@@ -5,7 +5,7 @@
 
 // ĐỊNH NGHĨA HÀM KHỞI TẠO CHÍNH (Được gọi từ app.js)
 window.shot1Init = async function() {
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz36knkDmqMdVHCXoFhvQb4l6Ej2e9dsj0rLj7dD2km7XXshj2IaNy2o9-sCuHigvhN2w/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw71ByZYOTRfNV5fzfL6C_JCSHo3eTbTGAoJ43U4mkSHGhrLtjC8cj1dwAE87521p1MbQ/exec";
     
     // Khai báo các phần tử DOM
     const tableBody = document.getElementById('table-body');

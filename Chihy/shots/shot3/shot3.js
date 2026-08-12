@@ -2,7 +2,7 @@
 const DG_MAP = {
     "OPEN": "#ca8a04", "PROCESS": "#16a34a", "PENDING": "#dc2626", "DONE": "#0891b2", "CLOSE": "#64748b" ,"NEW": "#d39236c7"
 };
-const DG_API_URL = "https://script.google.com/macros/s/AKfycby6KWMp7C6tlTot9tLyRR6OaupBPmsbWXZHKdR2nVeKLGb66l1UArX1fpzANQNPlBdQkg/exec";
+const DG_API_URL = "https://script.google.com/macros/s/AKfycbw71ByZYOTRfNV5fzfL6C_JCSHo3eTbTGAoJ43U4mkSHGhrLtjC8cj1dwAE87521p1MbQ/exec";
 
 // 2. HÀM KHỞI TẠO (Fetch dữ liệu)
 async function shotDigitalInit() {
