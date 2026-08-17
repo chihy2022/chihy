@@ -40,65 +40,43 @@ class UnimeApp {
   }
 
   // Thiết lập tất cả các sự kiện tương tác của người dùng
-  setupEventListeners() {
-
+setupEventListeners() {
     // Menu & Sidebar
-    document.getElementById("menuToggleBtn").addEventListener("click", () => this.handleMainToggle());
-    this.sidebarOverlay?.addEventListener("click", () =>
-      this.handleMainToggle(),
-    );
-    // 1. Xử lý nút Xuất PDF
-    document.getElementById("exportPdfBtn")?.addEventListener("click", (e) => {
-        // ĐÓNG MENU NGAY LẬP TỨC
-        document.getElementById("dotsMenuContent")?.classList.remove("show");
-        
-        // Sau đó mới chạy hàm xuất
-        handleExportPdf(e.currentTarget);
-    });
-
-    // 2. Xử lý nút Xuất PNG
-    document.getElementById("exportPngBtn")?.addEventListener("click", (e) => {
-        // ĐÓNG MENU NGAY LẬP TỨC
-        document.getElementById("dotsMenuContent")?.classList.remove("show");
-        
-        // Sau đó mới chạy hàm xuất
-        handleExportPng(e.currentTarget);
-    });
+    document.getElementById("menuToggleBtn")?.addEventListener("click", () => this.handleMainToggle());
+    this.sidebarOverlay?.addEventListener("click", () => this.handleMainToggle());
 
     // Đăng nhập & Đăng xuất
-    document
-      .getElementById("btnLogin")
-      .addEventListener("click", () => this.performLogin());
-    document
-      .getElementById("togglePassword")
-      .addEventListener("click", () => this.togglePassword());
-    document
-      .getElementById("logoutBtn")
-      .addEventListener("click", () => this.logout());
+    document.getElementById("btnLogin")?.addEventListener("click", () => this.performLogin());
+    document.getElementById("togglePassword")?.addEventListener("click", () => this.togglePassword());
+    document.getElementById("logoutBtn")?.addEventListener("click", () => this.logout());
 
-    // Nút xuất file (PDF và PNG)
-
-    // Thêm sự kiện cho nút 3 chấm
+    // Thêm sự kiện cho nút 3 chấm (Dots Menu)
     const dotsBtn = document.getElementById("dotsMenuBtn");
     const dotsContent = document.getElementById("dotsMenuContent");
 
     if (dotsBtn) {
-        dotsBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dotsContent.classList.toggle("show");
-        });
+      dotsBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dotsContent?.classList.toggle("show");
+      });
     }
 
-    // Click ra ngoài để đóng menu
+    // Click ra ngoài để đóng menu 3 chấm
     document.addEventListener("click", () => {
-        if (dotsContent) dotsContent.classList.remove("show");
+      if (dotsContent) dotsContent.classList.remove("show");
     });
-    document
-      .getElementById("exportPdfBtn")
-      ?.addEventListener("click", (e) => handleExportPdf(e.currentTarget));
-    document
-      .getElementById("exportPngBtn")
-      ?.addEventListener("click", (e) => handleExportPng(e.currentTarget));
+
+    // 1. Xử lý nút Xuất PDF (Chỉ dùng 1 handler duy nhất)
+    document.getElementById("exportPdfBtn")?.addEventListener("click", (e) => {
+      dotsContent?.classList.remove("show");
+      handleExportPdf(e.currentTarget);
+    });
+
+    // 2. Xử lý nút Xuất PNG (Chỉ dùng 1 handler duy nhất)
+    document.getElementById("exportPngBtn")?.addEventListener("click", (e) => {
+      dotsContent?.classList.remove("show");
+      handleExportPng(e.currentTarget);
+    });
 
     // Xử lý khi click vào các mục menu
     document.querySelectorAll(".menu-item").forEach((item) => {
@@ -108,11 +86,11 @@ class UnimeApp {
     // Xử lý đóng/mở các nhóm menu (Dropdown menu)
     document.querySelectorAll(".group-header").forEach((header) => {
       header.addEventListener("click", () =>
-        header.parentElement.classList.toggle("active"),
+        header.parentElement.classList.toggle("active")
       );
     });
 
-    // Các sự kiện click toàn cục (ví dụ: phóng to ảnh)
+    // Các sự kiện click toàn cục
     document.addEventListener("click", (e) => this.handleGlobalClicks(e));
 
     // Xử lý khi thay đổi kích thước màn hình
@@ -120,7 +98,7 @@ class UnimeApp {
       const currentShot = localStorage.getItem("currentShot") || "welcome";
       this.updateUIState(currentShot);
     });
-  }
+}
 
   /**
    * CẬP NHẬT TRẠNG THÁI GIAO DIỆN (HEADER & NÚT XUẤT FILE)
@@ -689,18 +667,19 @@ function applyPngExportStyles(contentEl, finalW, colWidths) {
  */
 async function handleExportPng(btn) {
   // 1. CHỌN VÙNG DỮ LIỆU CHÍNH
-  const source =
-    document.getElementById("content-area") ||
-    document.querySelector(".main-content");
-  const table = source ? source.querySelector("table") : null;
-  if (!table) return alert("Không tìm thấy dữ liệu bảng!");
+  if (!btn || btn.disabled) return; // Chống click đúp khi đang chạy
 
-  const originalText = btn.innerHTML;
+  const originalHtml = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang vẽ ảnh...';
 
   let ghostWrap = null;
   try {
+  const source =
+    document.getElementById("content-area") ||
+    document.querySelector(".main-content");
+  const table = source ? source.querySelector("table") : null;
+  if (!table) return alert("Không tìm thấy dữ liệu bảng!");
     await document.fonts.ready;
 
     // --- BƯỚC 1: ĐO ĐÚNG ĐỘ RỘNG TỪNG CỘT + TOÀN KHỐI TỪ BẢNG GỐC (LIVE DOM) ---
@@ -788,19 +767,27 @@ async function handleExportPng(btn) {
     link.href = canvas.toDataURL("image/png", 1.0);
     link.click();
   } catch (e) {
-    console.error("Lỗi trích xuất:", e);
-    alert("Lỗi xuất ảnh! Vui lòng cuộn lên đầu trang và thử lại lần nữa.");
+    console.error("Lỗi trích xuất PNG:", e);
+    alert("Lỗi xuất ảnh!");
   } finally {
-    if (ghostWrap && ghostWrap.parentNode) ghostWrap.parentNode.removeChild(ghostWrap);
+    if (ghostWrap && ghostWrap.parentNode) {
+      ghostWrap.parentNode.removeChild(ghostWrap);
+    }
     btn.disabled = false;
-    btn.innerHTML = originalText;
+    btn.innerHTML = originalHtml; // Khôi phục chính xác giao diện nút gốc
   }
 }
-
 /**
  * XỬ LÝ XUẤT PDF
  */
 async function handleExportPdf(btn) {
+  if (!btn || btn.disabled) return; // Chống click đúp khi đang chạy
+
+  const originalHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xử lý PDF...';
+
+  try {
   const source =
     document.querySelector(".main-content") ||
     document.getElementById("content-area");
@@ -808,12 +795,6 @@ async function handleExportPdf(btn) {
   if (!source) return;
  
   const table = source.querySelector("table");
- 
-  const originalText = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i> Đang xử lý PDF...';
- 
-  try {
     await document.fonts.ready;
  
     // Đo độ rộng cột từ bảng gốc TRƯỚC khi html2canvas clone, để đảm bảo
@@ -920,6 +901,6 @@ async function handleExportPdf(btn) {
     alert("Lỗi xuất PDF!");
   } finally {
     btn.disabled = false;
-    btn.innerHTML = originalText;
+    btn.innerHTML = originalHtml; // Khôi phục chính xác giao diện nút gốc
   }
 }
