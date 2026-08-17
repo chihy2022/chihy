@@ -337,7 +337,10 @@ img { max-width: 100%; height: auto; display: block; }
     filter: none;
     transform: none;
 }
-
+/* Class dùng để ẩn các thành phần khi xuất file */
+.no-export {
+    display: none !important;
+}
 .content-body { flex: 1; padding: 25px; overflow-y: auto; transition: opacity 0.3s; }
 
 /* ZOOM MODAL - ZOOM IMAGE*/
