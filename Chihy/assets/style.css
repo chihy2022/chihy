@@ -85,10 +85,21 @@ img { max-width: 100%; height: auto; display: block; }
 /* SIDEBAR - DARK NAVY STYLE */
 .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); border-right: none; display: flex; flex-direction: column; transition: var(--transition); position: relative; overflow: visible !important; z-index: 1001; flex-shrink: 0; }
 .sidebar.collapsed { width: var(--sidebar-c); }
-.sidebar-toggle { position: absolute; right: -14px; top: 35px; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: white; cursor: pointer; z-index: 10002; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; transform: translateY(-50%); color: var(--text-gray); }
+.sidebar-toggle { position: absolute; right: -14px; top: 35px; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: white; cursor: pointer; z-index: 10002; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: none !important; align-items: center; justify-content: center; transform: translateY(-50%); color: var(--text-gray); }
 .sidebar-toggle:hover { background: var(--primary-gradient); color: white; transform: translateY(-50%) scale(1.1); }
 .sidebar.collapsed .sidebar-toggle i { transform: rotate(180deg); }
+/* Class để ẩn hoàn toàn Sidebar */
+.sidebar.fully-hidden {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+}
 
+/* Đảm bảo nội dung chính tự động tràn ra 100% chiều rộng */
+.sidebar.fully-hidden ~ .main-content {
+    width: 100%;
+    margin-left: 0;
+}
 .sidebar-header { height: 70px; padding: 0 20px; margin-bottom: 20px; display: flex; align-items: center; box-sizing: border-box; }
 .user-profile { display: flex; align-items: center; gap: 12px; }
 .user-info { display: flex; flex-direction: column; justify-content: center; }
@@ -309,41 +320,85 @@ img { max-width: 100%; height: auto; display: block; }
 
 .btn-menu-global:hover { background: #e2e8f0; }
 
-/* --- NÚT XUẤT PDF / PNG (Gọn, thanh thoát, đồng bộ tông xanh sidebar) --- */
-.btn-primary {
-    background: #eef3ff;
-    color: var(--sidebar-logo-bg);
-    border: 1px solid #dbe6fb;
+/* --- DROPDOWN EXPORT MENU --- */
+.export-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-dots {
+    background: #00000000;
+    border: none;
+    width: 36px;
     height: 36px;
-    padding: 0 13px;
     border-radius: 8px;
-    font-weight: 600;
-    font-size: 12.5px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--sidebar-text-muted);
     cursor: pointer;
-    box-shadow: none;
     transition: all 0.2s ease;
-    flex-shrink: 0;
 }
-.btn-primary i { font-size: 12px; }
 
-.btn-primary:hover {
-    background: var(--sidebar-logo-bg);
-    border-color: var(--sidebar-logo-bg);
-    color: #fff;
-    box-shadow: 0 4px 10px rgba(47, 111, 237, 0.25);
-    filter: none;
-    transform: none;
+.btn-dots:hover {
+    background: #e2e8f0;
+    color: var(--sidebar-logo-bg);
 }
-/* Class dùng để ẩn các thành phần khi xuất file */
-.no-export {
-    display: none !important;
+
+.dropdown-content {
+    display: none; /* Mặc định ẩn */
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background: white;
+    min-width: 150px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    padding: 6px;
+    z-index: 1000;
+    border: 1px solid var(--border);
+    animation: fadeInDown 0.2s ease;
 }
-/* Class để ẩn các thành phần trong file PDF/PNG */
-.export-hidden {
-    display: none !important;
+
+.dropdown-content.show {
+    display: block;
+}
+
+.dropdown-item {
+    width: 100%;
+    border: none;
+    background: none;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sidebar-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background: #f1f5f9;
+    color: var(--sidebar-logo-bg);
+}
+
+.dropdown-item i {
+    width: 16px;
+    font-size: 14px;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Ẩn dropdown menu trên mobile hoặc các shot không cần thiết */
+@media (max-width: 1024px) {
+    #exportMenuWrapper { display: none !important; }
 }
 .content-body { flex: 1; padding: 25px; overflow-y: auto; transition: opacity 0.3s; }
 

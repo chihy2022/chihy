@@ -43,13 +43,10 @@ class UnimeApp {
   setupEventListeners() {
 
     // Menu & Sidebar
-    document
-      .getElementById("menuToggleBtn")
-      .addEventListener("click", () => this.handleMainToggle());
+    document.getElementById("menuToggleBtn").addEventListener("click", () => this.handleMainToggle());
     this.sidebarOverlay?.addEventListener("click", () =>
       this.handleMainToggle(),
     );
-    
     // 1. Xử lý nút Xuất PDF
     document.getElementById("exportPdfBtn")?.addEventListener("click", (e) => {
         // ĐÓNG MENU NGAY LẬP TỨC
@@ -80,6 +77,22 @@ class UnimeApp {
       .addEventListener("click", () => this.logout());
 
     // Nút xuất file (PDF và PNG)
+
+    // Thêm sự kiện cho nút 3 chấm
+    const dotsBtn = document.getElementById("dotsMenuBtn");
+    const dotsContent = document.getElementById("dotsMenuContent");
+
+    if (dotsBtn) {
+        dotsBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dotsContent.classList.toggle("show");
+        });
+    }
+
+    // Click ra ngoài để đóng menu
+    document.addEventListener("click", () => {
+        if (dotsContent) dotsContent.classList.remove("show");
+    });
     document
       .getElementById("exportPdfBtn")
       ?.addEventListener("click", (e) => handleExportPdf(e.currentTarget));
@@ -114,23 +127,13 @@ class UnimeApp {
    * Ẩn các nút export trên điện thoại hoặc ở các trang không có dữ liệu bảng
    */
   updateUIState(shotId) {
-    const pdfBtn = document.getElementById("exportPdfBtn");
-    const pngBtn = document.getElementById("exportPngBtn");
+    const exportMenu = document.getElementById("exportMenuWrapper");
     const hiddenShots = ["shot7", "welcome", "shot8"];
-
-    const isMobile = window.innerWidth <= 1024;
     const isHiddenShot = hiddenShots.includes(shotId);
 
-    // Điều khiển ẩn hiện nút xuất file
-    [pdfBtn, pngBtn].forEach((btn) => {
-      if (btn) {
-        if (isMobile || isHiddenShot) {
-          btn.style.setProperty("display", "none", "important");
-        } else {
-          btn.style.setProperty("display", "flex", "important");
-        }
-      }
-    });
+    if (exportMenu) {
+        exportMenu.style.display = isHiddenShot ? "none" : "block";
+    }
 
     // Đánh dấu mục menu đang được chọn (Active)
     document
@@ -244,10 +247,11 @@ class UnimeApp {
         this.updateUIState("welcome");
         this.loadPage("welcome");
       } else {
-        alert("Mã CODE không tồn tại!");
+        // SỬA DÒNG NÀY ĐỂ HIỆN LỖI THỰC TẾ TỪ SERVER
+        alert("Lỗi từ Server: " + (user.error || "Không xác định"));
       }
     } catch (e) {
-      alert("Lỗi kết nối!");
+      alert("Lỗi kết nối hoặc lỗi cú pháp JSON!");
     } finally {
       btn.disabled = false;
       btn.innerText = "ĐĂNG NHẬP";
@@ -403,28 +407,46 @@ class UnimeApp {
       content.style.opacity = "1";
     }
   }
-
-  // Đóng/Mở thanh menu bên trái
+  // Đóng/Mở thanh menu bên trái (Ẩn hoàn toàn)
+  // 1. Hàm Toggle: Đổi từ collapsed -> hidden
   handleMainToggle() {
     const isMobile = window.innerWidth <= 1024;
     const overlay = document.getElementById("sidebar-overlay");
+
     if (isMobile) {
       const isOpen = this.sidebar.classList.toggle("mobile-active");
       overlay?.classList.toggle("active", isOpen);
     } else {
-      this.sidebar.classList.toggle("collapsed");
-      // Lưu trạng thái mini/full để lần sau mở lại đúng như vậy
+      // Bỏ hẳn class 'collapsed', dùng 'fully-hidden'
+      const isHidden = this.sidebar.classList.toggle("fully-hidden");
+
+      // Cập nhật lại key lưu trữ cho rõ nghĩa
       localStorage.setItem(
         CONFIG.SIDEBAR_KEY,
-        this.sidebar.classList.contains("collapsed") ? "mini" : "full",
+        isHidden ? "hidden" : "visible"
       );
+
+      // Gọi vẽ lại Gantt Chart để tránh lệch đường kẻ
+      this.refreshGanttLayout();
     }
   }
 
-  // Khôi phục trạng thái sidebar từ bộ nhớ
+  // 2. Hàm khôi phục trạng thái khi load trang
   restoreSidebarState() {
-    if (localStorage.getItem(CONFIG.SIDEBAR_KEY) === "mini")
-      this.sidebar.classList.add("collapsed");
+    const state = localStorage.getItem(CONFIG.SIDEBAR_KEY);
+    if (state === "hidden") {
+      this.sidebar.classList.add("fully-hidden");
+    }
+    // Nếu trước đó là 'mini' (cũ), ta cũng coi như visible hoặc cho về hidden tùy bạn
+  }
+
+  // Hàm bổ trợ để refresh lại các shot có dùng Canvas/SVG như Gantt
+  refreshGanttLayout() {
+    setTimeout(() => {
+      if (typeof window.syncRowHeights === "function") window.syncRowHeights();
+      if (typeof window.drawConnectors37 === "function") window.drawConnectors37();
+      if (typeof window.drawTodayLine37 === "function") window.drawTodayLine37();
+    }, 300);
   }
 
   // Hiện/Ẩn mật khẩu (UID) ở màn hình đăng nhập
@@ -805,17 +827,9 @@ async function handleExportPdf(btn) {
       backgroundColor: "#ffffff",
       windowWidth: 1920,
       onclone: (clonedDoc) => {
-        // --- FIXED: ẨN CÁC NÚT VÀ SIDEBAR TRONG FILE PDF ---
-        clonedDoc.querySelectorAll(".no-export, .sidebar, .main-header, .sidebar-toggle").forEach(el => {
-          el.style.setProperty("display", "none", "important");
-        });
-
-        // const clonedSource =
-        //   clonedDoc.querySelector(".main-content") ||
-        //   clonedDoc.getElementById("content-area");
-        const clonedSource = clonedDoc.getElementById("content-area") || clonedDoc.querySelector(".main-content");
-        clonedSource.style.height = "auto";
-        clonedSource.style.overflow = "visible";
+        const clonedSource =
+          clonedDoc.querySelector(".main-content") ||
+          clonedDoc.getElementById("content-area");
  
         // Ép hiện rõ 100% (Fix mờ nhạt) - không đụng display/vertical-align
         clonedSource.querySelectorAll("*").forEach((el) => {
@@ -896,18 +910,16 @@ async function handleExportPdf(btn) {
       compress: true,
     });
  
-    pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, imgW, imgH);
-        pdf.save(`Umer_Report_${Date.now()}.pdf`);
-
-    } catch (error) {
-        console.error("Lỗi Xuất PDF:", error);
-        alert("Có lỗi xảy ra trong quá trình tạo file!");
-    } finally {
-        // 3. FORCE RESET: Ép nút quay lại trạng thái cũ bằng mọi giá
-        setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = originalContent;
-            console.log("Nút đã được reset.");
-        }, 500); // Delay 0.5s để chắc chắn trình duyệt đã xử lý xong file download
-    }
+    const imgData = canvas.toDataURL("image/png");
+    pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
+ 
+    const timestamp = new Date().getTime();
+    pdf.save(`Umer_dms_pdf_${timestamp}.pdf`);
+  } catch (e) {
+    console.error("Lỗi PDF:", e);
+    alert("Lỗi xuất PDF!");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
 }
