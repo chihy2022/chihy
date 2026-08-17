@@ -49,6 +49,24 @@ class UnimeApp {
     this.sidebarOverlay?.addEventListener("click", () =>
       this.handleMainToggle(),
     );
+    
+    // 1. Xử lý nút Xuất PDF
+    document.getElementById("exportPdfBtn")?.addEventListener("click", (e) => {
+        // ĐÓNG MENU NGAY LẬP TỨC
+        document.getElementById("dotsMenuContent")?.classList.remove("show");
+        
+        // Sau đó mới chạy hàm xuất
+        handleExportPdf(e.currentTarget);
+    });
+
+    // 2. Xử lý nút Xuất PNG
+    document.getElementById("exportPngBtn")?.addEventListener("click", (e) => {
+        // ĐÓNG MENU NGAY LẬP TỨC
+        document.getElementById("dotsMenuContent")?.classList.remove("show");
+        
+        // Sau đó mới chạy hàm xuất
+        handleExportPng(e.currentTarget);
+    });
 
     // Đăng nhập & Đăng xuất
     document
