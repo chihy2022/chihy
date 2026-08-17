@@ -805,9 +805,17 @@ async function handleExportPdf(btn) {
       backgroundColor: "#ffffff",
       windowWidth: 1920,
       onclone: (clonedDoc) => {
-        const clonedSource =
-          clonedDoc.querySelector(".main-content") ||
-          clonedDoc.getElementById("content-area");
+        // --- FIXED: ẨN CÁC NÚT VÀ SIDEBAR TRONG FILE PDF ---
+        clonedDoc.querySelectorAll(".no-export, .sidebar, .main-header, .sidebar-toggle").forEach(el => {
+          el.style.setProperty("display", "none", "important");
+        });
+
+        // const clonedSource =
+        //   clonedDoc.querySelector(".main-content") ||
+        //   clonedDoc.getElementById("content-area");
+        const clonedSource = clonedDoc.getElementById("content-area") || clonedDoc.querySelector(".main-content");
+        clonedSource.style.height = "auto";
+        clonedSource.style.overflow = "visible";
  
         // Ép hiện rõ 100% (Fix mờ nhạt) - không đụng display/vertical-align
         clonedSource.querySelectorAll("*").forEach((el) => {
