@@ -896,16 +896,18 @@ async function handleExportPdf(btn) {
       compress: true,
     });
  
-    const imgData = canvas.toDataURL("image/png");
-    pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
- 
-    const timestamp = new Date().getTime();
-    pdf.save(`Umer_dms_pdf_${timestamp}.pdf`);
-  } catch (e) {
-    console.error("Lỗi PDF:", e);
-    alert("Lỗi xuất PDF!");
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = originalText;
-  }
+    pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, imgW, imgH);
+        pdf.save(`Umer_Report_${Date.now()}.pdf`);
+
+    } catch (error) {
+        console.error("Lỗi Xuất PDF:", error);
+        alert("Có lỗi xảy ra trong quá trình tạo file!");
+    } finally {
+        // 3. FORCE RESET: Ép nút quay lại trạng thái cũ bằng mọi giá
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalContent;
+            console.log("Nút đã được reset.");
+        }, 500); // Delay 0.5s để chắc chắn trình duyệt đã xử lý xong file download
+    }
 }
